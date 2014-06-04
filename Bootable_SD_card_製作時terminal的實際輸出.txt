@@ -1,0 +1,87 @@
+root@anntony-Lenovo-B590:~# echo $card
+
+root@anntony-Lenovo-B590:~# card=/dev/sdb
+root@anntony-Lenovo-B590:~# echo $card
+/dev/sdb
+root@anntony-Lenovo-B590:~# image=/home/anntony/CubieTruck_Download/Cubieez/SD_card/
+cubieez_1.0.0_A20_Cubietruck_R1.img  Cubieez_1.0.0_Cubietruck.7z          
+root@anntony-Lenovo-B590:~# image=/home/anntony/CubieTruck_Download/Cubieez/SD_card/cubieez_1.0.0_A20_Cubietruck_R1.img
+root@anntony-Lenovo-B590:~# echo $image
+/home/anntony/CubieTruck_Download/Cubieez/SD_card/cubieez_1.0.0_A20_Cubietruck_R1.img
+root@anntony-Lenovo-B590:~# bootloader=/home/anntony/CubieTruck_Download/u-boot/u-boot-sunxi-with-spl-ct-20140107.bin
+root@anntony-Lenovo-B590:~# echo $bootloader
+/home/anntony/CubieTruck_Download/u-boot/u-boot-sunxi-with-spl-ct-20140107.bin
+root@anntony-Lenovo-B590:~# sunxi_tools_path=/home/anntony/CubieTruck_Download/sunxi-tools
+root@anntony-Lenovo-B590:~# echo $sunxi_tools_path
+/home/anntony/CubieTruck_Download/sunxi-tools
+root@anntony-Lenovo-B590:~# dd if=/dev/zero of=${card} bs=512 seek=1 count=2047
+輸入 2047+0 個紀錄
+輸出 2047+0 個紀錄
+複製了 1048064 個位元組 (1.0 MB), 0.339814 s, 3.1 MB/s
+root@anntony-Lenovo-B590:~# dd if=$bootloader of=$card bs=1024 seek=8
+輸入 254+1 個紀錄
+輸出 254+1 個紀錄
+複製了 261100 個位元組 (261 kB), 0.0640807 s, 4.1 MB/s
+root@anntony-Lenovo-B590:~# dd if=$image of=$card bs=1M
+輸入 1882+0 個紀錄
+輸出 1882+0 個紀錄
+複製了 1973420032 個位元組 (2.0 GB), 256.209 s, 7.7 MB/s
+root@anntony-Lenovo-B590:~# sync
+root@anntony-Lenovo-B590:~# mkdir /tmp/sdb1
+root@anntony-Lenovo-B590:~# mount -t ext4 /dev/sdb1 /tmp/sdb1
+mount：錯誤檔案系統類型、不當的選項、不當的超區塊於 /dev/sdb1,
+      缺少編碼頁或輔助程式，或其他錯誤
+       在某些狀況下，syslog 中可以找到有用的資訊 - 嘗試
+      dmesg | tail 之類命令
+
+root@anntony-Lenovo-B590:~# mount /dev/sdb1 /tmp/sdb1
+root@anntony-Lenovo-B590:~# cd /tmp/sdb1
+root@anntony-Lenovo-B590:/tmp/sdb1# ls
+script.bin  uEnv.txt  uImage
+root@anntony-Lenovo-B590:/tmp/sdb1# ls -al
+總計 5002
+drwxr-xr-x 2 root root   16384  1月  1  1970 .
+drwxrwxrwt 7 root root    4096  6月  5 02:04 ..
+-rwxr-xr-x 1 root root   46224  1月 11 19:24 script.bin
+-rwxr-xr-x 1 root root     114  1月 17 19:28 uEnv.txt
+-rwxr-xr-x 1 root root 5050976  1月 18 22:59 uImage
+root@anntony-Lenovo-B590:/tmp/sdb1# echo $sunxi_tools_path
+/home/anntony/CubieTruck_Download/sunxi-tools
+root@anntony-Lenovo-B590:/tmp/sdb1# $sunxi_tools_path bin2fex script.bin 1.fex
+-bash: /home/anntony/CubieTruck_Download/sunxi-tools: 是個目錄
+root@anntony-Lenovo-B590:/tmp/sdb1# $sunxi_tools_path/bin2fex script.bin 1.fex
+fexc-bin: script.bin: version: 0.1.2
+fexc-bin: script.bin: size: 46224 (83 sections)
+root@anntony-Lenovo-B590:/tmp/sdb1# ls
+1.fex  script.bin  uEnv.txt  uImage
+root@anntony-Lenovo-B590:/tmp/sdb1# cat 1.fex |grep screen0_output
+screen0_output_type = 3
+screen0_output_mode = 5
+root@anntony-Lenovo-B590:/tmp/sdb1# vi ./1.fex 
+root@anntony-Lenovo-B590:/tmp/sdb1# cat 1.fex |grep screen0_output
+screen0_output_type = 4
+screen0_output_mode = 4
+root@anntony-Lenovo-B590:/tmp/sdb1# $sunxi_tools_path/fex2bin 1.fex script.bin
+root@anntony-Lenovo-B590:/tmp/sdb1# ls -al
+總計 5026
+drwxr-xr-x 2 root root   16384  6月  5 02:07 .
+drwxrwxrwt 7 root root    4096  6月  5 02:08 ..
+-rwxr-xr-x 1 root root   24125  6月  5 02:07 1.fex
+-rwxr-xr-x 1 root root   46224  6月  5 02:08 script.bin
+-rwxr-xr-x 1 root root     114  1月 17 19:28 uEnv.txt
+-rwxr-xr-x 1 root root 5050976  1月 18 22:59 uImage
+root@anntony-Lenovo-B590:/tmp/sdb1# sync
+root@anntony-Lenovo-B590:/tmp/sdb1# cd /tmp
+root@anntony-Lenovo-B590:/tmp# cd -
+/tmp/sdb1
+root@anntony-Lenovo-B590:/tmp/sdb1# cat ./uEnv.txt 
+console=tty0
+loglevel=7
+root=/dev/mmcblk0p2 rootwait
+extraargs=console=ttyS0,115200 earkyprintk=vga,ttyS0,115200
+
+root@anntony-Lenovo-B590:/tmp/sdb1# cd /
+root@anntony-Lenovo-B590:/# sync
+root@anntony-Lenovo-B590:/# umount /tmp/sdb1
+root@anntony-Lenovo-B590:/# 
+

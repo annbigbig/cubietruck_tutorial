@@ -2,10 +2,6 @@
 為了可以方便修改分割區，我用Synaptic套件管理員安裝了Gparted這個分割管理程式
 開始製作之前
 請先用Gparted把MicroSD卡上面的分割區全都刪掉
-(剛才忘了說，再用Gparted把整張MicroSD分割成只有一個partition，也就是你在Gparted裡面要有看到/dev/sdb1)
-然後把這個/dev/sdb1格式化成ext4格式
-指令是
-# mkfs.ext4 /dev/sdb1
 以下假設你的MicroSD卡是/dev/sdb
 請再用Gparted或是Ubuntu裡的磁碟管理程式再次確認
 以免發生悲劇（也就是dd指令把你的開機硬碟洗得一乾二淨）
