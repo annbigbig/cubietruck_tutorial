@@ -150,3 +150,129 @@ screen0_output_mode = 10
 # umount /tmp/sdc1
 
 現在就把MicroSD卡插到CubieTruck裡面，開機，準備要來接通網路
+
+===============================================================================
+
+現在開始步驟2.將完成的MicroSD卡插入CubieTruck，開機後設定網路參數
+開機之後，如果你的路由器或分享器有DHCP Server功能，而且你的網路線又插在CubieTruck上面
+那麼你應該可以動態取得一個IP了，在這裡我想要讓我的eth0和wlan0都可以動態地透過DHCP取得IP
+打開終端機
+
+$ sudo -i
+# lsmod | grep bcmd
+
+這時候會看到系統已經有載入bcmdhd模組了，這就是無線網卡的驅動程式 
+再執行
+# ifconfig
+然後發現只有eth0和lo，並沒有發現wlan0
+於是再執行
+# ifconfig wlan0 up
+# ifconfig
+這個時候可以看到wlan0跑起來了，不過還沒有動態取得IP
+首先要將無線網路的SSID和密碼寫到/etc/wpa_supplicant.conf裡去
+# iwlist wlan0 scan
+# iwlist wlan0 scan |grep D-Link
+掃描之後可以看到我使用的無線網路ESSID是D-Link_DIR-600M
+# wpa_passphrase D-Link_DIR-600M mypassword >> /etc/wpa_supplicant.conf
+# cat /etc/wpa_supplicant.conf
+現在我們已經有無線網路的設定了，接下來請修改/etc/network/interfaces設定檔
+# vi /etc/network/interfaces
+改成這樣（忽略所有以#字元開頭的注解行，我只列出有作用的列數）
+auto lo
+iface lo inet loopback
+
+auto eth0
+allow-hotplug eth0
+iface eth0 inet dhcp
+
+auto wlan0
+iface wlan0 inet dhcp
+wpa-conf /etc/wpa_supplicant.conf
+修改完之後，執行
+# sync
+# init 6
+重新開機，看看無線網路介面wlan0是否成功啟動了？
+
+===============================================================================
+網路連通了之後，現在開始步驟3.打開音效，安裝必要軟體（繁體中文支援，中文輸入法，Oracle JDK 8)
+
+在安裝軟體之前
+先更新源列表，我沒有去動那個預設的/etc/apt/sources.list
+我另外新增了一個/etc/apt/sources.list.d/taiwan.list
+內容如下
+deb http://tw.archive.ubuntu.com/ubuntu precise main restricted universe multiverse
+deb http://tw.archive.ubuntu.com/ubuntu precise-security main restricted universe multiverse
+deb http://tw.archive.ubuntu.com/ubuntu precise-updates main restricted universe multiverse
+deb http://tw.archive.ubuntu.com/ubuntu precise-backports main restricted universe multiverse
+deb http://tw.archive.ubuntu.com/ubuntu precise-proposed main restricted universe multiverse
+deb-src http://tw.archive.ubuntu.com/ubuntu precise main restricted universe multiverse
+deb-src http://tw.archive.ubuntu.com/ubuntu precise-security main restricted universe multiverse
+deb-src http://tw.archive.ubuntu.com/ubuntu precise-updates main restricted universe multiverse
+deb-src http://tw.archive.ubuntu.com/ubuntu precise-backports main restricted universe multiverse
+deb-src http://tw.archive.ubuntu.com/ubuntu precise-proposed main restricted universe multiverse
+然後不要忘了執行
+# apt-get update
+這樣才會更新源列表
+注意上面的precise，這表示Cubiuntu是基於Ubuntu 12.04去改出來的
+每次你更新源列表的時候，要記得Ubuntu的版本號很重要，precise代表版本12.04
+
+
+先安裝簡體及繁體支援好了
+從畫面左下角的「CUBIUNTU」按鈕 -> Preferences -> Synaptic Package Manager
+把套件管理員打開，用戶linaro的密碼是linaro，進入套件管理員後
+按下上方工具列的「Search」按鈕，用關鍵字「language-pack han」搜尋
+會找到
+language-pack-gnome-zh-hans
+language-pack-gnome-zh-hans-base
+language-pack-gnome-zh-hant
+language-pack-gnome-zh-hant-base
+language-pack-zh-hans
+language-pack-zh-hans-base
+language-pack-zh-hant
+language-pack-zh-hant-basse
+這些全裝上
+
+還有這些
+firefox-locale-zh-hans
+firefox-locale-zh-hant
+
+還有中文字型
+ttf-wqy-zenhei
+
+安裝好之後，取消自動登入
+因為自動登入幫我們選的Locale是英文
+我們手動登入，才能選繁體中文
+從畫面左下角的「CUBIUNTU」按鈕 -> CubieTweaks -> Special Tweaks > AutologinOFF
+# sync
+# init 6
+重新開機之後，需要在畫面下方選擇Language: zh_HK 漢語（香港）
+我不知道那裡出錯了
+居然沒有zh_TW 漢語（台灣）的選項，這並不影響待會兒安裝中文輸入法或是瀏覽器的繁體中文顯示
+只是桌面選單的用語有些會有香港味
+
+打開Firefox瀏覽器之後
+在Google首頁看到熟悉的繁體中文了
+現在我們要來安裝中文輸入法
+Cubiuntu裡預設安裝了ibus
+所以我們再打開Synaptic套件管理員，請安裝ibus-chewing套件
+這是注音輸入法，如果需要倉頡輸入法請安裝ibus-table-cangjie套件
+如果Synaptic套件管理員一直當掉
+那就在終端機直接下指令
+# apt-get install ibus-chewing
+# apt-get install ibus-table-cangjie
+一樣可以安裝，安裝完成後在畫面的右下角有一個小小鍵盤的圖示，對它按右鍵選「重新啟動」
+此時小小鍵盤圖示會消失一會兒，等它重新啟動完成，又會出現，再對它按右鍵選「偏好設定」
+切換到第二個頁籤「輸入法」「選取輸入法」「漢語」，就可以看到剛才安裝的注音和倉頡
+選了注音，然後按下右邊的「加入」按鈕，在第一頁「通用」的「下一個輸入法」
+設定切換的「鍵盤快捷鍵」是Control+Shift+Shift_L，按下「確定」完成設定
+為了方便，請在「通用」頁籤下方的「顯示語言面板」把這個選項改成「當啟用時」，
+還是在「通用」頁籤，上方的「啟用或停用」，把它改成Control+space後，按下關閉，完成設定
+
+如果要安裝嘸蝦米，請確定你有購買它的版權，然後參考這一篇
+http://www.ubuntu-tw.org/modules/newbb/viewtopic.php?topic_id=43628
+它一樣是Ubuntu上面ibus安裝嘸蝦米輸入法
+（附注：deb包的安裝指令是dpkg -i xxxx-xxxx-xxxx.deb）
+
+現在繁體中文輸入法也有了，再來請打開音效
+等一下好累，明天再寫，該
+
