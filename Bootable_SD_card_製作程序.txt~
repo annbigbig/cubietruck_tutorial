@@ -30,7 +30,7 @@ sunxi_tools_path=工具程式的路徑
 #dd if=/dev/zero of=${card} bs=512 seek=1 count=2047	（清空記憶卡，這是Cubiuntu官網的作法）
 =============================================================
 
-從記憶卡最前面跳過8kb的位置，開始寫入spl-loader和u-boot
+從記憶卡最前面跳過8kb的位置，開始寫入spl-loader和u-boot，一樣擇一執行即可
 #dd if=$bootloader of=$card bs=1024 seek=8
 
 接下來就是把Image輸出到MicroSD記憶卡

@@ -1,0 +1,66 @@
+root@anntony-Lenovo-B590:/home/anntony/CubieTruck_Download/workplace# echo $card
+
+root@anntony-Lenovo-B590:/home/anntony/CubieTruck_Download/workplace# card=/dev/sdc
+root@anntony-Lenovo-B590:/home/anntony/CubieTruck_Download/workplace# echo $card
+/dev/sdc
+root@anntony-Lenovo-B590:/home/anntony/CubieTruck_Download/workplace# mkdir /tmp/sdc1
+root@anntony-Lenovo-B590:/home/anntony/CubieTruck_Download/workplace# mount /dev/sdc1 /tmp/sdc1
+root@anntony-Lenovo-B590:/home/anntony/CubieTruck_Download/workplace# cd /tmp/sdc1
+root@anntony-Lenovo-B590:/tmp/sdc1# ls
+lost+found  script.bin  uEnv.txt  uImage
+root@anntony-Lenovo-B590:/tmp/sdc1# ls -al
+總計 4550
+drwxr-xr-x 3 root root    1024  6月  8 17:03 .
+drwxrwxrwt 9 root root    4096  6月  8 17:17 ..
+drwx------ 2 root root   12288  6月  8 17:03 lost+found
+-rw-rw-r-- 1 1003 1003   46284  4月  2 19:57 script.bin
+-rw-rw-r-- 1 1003 1003     155  4月  2 19:57 uEnv.txt
+-rw-rw-r-- 1 1003 1003 4572704  4月  2 19:57 uImage
+root@anntony-Lenovo-B590:/tmp/sdc1# cat ./uEnv.txt 
+root=/dev/mmcblk0p2
+extraargs=console=tty0 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p50 rootwait panic=10 rootfstype=ext4 rootflags=discard
+root@anntony-Lenovo-B590:/tmp/sdc1# echo $sunxi_tools_path
+
+root@anntony-Lenovo-B590:/tmp/sdc1# sunxi_tools_path=/home/anntony/CubieTruck_Download/sunxi-tools
+root@anntony-Lenovo-B590:/tmp/sdc1# echo $sunxi_tools_path
+/home/anntony/CubieTruck_Download/sunxi-tools
+root@anntony-Lenovo-B590:/tmp/sdc1# $sunxi_tools_path/bin2fex script.bin 1.fex
+fexc-bin: script.bin: version: 0.1.2
+fexc-bin: script.bin: size: 46284 (83 sections)
+root@anntony-Lenovo-B590:/tmp/sdc1# cat ./1.fex |grep screen0
+screen0_output_type = 4
+screen0_output_mode = 11
+root@anntony-Lenovo-B590:/tmp/sdc1# vi ./1.fex 
+root@anntony-Lenovo-B590:/tmp/sdc1# cat ./1.fex | grep disp_mode
+disp_mode = 4
+root@anntony-Lenovo-B590:/tmp/sdc1# vi ./1.fex 
+root@anntony-Lenovo-B590:/tmp/sdc1# cat ./1.fex |grep screen0
+screen0_output_type = 4
+screen0_output_mode = 4
+root@anntony-Lenovo-B590:/tmp/sdc1# cat ./1.fex | grep disp_mode
+disp_mode = 0
+root@anntony-Lenovo-B590:/tmp/sdc1# $sunxi_tools_path/fex2bin 1.fex script.bin
+root@anntony-Lenovo-B590:/tmp/sdc1# ls -al
+總計 4575
+drwxr-xr-x 3 root root    1024  6月  8 17:24 .
+drwxrwxrwt 9 root root    4096  6月  8 17:21 ..
+-rw-r--r-- 1 root root   24157  6月  8 17:24 1.fex
+drwx------ 2 root root   12288  6月  8 17:03 lost+found
+-rw-rw-r-- 1 1003 1003   46284  6月  8 17:25 script.bin
+-rw-rw-r-- 1 1003 1003     155  4月  2 19:57 uEnv.txt
+-rw-rw-r-- 1 1003 1003 4572704  4月  2 19:57 uImage
+root@anntony-Lenovo-B590:/tmp/sdc1# cat ./uEnv.txt 
+root=/dev/mmcblk0p2
+extraargs=console=tty0 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p50 rootwait panic=10 rootfstype=ext4 rootflags=discard
+root@anntony-Lenovo-B590:/tmp/sdc1# vi ./uEnv.txt 
+root@anntony-Lenovo-B590:/tmp/sdc1# cd ..
+root@anntony-Lenovo-B590:/tmp# cd -
+/tmp/sdc1
+root@anntony-Lenovo-B590:/tmp/sdc1# cat ./uEnv.txt 
+root=/dev/mmcblk0p2
+extraargs=console=tty0 hdmi.audio=EDID:0 disp.screen0_output_type=4 disp.screen0_output_mode=4 rootwait panic=10 rootfstype=ext4 rootflags=discard
+root@anntony-Lenovo-B590:/tmp/sdc1# cd ..
+root@anntony-Lenovo-B590:/tmp# sync
+root@anntony-Lenovo-B590:/tmp# umount /tmp/sdc1
+root@anntony-Lenovo-B590:/tmp# 
+
