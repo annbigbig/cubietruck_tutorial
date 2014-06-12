@@ -274,5 +274,13 @@ http://www.ubuntu-tw.org/modules/newbb/viewtopic.php?topic_id=43628
 （附注：deb包的安裝指令是dpkg -i xxxx-xxxx-xxxx.deb）
 
 現在繁體中文輸入法也有了，再來請打開音效
+（我又把CubieTweaks > Special Tweaks > AutologinOn打開了）
+在畫面左下方的「CUBIUNTU」-> Gnome-Center-> Sound 
+在Hardware頁籤，把sunxi-CODEC和sunxi-sndspdif兩個預設都是Off的選項
+在對話框的下方可以調整成「Analog Stereo Output」
+然後在對話框上方要把OFF變更為ON，接著你會聽到「噗」的一聲
+這就表示你已經成功把音效打開了
+
+好累，剩一點點明天再寫好嗎？我想吃麵了…該
 等一下好累，明天再寫，該
 
