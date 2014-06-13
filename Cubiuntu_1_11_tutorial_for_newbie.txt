@@ -298,6 +298,49 @@ CUBIUNTU -> Preferences -> Gnome-Center -> Date and Time
 這樣右下角的時間顯示就會正常
 （預設是歐洲馬德里，因為包CUBIUNTU這個distribution的ikeeki應該是西班牙人）
 
-待續…(噗）
+最後是把板子上的LED關掉
+CUBIUNTU -> CubieTweaks > Leds Tweaks > [顏色] Led
+[顏色]有Blue、Orange、White、Green
+選擇你想要關掉的LED燈，選None
+記住要稍微等一下（大概十五秒），等桌面環境跳一個記事本對話框，
+告訴你設定值會在下次開機生效，這樣才算關掉了
+如果又突然懷念它那閃來閃去像聖誕樹的樣子
+可以再選Default-On把它們打開
 
+
+還有一個是原本的vi編輯器的上下左右會變成ABCD（莫名奇妙）
+直接在終端機下指令安裝vim
+apt-get install vim
+安裝了vim之後
+注解行（前面是以#字元開頭的行）是深藍色，
+而背景是純黑色，根本什麼都看不見
+在vim的Menu選單的Edit-> Profile Preferences也找不到任何地方可以改成亮一點的顏色
+上網用「vim how to change color of comment text」爬文後
+https://spinspire.com/article/change-default-comment-color-vim
+在家目錄/home/linaro及/root下面都新增一个.vimrc的檔案
+內容只有一行，就是
+:highlight Comment ctermfg=green
+這樣注解行就是亮綠色，背景色是黑色，這樣才有辦法工作
+不然你以為我有寫輪眼嗎？黑色背景深藍色字是要怎麼看啊
+
+到這裡好像是在微調Cubiuntu
+我有找到一篇
+http://www.forum-cubieboard.de/Thread-how-to-customize-cubiuntu
+(How to customize cubiuntu)
+
+另外忙了這麼久，我可能要研究一下Cubieboard官網上的這篇
+http://docs.cubieboard.org/how_to_make_a_sd_image_from_sd_bootable_os
+這一篇介紹了如何把一張可以開機的SD card，變成一個Image檔案
+這對我很有幫助，因為安裝了這麼多軟體，也修改了這麼多組態
+總是希望作個快照，下次就可以用這個Image直接刷出一張SD card
+
+
+還有我打算再買一顆SATA2的2.5吋硬碟
+我想把整个rootfs搬到SATA硬碟上
+所以這一篇可能也要研究一下
+http://www.cubieforums.com/index.php?topic=1485.0
+（HOW TO INSTALL CUBIUNTU 1.1 ON SATA HDD）
+
+
+還是待續…想到什麼就會補上來(噗）
 
