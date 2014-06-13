@@ -298,6 +298,6 @@ CUBIUNTU -> Preferences -> Gnome-Center -> Date and Time
 這樣右下角的時間顯示就會正常
 （預設是歐洲馬德里，因為包CUBIUNTU這個distribution的ikeeki應該是西班牙人）
 
-待續…
+待續…(噗）
 
 
