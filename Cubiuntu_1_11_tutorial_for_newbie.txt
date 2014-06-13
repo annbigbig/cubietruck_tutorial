@@ -273,6 +273,16 @@ http://www.ubuntu-tw.org/modules/newbb/viewtopic.php?topic_id=43628
 它一樣是Ubuntu上面ibus安裝嘸蝦米輸入法
 （附注：deb包的安裝指令是dpkg -i xxxx-xxxx-xxxx.deb）
 
+要注意的是，ibus在開機的時候並不會自動啟動，
+我在Cubiuntu裡面也找不到關於可以在開機時自動啟動ibus的設定項
+所以我再打開了Synaptic套件管理員，安裝了im-config套件
+安裝完成後，在終端機執行
+# im-config
+然後會跳出一個對話框，讓你選擇預設的輸入法，此時請選擇ibus
+下次開機的時候，ibus就會自動啟動了，不然每次都要手動去
+CUBIUNTU -> Preferences -> Keyboard Input Methods手動叫醒ibus還滿累人的
+
+
 現在繁體中文輸入法也有了，再來請打開音效
 （我又把CubieTweaks > Special Tweaks > AutologinOn打開了）
 在畫面左下方的「CUBIUNTU」-> Gnome-Center-> Sound 
@@ -281,6 +291,13 @@ http://www.ubuntu-tw.org/modules/newbb/viewtopic.php?topic_id=43628
 然後在對話框上方要把OFF變更為ON，接著你會聽到「噗」的一聲
 這就表示你已經成功把音效打開了
 
-好累，剩一點點明天再寫好嗎？我想吃麵了…該
-等一下好累，明天再寫，該
+
+然後還有我發現系統時間怪怪的，需要調整成亞洲台北時間
+CUBIUNTU -> Preferences -> Gnome-Center -> Date and Time
+可以調整成Asia Taipei
+這樣右下角的時間顯示就會正常
+（預設是歐洲馬德里，因為包CUBIUNTU這個distribution的ikeeki應該是西班牙人）
+
+待續…
+
 
