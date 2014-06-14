@@ -341,6 +341,36 @@ http://docs.cubieboard.org/how_to_make_a_sd_image_from_sd_bootable_os
 http://www.cubieforums.com/index.php?topic=1485.0
 （HOW TO INSTALL CUBIUNTU 1.1 ON SATA HDD）
 
+2014/06/14 15:47:03補充
+我剛才又繼續爬了文
+現在解決了中文locale只有zh_CN和zh_HK和zh_SG可是找不到zh_TW的問題
+
+https://help.ubuntu.com/community/Locale
+http://blog.changyy.org/2011/03/bash-warning-setlocale-lcctype-cannot.html
+改成zh_TW.UTF-8之前
+可以先使用指令看看目前的設定
+# locale
+
+這個指令會列出你目前Ubunu系統支援的locale
+# locale -a
+
+這個指令打印目前關於locale的組態檔
+# cat /etc/default/locale
+
+
+現在要切換到zh_TW.UTF-8，請用root權限執行
+# locale-gen zh_TW.UTF-8
+# update-locale LANG=zh_TW.UTF-8
+
+然後請重新開機，設定就會生效
+終於切換到漢語台灣了，呼
+再執行剛才的
+# locale
+# locale -a
+# cat /etc/default/local
+看看有什麼不同？
+
+
 
 還是待續…想到什麼就會補上來(噗）
 
