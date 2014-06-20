@@ -1,0 +1,225 @@
+root@anntony-Lenovo-B590:/tmp# mkdir WORK_DIR
+root@anntony-Lenovo-B590:/tmp# ls
+fcitx-socket-:0  ssh-MBaYIwYFuRHd  unity_support_test.0  WORK_DIR
+root@anntony-Lenovo-B590:/tmp# cd WORK_DIR/
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# ls
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# cd /media/
+root@anntony-Lenovo-B590:/media# ls
+anntony
+root@anntony-Lenovo-B590:/media# ls -al
+總計 12
+drwxr-xr-x   3 root root 4096  4月 27 20:34 .
+drwxr-xr-x  23 root root 4096  6月  8 15:40 ..
+drwxr-x---+  4 root root 4096  6月 14 17:06 anntony
+root@anntony-Lenovo-B590:/media# cd -
+/tmp/WORK_DIR
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# fdisk -l
+
+Disk /dev/sda: 500.1 GB, 500107862016 bytes
+255 磁頭，63 磁區/磁軌，60801 磁柱，總計 976773168 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 4096 位元組
+I/O 大小 (最小/最佳化)：4096 位元組 / 4096 位元組
+磁碟識別碼：0x00085c1d
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sda1   *        2048   973369343   486683648   83  Linux
+/dev/sda2       973371390   976771071     1699841    5  延伸
+分割區 2 並非開始於磁柱邊界。
+/dev/sda5       973371392   976771071     1699840   82  Linux 交換區/ Solaris
+
+Disk /dev/sdc: 15.7 GB, 15720251392 bytes
+64 磁頭，32 磁區/磁軌，14992 磁柱，總計 30703616 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sdc1            2048       30719       14336    c  W95 FAT32 (LBA)
+/dev/sdc2           30720    30703615    15336448   83  Linux
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# fdisk -l
+
+Disk /dev/sda: 500.1 GB, 500107862016 bytes
+255 磁頭，63 磁區/磁軌，60801 磁柱，總計 976773168 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 4096 位元組
+I/O 大小 (最小/最佳化)：4096 位元組 / 4096 位元組
+磁碟識別碼：0x00085c1d
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sda1   *        2048   973369343   486683648   83  Linux
+/dev/sda2       973371390   976771071     1699841    5  延伸
+分割區 2 並非開始於磁柱邊界。
+/dev/sda5       973371392   976771071     1699840   82  Linux 交換區/ Solaris
+
+Disk /dev/sdc: 15.7 GB, 15720251392 bytes
+64 磁頭，32 磁區/磁軌，14992 磁柱，總計 30703616 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sdc1            2048       30719       14336    c  W95 FAT32 (LBA)
+/dev/sdc2           30720    30703615    15336448   83  Linux
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# cd ..
+root@anntony-Lenovo-B590:/tmp# mkdir sdc1
+root@anntony-Lenovo-B590:/tmp# mkdir sdc2
+root@anntony-Lenovo-B590:/tmp# mount /dev/sdc1 /tmp/sdc1
+root@anntony-Lenovo-B590:/tmp# cd sdc1
+root@anntony-Lenovo-B590:/tmp/sdc1# ls
+1.fex          script-ct.bin         uEnv.cb2  uEnv.ct.default
+CUBIUNTU 1.11  script-cubie-A20.bin  uEnv.ct   uImage.3.4.79-sun7i+
+root@anntony-Lenovo-B590:/tmp/sdc1# tar -cp * | gzip -9 > /tmp/bootfs.tar.gz
+root@anntony-Lenovo-B590:/tmp/sdc1# ls
+1.fex          script-ct.bin         uEnv.cb2  uEnv.ct.default
+CUBIUNTU 1.11  script-cubie-A20.bin  uEnv.ct   uImage.3.4.79-sun7i+
+root@anntony-Lenovo-B590:/tmp/sdc1# cd ..
+root@anntony-Lenovo-B590:/tmp# umount /tmp/sdc1
+root@anntony-Lenovo-B590:/tmp# ls
+bootfs.tar.gz    sdc1  ssh-MBaYIwYFuRHd      WORK_DIR
+fcitx-socket-:0  sdc2  unity_support_test.0
+root@anntony-Lenovo-B590:/tmp# mount /dev/sdc2 /tmp/sdc2
+root@anntony-Lenovo-B590:/tmp# cd sdc2
+root@anntony-Lenovo-B590:/tmp/sdc2# ls
+allwinner  boot  home        media  opt   run      srv     tmp
+bin        dev   lib         mnt    proc  sbin     sys     usr
+blkid.tab  etc   lost+found  mtab   root  selinux  system  var
+root@anntony-Lenovo-B590:/tmp/sdc2# cd ..
+root@anntony-Lenovo-B590:/tmp# ls
+bootfs.tar.gz    sdc1  ssh-MBaYIwYFuRHd      WORK_DIR
+fcitx-socket-:0  sdc2  unity_support_test.0
+root@anntony-Lenovo-B590:/tmp# cd sdc2
+root@anntony-Lenovo-B590:/tmp/sdc2# ls
+allwinner  boot  home        media  opt   run      srv     tmp
+bin        dev   lib         mnt    proc  sbin     sys     usr
+blkid.tab  etc   lost+found  mtab   root  selinux  system  var
+root@anntony-Lenovo-B590:/tmp/sdc2# tar -cp * | gzip -9 > /tmp/rootfs.tar.gz
+tar: tmp/.lxterminal-socket\:0.0-linaro：忽略通訊端
+tar: tmp/pulse-2L9K88eMlGn7/native：忽略通訊端
+root@anntony-Lenovo-B590:/tmp/sdc2# ls
+allwinner  boot  home        media  opt   run      srv     tmp
+bin        dev   lib         mnt    proc  sbin     sys     usr
+blkid.tab  etc   lost+found  mtab   root  selinux  system  var
+root@anntony-Lenovo-B590:/tmp/sdc2# cd /tmp
+root@anntony-Lenovo-B590:/tmp# ls
+bootfs.tar.gz    rootfs.tar.gz  sdc2              unity_support_test.0
+fcitx-socket-:0  sdc1           ssh-MBaYIwYFuRHd  WORK_DIR
+root@anntony-Lenovo-B590:/tmp# ls -al unity_support_test.0 
+-rw-rw-r-- 1 anntony anntony 0  6月 14 17:00 unity_support_test.0
+root@anntony-Lenovo-B590:/tmp# ls -al
+總計 1306708
+drwxrwxrwt  9 root    root          4096  6月 14 18:04 .
+drwxr-xr-x 23 root    root          4096  6月  8 15:40 ..
+-rw-r--r--  1 root    root       5055834  6月 14 17:15 bootfs.tar.gz
+drwx------  2 anntony anntony       4096  6月 14 17:00 .com.google.Chrome.q5KrVl
+srw-------  1 anntony anntony          0  6月 14 17:00 fcitx-socket-:0
+drwxrwxrwt  2 root    root          4096  6月 14 17:00 .ICE-unix
+-rw-r--r--  1 root    root    1332964804  6月 14 17:32 rootfs.tar.gz
+drwxr-xr-x  2 root    root          4096  6月 14 17:14 sdc1
+drwxrwxr-x 24 anntony anntony       4096  5月 12 05:00 sdc2
+drwx------  2 anntony anntony       4096  6月 14 17:00 ssh-MBaYIwYFuRHd
+-rw-rw-r--  1 anntony anntony          0  6月 14 17:00 unity_support_test.0
+drwxr-xr-x  2 root    root          4096  6月 14 17:12 WORK_DIR
+-r--r--r--  1 root    root            11  6月 14 17:00 .X0-lock
+drwxrwxrwt  2 root    root          4096  6月 14 17:00 .X11-unix
+root@anntony-Lenovo-B590:/tmp# cp ./*.tar.gz /home/anntony/CubieTruck_Download/Cubiuntu/experimental/
+root@anntony-Lenovo-B590:/tmp# cd /home/anntony/CubieTruck_Download/Cubiuntu/experimental/
+root@anntony-Lenovo-B590:/home/anntony/CubieTruck_Download/Cubiuntu/experimental# ls
+bootfs.tar.gz  REAEMD.txt  REAEMD.txt~  rootfs.tar.gz
+root@anntony-Lenovo-B590:/home/anntony/CubieTruck_Download/Cubiuntu/experimental# ls -al
+總計 1306680
+drwxrwxr-x 2 anntony anntony       4096  6月 14 19:36 .
+drwxrwxr-x 6 anntony anntony       4096  6月 14 19:33 ..
+-rw-r--r-- 1 root    root       5055834  6月 14 19:36 bootfs.tar.gz
+-rw-rw-r-- 1 anntony anntony        262  6月 14 19:35 REAEMD.txt
+-rw-rw-r-- 1 anntony anntony          0  6月 14 19:33 REAEMD.txt~
+-rw-r--r-- 1 root    root    1332964804  6月 14 19:36 rootfs.tar.gz
+root@anntony-Lenovo-B590:/home/anntony/CubieTruck_Download/Cubiuntu/experimental# chown anntony:anntony ./*.tar.gz
+root@anntony-Lenovo-B590:/home/anntony/CubieTruck_Download/Cubiuntu/experimental# ls -al
+總計 1306680
+drwxrwxr-x 2 anntony anntony       4096  6月 14 19:36 .
+drwxrwxr-x 6 anntony anntony       4096  6月 14 19:33 ..
+-rw-r--r-- 1 anntony anntony    5055834  6月 14 19:36 bootfs.tar.gz
+-rw-rw-r-- 1 anntony anntony        262  6月 14 19:35 REAEMD.txt
+-rw-rw-r-- 1 anntony anntony          0  6月 14 19:33 REAEMD.txt~
+-rw-r--r-- 1 anntony anntony 1332964804  6月 14 19:36 rootfs.tar.gz
+root@anntony-Lenovo-B590:/home/anntony/CubieTruck_Download/Cubiuntu/experimental# cd -
+/tmp
+root@anntony-Lenovo-B590:/tmp# ls
+bootfs.tar.gz    rootfs.tar.gz  sdc2              unity_support_test.0
+fcitx-socket-:0  sdc1           ssh-MBaYIwYFuRHd  WORK_DIR
+root@anntony-Lenovo-B590:/tmp# cd WORK_DIR/
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# ls
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# ls -al /dev |greploop
+greploop：無此指令
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# ls -al /dev |grep loop
+brw-rw----   1 root disk      7,   0  6月 14 17:00 loop0
+brw-rw----   1 root disk      7,   1  6月 14 17:00 loop1
+brw-rw----   1 root disk      7,   2  6月 14 17:00 loop2
+brw-rw----   1 root disk      7,   3  6月 14 17:00 loop3
+brw-rw----   1 root disk      7,   4  6月 14 17:00 loop4
+brw-rw----   1 root disk      7,   5  6月 14 17:00 loop5
+brw-rw----   1 root disk      7,   6  6月 14 17:00 loop6
+brw-rw----   1 root disk      7,   7  6月 14 17:00 loop7
+crw-------   1 root root     10, 237  6月 14 17:00 loop-control
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# man dd
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# ls
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# dd if=/dev/zero of=disk.img bs=1k count=5000000輸入 5000000+0 個紀錄
+輸出 5000000+0 個紀錄
+複製了 5120000000 個位元組 (5.1 GB), 47.197 s, 108 MB/s
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# ls
+disk.img
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# ls -al
+總計 5000012
+drwxr-xr-x 2 root root       4096  6月 14 19:42 .
+drwxrwxrwt 9 root root       4096  6月 14 19:38 ..
+-rw-r--r-- 1 root root 5120000000  6月 14 19:42 disk.img
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# losetup /dev/loop0 disk.img
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# man losetup
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# losetup /dev/loop0
+/dev/loop0: [0801]:18481530 (/tmp/WORK_DIR/disk.img)
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# losetup /dev/loop1
+loop：無法取得裝置上的資訊 /dev/loop1: 沒有此一裝置或位址
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# losetup /dev/loop2
+loop：無法取得裝置上的資訊 /dev/loop2: 沒有此一裝置或位址
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# losetup /dev/loop0
+/dev/loop0: [0801]:18481530 (/tmp/WORK_DIR/disk.img)
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# dd if=/dev/zero of=/dev/loop0 bs=1k count=1024
+輸入 1024+0 個紀錄
+輸出 1024+0 個紀錄
+複製了 1048576 個位元組 (1.0 MB), 0.0398904 s, 26.3 MB/s
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# bootloader=/home/anntony/CubieTruck_Download/u-boot/u-boot-sunxi-with-spl-ct-20140107.bin
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# echo $bootloader
+/home/anntony/CubieTruck_Download/u-boot/u-boot-sunxi-with-spl-ct-20140107.bin
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# dd if=$bootloader of=/dev/loop0 bs=1024 seek=8
+輸入 254+1 個紀錄
+輸出 254+1 個紀錄
+複製了 261100 個位元組 (261 kB), 0.00891244 s, 29.3 MB/s
+root@anntony-Lenovo-B590:/tmp/WORK_DIR# fdisk -l
+
+Disk /dev/sda: 500.1 GB, 500107862016 bytes
+255 磁頭，63 磁區/磁軌，60801 磁柱，總計 976773168 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 4096 位元組
+I/O 大小 (最小/最佳化)：4096 位元組 / 4096 位元組
+磁碟識別碼：0x00085c1d
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sda1   *        2048   973369343   486683648   83  Linux
+/dev/sda2       973371390   976771071     1699841    5  延伸
+分割區 2 並非開始於磁柱邊界。
+/dev/sda5       973371392   976771071     1699840   82  Linux 交換區/ Solaris
+
+Disk /dev/sdc: 15.7 GB, 15720251392 bytes
+64 磁頭，32 磁區/磁軌，14992 磁柱，總計 30703616 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sdc1            2048       30719       14336    c  W95 FAT32 (LBA)
+/dev/sdc2           30720    30703615    15336448   83  Linux
+root@anntony-Lenovo-B590:/tmp/WORK_DIR#

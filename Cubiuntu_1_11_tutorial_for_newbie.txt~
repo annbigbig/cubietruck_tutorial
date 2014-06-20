@@ -398,12 +398,7 @@ http://blog.changyy.org/2011/03/bash-warning-setlocale-lcctype-cannot.html
 http://ubuntuforums.org/showthread.php?t=1245536
 應該跳了至少一兩萬個y之後，我再格式化一次卡片
 # mkfs.ext4 /dev/sdc1
-然後再執行了兩三次
-# e2fsck -f -b 32768 -y /dev/sdc1
-它還是會跳，只是沒有幾萬次，大概二十、三十個行就結束了
-（所以我搞不懂我的8g SD card到底是好還是壞的？？？）
-然後我決定不管它了，把Image寫進去再說
-於是就把Image檔寫進SD card裡（步驟如上故不再囉嗦）
+然後再把Image檔寫進SD card裡（步驟如上故不再囉嗦）
 
 
 還是待續…想到什麼就會補上來(噗）
