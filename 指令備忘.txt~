@@ -1,0 +1,32 @@
+把目前的整個rootfs複製到/dev/nand2
+參考：https://github.com/igorpecovnik/Cubietruck-Debian/blob/master/scripts/nand-install.sh
+mount /dev/nand2 /mnt
+rsync -aH --exclude-from=.install-exclude  /  /mnt
+
+另一種
+參考：http://cubiuntu.com/downloads/
+sudo rsync -avc –exclude-from=EXCLUDE_FILE / /mnt
+
+
+要不就用tar來複製(這是錯的指令）
+參考：http://www.cubieforums.com/index.php?topic=1147.0
+tar -cf - /mnt/nandb | tar -C /mnt/sda1 -xphf -
+
+這可能是對的指令
+(cd /tmp/nandb_source; tar --backup -c *) |tar -C /tmp/sdcard_target -xv
+
+正確來說完整的是這樣
+假設我要從/dev/nandb 複製給 /dev/sda1
+cd /mnt
+mkdir nandb sda1
+mount /dev/nandb /mnt/nandb
+mount /dev/sda1 /mnt/sda1
+cd /mnt/nandb
+tar --backup -c * | tar -C /mnt/sda1 -xv
+然後就會開始複製了
+
+
+查看目前的儲存裝置
+sfdisk -s
+
+
