@@ -1,0 +1,34 @@
+# useradd anntony
+# passwd anntony
+# vi /etc/passwd
+（把anntony用戶那一行的/bin/sh改成/bin/bash）
+# vi /etc/group
+# vi /etc/gshadow
+（把字串aruntu換成aruntu,anntony）
+
+（把SD card拔掉，拿到另一台電腦上複製家目錄）
+（為什麼這麼作？在CubieTruck以aruntu用戶登入時
+/home/aruntu目錄裡的某些檔案好像會被鎖死
+導致cp複製檔案的時候永遠沒辦法完成）
+
+# mkdir /tmp/sdb2
+# mount /dev/sdb1 /tmp/sdb2
+# cd /tmp/sdb2
+# cd home
+# cp -Rp aruntu anntony
+# sync
+# cd /tmp
+# umount /tmp/sdb2
+
+(再把SD card插回CubieTruck開機)
+$ sudo -i
+# cd /home
+# chown -R anntony:anntony anntony
+
+（修改自動登入的用戶名）
+# vi /etc/slim.conf
+
+auto_login	yes
+default_login	anntony
+
+

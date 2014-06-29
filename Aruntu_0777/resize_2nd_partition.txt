@@ -1,0 +1,98 @@
+root@anntony-Lenovo-B590:~/workdir/Aruntu_SD_v0.777/v0# fdisk $card
+
+命令 (m 以獲得說明)： p
+
+磁碟 /dev/sdb: 7742 MB，7742685184 位元組
+239 磁頭，62 磁區/磁軌，1020 磁柱，總計 15122432 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sdb1            2048       30719       14336    c  W95 FAT32 (LBA)
+/dev/sdb2           30720     5150719     2560000   83  Linux
+
+命令 (m 以獲得說明)： d
+分割區編號 (1-4): 2
+
+命令 (m 以獲得說明)： p
+
+磁碟 /dev/sdb: 7742 MB，7742685184 位元組
+239 磁頭，62 磁區/磁軌，1020 磁柱，總計 15122432 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sdb1            2048       30719       14336    c  W95 FAT32 (LBA)
+
+命令 (m 以獲得說明)： w
+分割表已變更！
+
+呼叫 ioctl() 以重新讀取分割表。
+同步磁碟。
+root@anntony-Lenovo-B590:~/workdir/Aruntu_SD_v0.777/v0# fdisk $card
+
+命令 (m 以獲得說明)： p
+
+磁碟 /dev/sdb: 7742 MB，7742685184 位元組
+233 磁頭，39 磁區/磁軌，1664 磁柱，總計 15122432 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sdb1            2048       30719       14336    c  W95 FAT32 (LBA)
+
+命令 (m 以獲得說明)： n
+Partition type:
+   p   primary (1 primary, 0 extended, 3 free)
+   e   extended
+Select (default p): 
+Using default response p
+分割區編號 (1-4, 預設 2)： 
+使用預設值 2
+起初 磁區 (30720-15122431, 預設 30720)： 
+使用預設值 30720
+最後 磁區, +磁區 或 +大小{K,M,G} (30720-15122431, 預設 15122431)： 7710000
+
+命令 (m 以獲得說明)： p
+
+磁碟 /dev/sdb: 7742 MB，7742685184 位元組
+233 磁頭，39 磁區/磁軌，1664 磁柱，總計 15122432 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sdb1            2048       30719       14336    c  W95 FAT32 (LBA)
+/dev/sdb2           30720     7710000     3839640+  83  Linux
+
+命令 (m 以獲得說明)： w
+分割表已變更！
+
+呼叫 ioctl() 以重新讀取分割表。
+同步磁碟。
+root@anntony-Lenovo-B590:~/workdir/Aruntu_SD_v0.777/v0# resize2fs /dev/sdb2
+resize2fs 1.42.9 (4-Feb-2014)
+Please run 'e2fsck -f /dev/sdb2' first.
+
+root@anntony-Lenovo-B590:~/workdir/Aruntu_SD_v0.777/v0# e2fsck -f /dev/sdb2
+e2fsck 1.42.9 (4-Feb-2014)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/dev/sdb2: 137039/160000 files (0.5% non-contiguous), 574652/639999 blocks
+root@anntony-Lenovo-B590:~/workdir/Aruntu_SD_v0.777/v0# resize2fs /dev/sdb2
+resize2fs 1.42.9 (4-Feb-2014)
+Resizing the filesystem on /dev/sdb2 to 959910 (4k) blocks.
+The filesystem on /dev/sdb2 is now 959910 blocks long.
+
+root@anntony-Lenovo-B590:~/workdir/Aruntu_SD_v0.777/v0# 
+

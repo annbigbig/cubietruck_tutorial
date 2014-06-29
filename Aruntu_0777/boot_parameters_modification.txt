@@ -1,0 +1,159 @@
+root@anntony-Lenovo-B590:/tmp# 
+root@anntony-Lenovo-B590:/tmp# 
+root@anntony-Lenovo-B590:/tmp# mkdir sdb1 sdb2
+root@anntony-Lenovo-B590:/tmp# mount /dev/sdb1 /tmp/sdb1
+root@anntony-Lenovo-B590:/tmp# cd sdb1
+root@anntony-Lenovo-B590:/tmp/sdb1# ls
+aRUNTU 0.777          script-ct.bin         uEnv.cb2  uImage.3.4.79-sun7i+
+config.3.4.79-sun7i+  script-cubie-A20.bin  uEnv.ct
+root@anntony-Lenovo-B590:/tmp/sdb1# ls -al
+總計 5162
+drwxr-xr-x 2 root root   16384  1月  1  1970 .
+drwxrwxrwt 8 root root    4096  6月 28 16:06 ..
+-rwxr-xr-x 1 root root      75  6月 22 20:55 aRUNTU 0.777
+-rwxr-xr-x 1 root root   95502  2月 12 05:56 config.3.4.79-sun7i+
+-rwxr-xr-x 1 root root   44220  6月  8 18:10 script-ct.bin
+-rwxr-xr-x 1 root root   46096  6月  8 18:10 script-cubie-A20.bin
+-rwxr-xr-x 1 root root    5464  6月  8 18:14 uEnv.cb2
+-rwxr-xr-x 1 root root    5425  6月 22 18:09 uEnv.ct
+-rwxr-xr-x 1 root root 5061904  6月  8 18:10 uImage.3.4.79-sun7i+
+root@anntony-Lenovo-B590:/tmp/sdb1# cp ./uEnv.ct ./uEnv.ct.default
+root@anntony-Lenovo-B590:/tmp/sdb1# vi ./uEnv.ct
+root@anntony-Lenovo-B590:/tmp/sdb1# cat ./uEnv.ct
+extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1920x1080p50 consoleblank=0 cubietruck
+#sunxi_g2d_mem_reserve=0 
+#sunxi_fb_mem_reserve=16
+sunxi_ve_mem_reserve=128
+root=/dev/mmcblk0p2 rootwait
+partition=0:1
+kernel=/uImage.3.4.79-sun7i+
+script=script-ct.bin
+
+#video output settings, replace the above video output related string  
+
+###HDMI
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1280x720p50 consoleblank=0 cubietruck
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1280x720p60 consoleblank=0 cubietruck
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1920x1080p50 consoleblank=0 cubietruck
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1920x1080p60 consoleblank=0 cubietruck
+
+###VGA
+#extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=3 cubietruck
+#extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=4 cubietruck
+#extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=10 cubietruck
+
+
+#Root settings, watch out
+
+#root=/dev/mmcblk0p2 rootwait partition=0:1
+#root=/dev/sda1 rootwait partition=0:1
+#root=/dev/sda2 rootwait partition=0:1
+
+
+###################################Some literature:
+#Kernel arguments
+#Kernel arguments can be specified in bootargs U-boot environment variable or can be compiled into kernel.
+#The U-boot variables can be compiled in as default environment, saved in the environment on media or specified in boot.scr
+#An example of kernel command line arguments:
+#console=ttyS0,115200 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x1024p60 root=/dev/mmcblk0p1 rootwait panic=10
+#console=ttyS0,115200 is for taking over the serial port after u-boot. These are the default settings u-boot uses. You can specify console=ttyS0,115200 console=tty0 for both serial and framebuffer console
+#earlyprintk=serial,ttyS0,115200 enable earlyprintk on serial port. Pretty much useless on sunxi since some u-boot specific mechanism of printing to u-boot enabled serial port is used anyway and duplicates the earlyprintk functionality. Might come handy if you want to use another port, however.
+#initcall_debug kernel prints which init function it enters and exists. Useful to determine which driver crashed the kernel in case some driver crashed the kernel before it even printed anything.
+#ddebug_query='"file 8250_sunxi.c +p"' enable debug prints (pr_info and pr_debug) in 8250_sunxi.c if you have CONFIG_DYNAMIC_DEBUG enabled. Note the double quoting - you will be probably setting this from u-boot which strips one set of quotes. The ddebug documentation says to use double quotes.
+#consoleblank=0 to disable screen saver of framebuffer.
+#hdmi.audio=EDID:0 this should presumably turn on HDMI audio only when screen EDID says it supports audio. Omit EDID to just turn on - 1 or off - 0. Currently HDMI audio is enabled even on screen that definitly does not support it - YMMW.
+#disp.screen0_output_mode=EDID:1280x1024p60 screen 0 is the first screen configured in script.bin. EDID instructs the kernel to try to read mode from the screen. Failing that you can pick a mode from a fixed mode list in the driver. Again, omit EDID to override mode manually. You can try to figure out supported modes from files like https://github.com/linux-sunxi/linux-sunxi/blob/sunxi-3.0/drivers/video/sunxi/disp/disp_clk.c cat /sys/class/graphics/fb0/modes might be of some help too.
+#root=/dev/mmcblk0p1 - root on first mmc device first partition. Use /dev/nandc for nand third partition (new partitioning scheme uses /dev/nand3) Some images use label or UUID to identify the root filesystem. /dev/sda1 identifies first SCSI device first partition but as both internal SATA and USB mass storage use SCSI emulation this device name is not assigned deterministically. Use labels or UUIDs for SCSI devices. If you have a seperate boot partition that holds the kernel, boot.scr and script.bin, the root file system would usually be /dev/mmcblk0p2 (use root=/dev/mmcblk0p2).
+#rootwait - this was in the default environment. Not sure what would break if omitted.
+#panic=10 - the amount of time in seconds to wait before rebooting after kernel panic.
+#It is possible to significantly reduce the amount of reserved memory assigned to various video devices at boot time, resulting in more free system memory, which is especiallly helpful for 512MB devices:
+#sunxi_ve_mem_reserve=0 -- This eliminates the reserved memory for the video acceleration engine, saving 80MB. You can use this if you don't run accelerated video with programs such as VLC or XBMC or libvdpau-sunxi.
+#sunxi_g2d_mem_reserve=0 -- This eliminates the reserved memory for the 2D acceleration engine. You can use this if you don't have the G2D accelerated driver enabled in your xorg.conf. Even when G2D is enabled, it may not actually use any of this memory, so this setting may be safe (to be verified).
+#sunxi_no_mali_mem_reserve -- This eliminates the reserved memory for the Mali400 3D GPU. If you do not have the Mali binary blob driver installed, it is safe to use this and save another 64MB.
+#sunxi_fb_mem_reserve=16 -- This sets the amount of total reserved memory for the framebuffer to 16MB. The default is 32MB. Because of double buffering Mali may require more than 16MB of framebuffer, so generally only enable this if you don't have Mali installed. 16MB should be sufficient for the largest supported resolution (normally 1920x1080x32bpp).
+root@anntony-Lenovo-B590:/tmp/sdb1# vi ./uEnv.ct
+root@anntony-Lenovo-B590:/tmp/sdb1# cat ./uEnv.ct
+extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=1920x1080p60 consoleblank=0 cubietruck
+#sunxi_g2d_mem_reserve=0 
+#sunxi_fb_mem_reserve=16
+sunxi_ve_mem_reserve=128
+root=/dev/mmcblk0p2 rootwait
+partition=0:1
+kernel=/uImage.3.4.79-sun7i+
+script=script-ct.bin
+
+#video output settings, replace the above video output related string  
+
+###HDMI
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1280x720p50 consoleblank=0 cubietruck
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1280x720p60 consoleblank=0 cubietruck
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1920x1080p50 consoleblank=0 cubietruck
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1920x1080p60 consoleblank=0 cubietruck
+
+###VGA
+#extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=3 cubietruck
+#extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=4 cubietruck
+#extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=10 cubietruck
+
+
+#Root settings, watch out
+
+#root=/dev/mmcblk0p2 rootwait partition=0:1
+#root=/dev/sda1 rootwait partition=0:1
+#root=/dev/sda2 rootwait partition=0:1
+
+
+###################################Some literature:
+#Kernel arguments
+#Kernel arguments can be specified in bootargs U-boot environment variable or can be compiled into kernel.
+#The U-boot variables can be compiled in as default environment, saved in the environment on media or specified in boot.scr
+#An example of kernel command line arguments:
+#console=ttyS0,115200 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x1024p60 root=/dev/mmcblk0p1 rootwait panic=10
+#console=ttyS0,115200 is for taking over the serial port after u-boot. These are the default settings u-boot uses. You can specify console=ttyS0,115200 console=tty0 for both serial and framebuffer console
+#earlyprintk=serial,ttyS0,115200 enable earlyprintk on serial port. Pretty much useless on sunxi since some u-boot specific mechanism of printing to u-boot enabled serial port is used anyway and duplicates the earlyprintk functionality. Might come handy if you want to use another port, however.
+#initcall_debug kernel prints which init function it enters and exists. Useful to determine which driver crashed the kernel in case some driver crashed the kernel before it even printed anything.
+#ddebug_query='"file 8250_sunxi.c +p"' enable debug prints (pr_info and pr_debug) in 8250_sunxi.c if you have CONFIG_DYNAMIC_DEBUG enabled. Note the double quoting - you will be probably setting this from u-boot which strips one set of quotes. The ddebug documentation says to use double quotes.
+#consoleblank=0 to disable screen saver of framebuffer.
+#hdmi.audio=EDID:0 this should presumably turn on HDMI audio only when screen EDID says it supports audio. Omit EDID to just turn on - 1 or off - 0. Currently HDMI audio is enabled even on screen that definitly does not support it - YMMW.
+#disp.screen0_output_mode=EDID:1280x1024p60 screen 0 is the first screen configured in script.bin. EDID instructs the kernel to try to read mode from the screen. Failing that you can pick a mode from a fixed mode list in the driver. Again, omit EDID to override mode manually. You can try to figure out supported modes from files like https://github.com/linux-sunxi/linux-sunxi/blob/sunxi-3.0/drivers/video/sunxi/disp/disp_clk.c cat /sys/class/graphics/fb0/modes might be of some help too.
+#root=/dev/mmcblk0p1 - root on first mmc device first partition. Use /dev/nandc for nand third partition (new partitioning scheme uses /dev/nand3) Some images use label or UUID to identify the root filesystem. /dev/sda1 identifies first SCSI device first partition but as both internal SATA and USB mass storage use SCSI emulation this device name is not assigned deterministically. Use labels or UUIDs for SCSI devices. If you have a seperate boot partition that holds the kernel, boot.scr and script.bin, the root file system would usually be /dev/mmcblk0p2 (use root=/dev/mmcblk0p2).
+#rootwait - this was in the default environment. Not sure what would break if omitted.
+#panic=10 - the amount of time in seconds to wait before rebooting after kernel panic.
+#It is possible to significantly reduce the amount of reserved memory assigned to various video devices at boot time, resulting in more free system memory, which is especiallly helpful for 512MB devices:
+#sunxi_ve_mem_reserve=0 -- This eliminates the reserved memory for the video acceleration engine, saving 80MB. You can use this if you don't run accelerated video with programs such as VLC or XBMC or libvdpau-sunxi.
+#sunxi_g2d_mem_reserve=0 -- This eliminates the reserved memory for the 2D acceleration engine. You can use this if you don't have the G2D accelerated driver enabled in your xorg.conf. Even when G2D is enabled, it may not actually use any of this memory, so this setting may be safe (to be verified).
+#sunxi_no_mali_mem_reserve -- This eliminates the reserved memory for the Mali400 3D GPU. If you do not have the Mali binary blob driver installed, it is safe to use this and save another 64MB.
+#sunxi_fb_mem_reserve=16 -- This sets the amount of total reserved memory for the framebuffer to 16MB. The default is 32MB. Because of double buffering Mali may require more than 16MB of framebuffer, so generally only enable this if you don't have Mali installed. 16MB should be sufficient for the largest supported resolution (normally 1920x1080x32bpp).
+root@anntony-Lenovo-B590:/tmp/sdb1# tools=/home/anntony/CubieTruck_Download/sunxi-tools
+root@anntony-Lenovo-B590:/tmp/sdb1# $tools/bin2fex script-ct.bin 1.fex
+fexc-bin: script-ct.bin: version: 0.1.2
+fexc-bin: script-ct.bin: size: 44220 (82 sections)
+root@anntony-Lenovo-B590:/tmp/sdb1# cat ./1.fex |grep screen0
+screen0_output_type = 3
+screen0_output_mode = 5
+root@anntony-Lenovo-B590:/tmp/sdb1# vi ./1.fex 
+root@anntony-Lenovo-B590:/tmp/sdb1# cat ./1.fex |grep screen0
+screen0_output_type = 4
+screen0_output_mode = 10
+root@anntony-Lenovo-B590:/tmp/sdb1# cat ./1.fex |grep leds_use
+leds_used = 0
+root@anntony-Lenovo-B590:/tmp/sdb1# $tools/fex2bin 1.fex script-ct.bin
+root@anntony-Lenovo-B590:/tmp/sdb1# ls -al
+總計 5192
+drwxr-xr-x 2 root root   16384  6月 28 16:09 .
+drwxrwxrwt 8 root root    4096  6月 28 16:10 ..
+-rwxr-xr-x 1 root root   23203  6月 28 16:09 1.fex
+-rwxr-xr-x 1 root root      75  6月 22 20:55 aRUNTU 0.777
+-rwxr-xr-x 1 root root   95502  2月 12 05:56 config.3.4.79-sun7i+
+-rwxr-xr-x 1 root root   44220  6月 28 16:10 script-ct.bin
+-rwxr-xr-x 1 root root   46096  6月  8 18:10 script-cubie-A20.bin
+-rwxr-xr-x 1 root root    5464  6月  8 18:14 uEnv.cb2
+-rwxr-xr-x 1 root root    5425  6月 28 16:08 uEnv.ct
+-rwxr-xr-x 1 root root    5425  6月 28 16:07 uEnv.ct.default
+-rwxr-xr-x 1 root root 5061904  6月  8 18:10 uImage.3.4.79-sun7i+
+root@anntony-Lenovo-B590:/tmp/sdb1# sync
+root@anntony-Lenovo-B590:/tmp/sdb1# sync
+root@anntony-Lenovo-B590:/tmp/sdb1# cd ..
+root@anntony-Lenovo-B590:/tmp# umount /tmp/sdb1
+root@anntony-Lenovo-B590:/tmp# 
+
