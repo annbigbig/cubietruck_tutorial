@@ -1,0 +1,15 @@
+參考這篇來修改timezone
+http://www.christopherirish.com/2012/03/21/how-to-set-the-timezone-on-ubuntu-server/
+
+查看目前的timezone
+# date
+
+查看設定檔
+# cat /etc/timezone
+
+#重新設定timezone
+# dpkg-reconfigure tzdata
+
+重新啟動cron
+# /etc/init.d/cron stop
+# /etc/init.d/cron start

@@ -1,0 +1,14 @@
+一、可能是/bin/sh指向/bin/dash
+解：# dpkg-reconfigure -plow dash
+然後選「no」
+接著再執行
+# ls -al /bin/sh
+看看是不是指向/bin/bash
+
+二、可能是eclipse.ini裡沒指定好vm
+解：修改eclipse.ini
+加入
+ -vm
+/opt/sun-jdk-1.6.0.02/bin/java
+
+記得要放在vmargs那一行的前面

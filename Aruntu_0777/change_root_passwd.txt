@@ -1,0 +1,10 @@
+aruntu@aruntu-desktop:~/.vnc$ sudo -i
+root@aruntu-desktop:~# pwd
+/root
+root@aruntu-desktop:~# 
+root@aruntu-desktop:~# 
+root@aruntu-desktop:~# passwd 
+Enter new UNIX password: 
+Retype new UNIX password: 
+passwd: password updated successfully
+

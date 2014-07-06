@@ -32,3 +32,63 @@ auto_login	yes
 default_login	anntony
 
 
+修改/etc/sudoers
+
+anntony@aruntu-desktop:~$ sudo -i
+[sudo] password for anntony: 
+root@aruntu-desktop:~# visudo
+visudo: /etc/sudoers.tmp unchanged
+oroot@aruntu-desktop:~# update-alternatives --config editor
+There are 3 choices for the alternative editor (providing /usr/bin/editor).
+
+  Selection    Path                Priority   Status
+------------------------------------------------------------
+* 0            /bin/nano            40        auto mode
+  1            /bin/nano            40        manual mode
+  2            /usr/bin/vim.basic   30        manual mode
+  3            /usr/bin/vim.tiny    10        manual mode
+
+Press enter to keep the current choice[*], or type selection number: 2
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/editor (editor) in manual mode
+root@aruntu-desktop:~# visudo
+root@aruntu-desktop:~# exit
+logout
+anntony@aruntu-desktop:~$ sudo -i
+root@aruntu-desktop:~# 
+
+
+root@aruntu-desktop:~# cat /etc/sudoers
+#
+# This file MUST be edited with the 'visudo' command as root.
+#
+# Please consider adding local content in /etc/sudoers.d/ instead of
+# directly modifying this file.
+#
+# See the man page for details on how to write a sudoers file.
+#
+Defaults	env_reset
+Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Host alias specification
+
+# User alias specification
+
+# Cmnd alias specification
+
+# User privilege specification
+root	ALL=(ALL:ALL) ALL
+
+# Members of the admin group may gain root privileges
+%admin  ALL = (ALL) NOPASSWD: ALL
+
+# Allow members of group sudo to execute any command
+%sudo	ALL=(ALL:ALL) ALL
+
+# See sudoers(5) for more information on "#include" directives:
+
+#includedir /etc/sudoers.d
+aruntu ALL=(ALL) NOPASSWD: ALL
+anntony ALL=(ALL) NOPASSWD: ALL
+root ALL=(ALL) NOPASSWD: ALL
+
+

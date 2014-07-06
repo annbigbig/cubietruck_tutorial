@@ -1,0 +1,11 @@
+root@aruntu-desktop:~# exit
+logout
+aruntu@aruntu-desktop:~$ x11vnc -storepasswd
+Enter VNC password: 
+Verify password:    
+Write password to /home/aruntu/.vnc/passwd?  [y]/n y
+Password written to: /home/aruntu/.vnc/passwd
+aruntu@aruntu-desktop:~$ cd .vnc
+aruntu@aruntu-desktop:~/.vnc$ cat ./passwd 
+\ufffd`\ufffd}\ufffd\ufffd6\ufffdaruntu@aruntu-desktop:~/.vnc$ 
+
