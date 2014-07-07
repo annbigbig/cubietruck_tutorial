@@ -1,0 +1,58 @@
+root@aruntu-desktop:~# update-alternatives --config java
+替代項目 java（提供 /usr/bin/java）有 3 個選擇。
+
+  選項       路徑                                          優先權  狀態
+------------------------------------------------------------
+  0            /usr/lib/jvm/java-7-openjdk-armhf/jre/bin/java   1063      自動模式
+* 1            /usr/lib/jvm/java-7-openjdk-armhf/jre/bin/java   1063      手動模式
+  2            /usr/local/jdk7/bin/java                         1         手動模式
+  3            /usr/local/jdk8/bin/java                         300       手動模式
+
+按 [enter] 保留目前選項 [*]，或輸入選項編號：2
+update-alternatives: 以 /usr/local/jdk7/bin/java 提供 手動模式 中的 /usr/bin/java (java)
+root@aruntu-desktop:~# update-alternatives --config javac
+替代項目 javac（提供 /usr/bin/javac）有 3 個選擇。
+
+  選項       路徑                                       優先權  狀態
+------------------------------------------------------------
+  0            /usr/lib/jvm/java-7-openjdk-armhf/bin/javac   1063      自動模式
+* 1            /usr/lib/jvm/java-7-openjdk-armhf/bin/javac   1063      手動模式
+  2            /usr/local/jdk7/bin/javac                     1         手動模式
+  3            /usr/local/jdk8/bin/javac                     300       手動模式
+
+按 [enter] 保留目前選項 [*]，或輸入選項編號：2
+update-alternatives: 以 /usr/local/jdk7/bin/javac 提供 手動模式 中的 /usr/bin/javac (javac)
+root@aruntu-desktop:~# which java
+/usr/local/jdk7/bin/java
+root@aruntu-desktop:~# which javac
+/usr/local/jdk7/bin/javac
+
+
+
+There is a similar answer on how to install JRE 8.
+
+Install Java JDK
+
+The manual way
+Download the 32bit or 64bit Linux "compressed binary file" - it has a ".tar.gz" file extension.
+
+Uncompress it
+
+tar -xvf jdk-8-linux-i586.tar.gz (32bit)
+
+tar -xvf jdk-8-linux-x64.tar.gz (64bit)
+
+JDK 8 package is extracted into ./jdk1.8.0 directory. N.B. check carefully this folder name since Oracle seem to change this occasionally with each update.
+
+Now move the JDK 8 directory to /usr/lib
+
+sudo mkdir -p /usr/lib/jvm
+sudo mv ./jdk1.8.0 /usr/lib/jvm/
+Now run
+
+sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk1.8.0/bin/java" 1
+sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk1.8.0/bin/javac" 1
+sudo update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/lib/jvm/jdk1.8.0/bin/javaws" 1
+
+update-alternatives --config java
+

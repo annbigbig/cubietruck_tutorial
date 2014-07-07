@@ -1,0 +1,55 @@
+為了讓瀏覽器支援java， 需安裝
+icedtea-7-jre-jamvm
+openjdk-7-jre
+openjdk-7-jre-jamvm
+openjdk-7-jre-headless
+
+================================
+為了執行eclipse
+安裝了
+default-jdk 沒用
+default-jdk-doc 沒用
+libhamcrest-java
+
+================================
+
+apache-tomcat-7.0.54.tar.gz
+jdk-8-linux-arm-vfp-hflt.tar.gz
+jdk-7u60-linux-arm-vfp-hflt.tar.gz
+netbeans-8.0-201403101706-javaee.zip
+(解壓縮之後， 執行bin目錄下的netbeans檔案）
+# ./netbeans
+
+
+eclipse ide for arm download
+
+
+tar zxvf jdk-7u60-linux-arm-vfp-hflt.tar.gz -C /usr/local
+
+root@aruntu-desktop:~# which java
+/usr/local/jdk7/bin/java
+root@aruntu-desktop:~# update-alternatives --install "/usr/bin/java" "java" "/usr/local/jdk7/bin/java" 1
+root@aruntu-desktop:~# update-alternatives --install "/usr/bin/javac" "javac" "/usr/local/jdk7/bin/javac" 1
+root@aruntu-desktop:~# update-alternatives --config java
+替代項目 java（提供 /usr/bin/java）有 3 個選擇。
+
+  選項       路徑                                          優先權  狀態
+------------------------------------------------------------
+  0            /usr/lib/jvm/java-7-openjdk-armhf/jre/bin/java   1063      自動模式
+  1            /usr/lib/jvm/java-7-openjdk-armhf/jre/bin/java   1063      手動模式
+  2            /usr/local/jdk7/bin/java                         1         手動模式
+* 3            /usr/local/jdk8/bin/java                         300       手動模式
+
+按 [enter] 保留目前選項 [*]，或輸入選項編號：2
+update-alternatives: 以 /usr/local/jdk7/bin/java 提供 手動模式 中的 /usr/bin/java (java)
+root@aruntu-desktop:~# update-alternatives --config javac
+替代項目 javac（提供 /usr/bin/javac）有 2 個選擇。
+
+  選項       路徑                     優先權  狀態
+------------------------------------------------------------
+* 0            /usr/local/jdk8/bin/javac   300       自動模式
+  1            /usr/local/jdk7/bin/javac   1         手動模式
+  2            /usr/local/jdk8/bin/javac   300       手動模式
+
+按 [enter] 保留目前選項 [*]，或輸入選項編號：1
+update-alternatives: 以 /usr/local/jdk7/bin/javac 提供 手動模式 中的 /usr/bin/javac (javac)
