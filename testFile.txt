@@ -1,4 +1,4 @@
 我只是想試試新的ssh key生效了嗎？
 I just wanna test may I push to github??
 I just wanna test on my new installed Linux Mint 17
-bu
+bu bu bu again
