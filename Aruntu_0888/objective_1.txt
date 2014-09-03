@@ -1,0 +1,38 @@
+如何下載官方或是社群提供的OS image檔案？
+
+請注意，Image檔案有的是給你製作開機 MicroSD卡用的
+有的Image是給你刷進CubieTruck上面的內建8 GB的nand快閃記憶體用的
+注意看一下檔名，應該不難分別，通常用來刷進nand的影像檔檔名會是xxxxx-nand-xxxx.img
+然後讓你製作開機MicroSD卡用的影像檔檔名會是xxxxx-card-xxxx.img
+
+cubieboard官方載點
+（大部分都是給nand刷機用的影像檔，只有Lubuntu和Cubian有SD卡影像檔）
+
+Cubian  (nand和card影像檔都有)
+http://dl.cubieboard.org/software/a20-cubietruck/cubian/
+
+Lubuntu (nand和card影像檔都有)
+http://dl.cubieboard.org/software/a20-cubietruck/lubuntu/
+
+Fedora  (只有nand影像檔)
+http://dl.cubieboard.org/software/a20-cubietruck/fedora/
+
+在接下來的筆記裡
+我們要使用Aruntu 0.888版的SD card用的影像檔
+為我們的CubieTruck製作可開機的MicroSD卡
+ (之前它叫作Cubiuntu，是一個熱血的西班牙人ikeeki基於Ubuntu 13.10包出來的Linux distribution)
+
+如果有更新的版本，下載頁面會在這裡
+http://cubiuntu.com/downloads/
+
+Aruntu 0.888版影像檔的載點在這裡
+http://dl.cubieboard.org/cubiuntux/Aruntu/aruntu_CT/aRUNTU_CB_CT_sd_0.888_66cae85b5f2204faf832a4fbcee507c8.rar
+
+下載後請將這個rar檔解壓縮，如果沒有rar請自行先用套件管理員裝上
+解壓縮的terminal指令是
+# rar e /path/to/aRUNTU_CB_CT_sd_0.888_66cae85b5f2204faf832a4fbcee507c8.rar
+(路徑的/path/to要換成你放置這個影像檔的真實位置，因為我不知道你放在那裡，我的電腦上的實際rar解壓縮指令會像這樣：)
+# rar e /home/anntony/downloads/aRUNTU_CB_CT_sd_0.888_66cae85b5f2204faf832a4fbcee507c8.rar
+
+接著我們要進入objective 2
+
