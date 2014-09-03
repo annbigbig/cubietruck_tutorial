@@ -28,11 +28,15 @@ http://cubiuntu.com/downloads/
 Aruntu 0.888版影像檔的載點在這裡
 http://dl.cubieboard.org/cubiuntux/Aruntu/aruntu_CT/aRUNTU_CB_CT_sd_0.888_66cae85b5f2204faf832a4fbcee507c8.rar
 
-下載後請將這個rar檔解壓縮，如果沒有rar請自行先用套件管理員裝上
+下載後請將這個rar檔解壓縮
+用來解壓縮的指令是unrar，請先用套件管理員安裝上unrar套件
 解壓縮的terminal指令是
-# rar e /path/to/aRUNTU_CB_CT_sd_0.888_66cae85b5f2204faf832a4fbcee507c8.rar
+# unrar x /path/to/aRUNTU_CB_CT_sd_0.888_66cae85b5f2204faf832a4fbcee507c8.rar
 (路徑的/path/to要換成你放置這個影像檔的真實位置，因為我不知道你放在那裡，我的電腦上的實際rar解壓縮指令會像這樣：)
-# rar e /home/anntony/downloads/aRUNTU_CB_CT_sd_0.888_66cae85b5f2204faf832a4fbcee507c8.rar
+# unrar x /home/anntony/downloads/aRUNTU_CB_CT_sd_0.888_66cae85b5f2204faf832a4fbcee507c8.rar
+
+解壓縮之後會得到一個影像檔
+aRUNTU_CB_CT_sd_0.888_3a49ee3d446e45ff478a624e9a31d9f3.img
 
 接著我們要進入objective 2
 
