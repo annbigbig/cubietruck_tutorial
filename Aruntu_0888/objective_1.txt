@@ -1,4 +1,4 @@
-如何下載官方或是社群提供的OS image檔案？
+objective 1 : 如何下載官方或是社群提供的OS image檔案？
 
 請注意，Image檔案有的是給你製作開機 MicroSD卡用的
 有的Image是給你刷進CubieTruck上面的內建8 GB的nand快閃記憶體用的
@@ -6,7 +6,7 @@
 然後讓你製作開機MicroSD卡用的影像檔檔名會是xxxxx-card-xxxx.img
 
 cubieboard官方載點
-（大部分都是給nand刷機用的影像檔，只有Lubuntu和Cubian有SD卡影像檔）
+（大部分都是給nand刷機用的影像檔，只有Lubuntu和Cubian有card影像檔）
 
 Cubian  (nand和card影像檔都有)
 http://dl.cubieboard.org/software/a20-cubietruck/cubian/
@@ -18,7 +18,7 @@ Fedora  (只有nand影像檔)
 http://dl.cubieboard.org/software/a20-cubietruck/fedora/
 
 在接下來的筆記裡
-我們要使用Aruntu 0.888版的SD card用的影像檔
+我們要使用Aruntu 0.888版的card用的影像檔
 為我們的CubieTruck製作可開機的MicroSD卡
  (之前它叫作Cubiuntu，是一個熱血的西班牙人ikeeki基於Ubuntu 13.10包出來的Linux distribution)
 

@@ -1,0 +1,188 @@
+objective 2 : 如何製作可以用來開機的Micro SD卡？
+
+為了製作可開機MicroSD卡
+我準備了下面的東西
+
+　一台安裝了Linux Mint 17的lenovo筆記型電腦（內建SD卡插槽）
+　一張 16GB 的 MicroSD卡
+　一張SD轉卡   或是  USB讀卡機（為了讀寫MicroSD卡）
+
+如果不太清楚我講的SD轉卡是什麼，可以使用Google的圖片搜尋「SD轉卡」
+MicroSD卡和SD轉卡的關係，有點像是鋼彈駕駛員和鋼彈機器人之間的關係…
+SD轉卡和USB讀卡機，兩者擇一使用皆可，目的是為了要在筆記型電腦上寫入Image檔到 MicroSD卡裡
+
+我自已是使用SD轉卡，現在把MicroSD卡插進SD轉卡，再把它插到筆記型電腦的SD卡插槽上
+然後打開Linux Mint的磁碟管理程式 ( 從左下角的 Menu -> 偏好設定 ->  磁碟 )
+
+然後你會看到這樣的畫面
+https://plus.google.com/photos/117546034720970496255/albums/6055093301282411841/6055093305028701378?pid=6055093305028701378&oid=117546034720970496255
+
+如果這張 MicroSD卡上面已經有存放資料，那麼在你剛才把SD轉卡插入筆記型電腦時，
+磁碟管理程式會雞婆的自動掛載 MicroSD卡上面的所有分割區 (partitions)
+上面的圖片裡可以看到磁碟管理程式中，我用紅筆圈起來的地方，是一個黑色實心的小正方形
+這代表了目前 MicroSD卡的分割區1是被掛載起來的，分割區1的裝置代號是/dev/sdb1
+現在我要把 MicroSD卡上面所有分割區都卸載，然後把這張 MicroSD卡上面的所有分割區都刪除
+然後為了慎重起見，再對整張MicroSD卡作一次格式化的動作
+請注意，你的MicroSD卡或是USB隨身碟，插在你的筆電或是桌機上的時候
+你的磁碟代號也許會和我不一樣，也許/dev/sdb是你的第二顆硬碟也說不定
+所以在你清空 MicroSD卡之前，請務必要確認你 MicroSD卡的裝置代號，以免稍後造成不可挽回的悲劇
+（這也是為什麼我要你把磁碟管理程式打開來的原因）
+
+
+接下來請打開終端機，我們會直接下指令來卸載分割區
+然後使用fdisk來重新把 MicroSD卡重新分割成一整個分割區，並格式化整張卡
+
+anntony@anntony-Lenovo-B590 ~/cubietruck_tutorial/Aruntu_0888 $ sudo -i
+[sudo] password for anntony: 
+anntony-Lenovo-B590 ~ # df -h
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/sda1       453G   88G  343G   21% /
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+udev            2.8G  4.0K  2.8G    1% /dev
+tmpfs           559M  1.4M  558M    1% /run
+none            5.0M     0  5.0M    0% /run/lock
+none            2.8G   41M  2.7G    2% /run/shm
+none            100M   40K  100M    1% /run/user
+/dev/sdb1        14M  5.1M  9.0M   37% /media/anntony/815B-BF7D
+/dev/sdb2       3.6G  2.9G  493M   86% /media/anntony/bbaa47cc-b0cf-41ce-9ab2-b0ad1895f72f
+anntony-Lenovo-B590 ~ # umount /dev/sdb1
+anntony-Lenovo-B590 ~ # umount /dev/sdb2
+anntony-Lenovo-B590 ~ # df -h
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/sda1       453G   88G  343G   21% /
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+udev            2.8G  4.0K  2.8G    1% /dev
+tmpfs           559M  1.4M  558M    1% /run
+none            5.0M     0  5.0M    0% /run/lock
+none            2.8G   41M  2.7G    2% /run/shm
+none            100M   44K  100M    1% /run/user
+anntony-Lenovo-B590 ~ # fdisk /dev/sdb
+
+命令 (m 以獲得說明)： m
+命令動作
+   a   切換可開機的旗標
+   b   編輯 bsd 磁碟標籤
+   c   切換 DOS 相容性旗標
+   d   刪除分割區
+   l   列出已知分割區類型
+   m   印出這個選單
+   n   加入新的分割區
+   o   建立新的空白 DOS 分割表
+   p   印出分割表
+   q   離開而不需儲存變更
+   s   建立新的空白 Sun 磁碟標籤
+   t   變更分割區系統識別號
+   u   變更顯示/輸入單位
+   v   驗證分割表
+   w   分割表寫入磁碟然後離開
+   x   額外功能 (專家限用)
+
+命令 (m 以獲得說明)： p
+
+Disk /dev/sdb: 15.7 GB, 15720251392 bytes
+64 磁頭，32 磁區/磁軌，14992 磁柱，總計 30703616 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sdb1            2048       30719       14336    c  W95 FAT32 (LBA)
+/dev/sdb2           30720     7710000     3839640+  83  Linux
+
+命令 (m 以獲得說明)： d
+分割區編號 (1-4): 2
+
+命令 (m 以獲得說明)： p
+
+Disk /dev/sdb: 15.7 GB, 15720251392 bytes
+64 磁頭，32 磁區/磁軌，14992 磁柱，總計 30703616 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sdb1            2048       30719       14336    c  W95 FAT32 (LBA)
+
+命令 (m 以獲得說明)： d
+已選分割區 1
+
+命令 (m 以獲得說明)： p
+
+Disk /dev/sdb: 15.7 GB, 15720251392 bytes
+64 磁頭，32 磁區/磁軌，14992 磁柱，總計 30703616 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+
+命令 (m 以獲得說明)： n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): 
+Using default response p
+分割區編號 (1-4, 預設 1)： 
+使用預設值 1
+起初 磁區 (2048-30703615, 預設 2048)： 
+使用預設值 2048
+最後 磁區, +磁區 或 +大小{K,M,G} (2048-30703615, 預設 30703615)： 
+使用預設值 30703615
+
+命令 (m 以獲得說明)： p
+
+Disk /dev/sdb: 15.7 GB, 15720251392 bytes
+64 磁頭，32 磁區/磁軌，14992 磁柱，總計 30703616 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sdb1            2048    30703615    15350784   83  Linux
+
+命令 (m 以獲得說明)： w
+分割表已變更！
+
+呼叫 ioctl() 以重新讀取分割表。
+同步磁碟。
+anntony-Lenovo-B590 ~ # mkfs.ext4 /dev/sdb1
+mke2fs 1.42.9 (4-Feb-2014)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+960992 inodes, 3837696 blocks
+191884 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=3930062848
+118 block groups
+32768 blocks per group, 32768 fragments per group
+8144 inodes per group
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information: done   
+
+anntony-Lenovo-B590 ~ # 
+
+完成以上的步驟之後，我們就有了一張乾淨的空白MicroSD卡
+現在我從筆記型電腦裡取出SD轉卡，再插回去，讓磁碟管理程式重新更新一下 MicroSD卡的狀態
+然後我們現在會看到磁碟管理程式裡，經過剛才的那些指令之後，MicroSD卡最新的狀態如下圖：
+
+https://plus.google.com/photos/117546034720970496255/albums/6055093301282411841/6055104642323424434?pid=6055104642323424434&oid=117546034720970496255
+
+現在我們的16 GB MicroSD卡整個只有一個分割區，裝置代號是/dev/sdb1
+然後也格式化成ext4了，接下來我們要準備把影像檔寫入MicroSD卡
+
+
+
+
+
