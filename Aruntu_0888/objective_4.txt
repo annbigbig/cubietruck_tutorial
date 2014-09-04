@@ -315,4 +315,35 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 在：時鐘左邊的藍色紅色箭頭上面按右鍵，選「Edit connections...」就可以了
 可是剛才那個usb0還是讓我很unhappy，噗
 
+要睡之前，不小心搜出了這一篇
+http://en.wikipedia.org/wiki/Ethernet_over_USB
+
+
+重要的內文有
+Treat USB as an Ethernet network
+The USB-eth module in Linux emulates an Ethernet device that uses USB as the physical medium. Once created, this network interface can be assigned an IP address and otherwise treated as though it were ordinary Ethernet hardware. The USB-eth module allows the USB device to "see" a network, ping other IP addresses, and even "talk" DHCP, HTTP, NFS, telnet, and e-mail. In short, any applications that work over real Ethernet interfaces will work over a USB-eth interface without modification, because they can't tell that they aren't using real Ethernet hardware.[1]
+
+On Linux hosts, the corresponding Ethernet-over-USB kernel module is called usbnet. A recently announced usbnet-style driver for Win32 hosts is called the Bahia Network Driver.[2]
+
+The approach allows devices with very limited communications hardware to operate over IP networks. The Linux kernel for the iPAQ uses this communications strategy exclusively, since the iPAQ hardware has neither an accessible legacy (RS-232/RS-422) serial port nor a dedicated network interface.
+
+我哭了
+我一直以為/etc/network/interfaces組態檔裡只有eth0、eth1、wlan0、wlan1這種interface才能夠綁上一個IP
+原來那個usb0介面本來就可以指定一個IP
+它是拿來模擬Ethernet device用的（使用USB當成實體傳輸媒介）
+所以上面我看到那個莫名奇妙的連接方式
+就是兩台機器上都有usb0 interface，然後兩邊都各綁上一個同網段的IP
+他們兩個usb設備都要被當成真實的Ethernet interfaces來對待
+可是我在家裡暫時用不到這樣的網路架構
+累斃了不能再Google深入探索
+我想如果有兩台安裝了Linux的電腦，剛好兩台上面都沒有任何有線或無線網卡
+只有usb port可以對接
+那麼此時在兩台電腦各自的usb0 interface上
+各自綁上兩個同網段的IP (例：192.168.0.100 和192.168.0.101)
+然後就可以使用ssh或ftp或nfs來互連或是交換資料了
+這個架構在USB上的Ethernet的核心模組叫作usbnet
+好我大概知道了
+寫得亂七八糟，明天睡醒要來改，不然會被大家恥笑
+
+
 objective 5 待續
