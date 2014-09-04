@@ -182,7 +182,90 @@ https://plus.google.com/photos/117546034720970496255/albums/6055093301282411841/
 現在我們的16 GB MicroSD卡整個只有一個分割區，裝置代號是/dev/sdb1
 然後也格式化成ext4了，接下來我們要準備把影像檔寫入MicroSD卡
 
+在寫入影像檔之前，我們還需要一個叫作u-boot-sunxi-with-spl-ct-xxxxxxxx的檔案
+請到cubieboard官網下載，檔案放在
+http://dl.cubieboard.org/software/a20-cubietruck/lubuntu/ct-lubuntu-card0-v1.00/
 
+有兩個版本
+http://dl.cubieboard.org/software/a20-cubietruck/lubuntu/ct-lubuntu-card0-v1.00/u-boot-sunxi-with-spl-ct-20131102.bin
+http://dl.cubieboard.org/software/a20-cubietruck/lubuntu/ct-lubuntu-card0-v1.00/u-boot-sunxi-with-spl-ct-20140107.bin
 
+我選擇使用
+u-boot-sunxi-with-spl-ct-20140107.bin
+這個版本 ( 我不知道兩者有什麼差異，純萃是因為日期看起來比較新 )
+
+現在再次回到終端機，我們要寫入影像檔到 MicroSD卡了
+
+anntony-Lenovo-B590 ~ # df -h
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/sda1       453G   88G  343G   21% /
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+udev            2.8G  4.0K  2.8G    1% /dev
+tmpfs           559M  1.4M  558M    1% /run
+none            5.0M     0  5.0M    0% /run/lock
+none            2.8G   28M  2.8G    2% /run/shm
+none            100M   44K  100M    1% /run/user
+/dev/sdb1        15G   37M   14G    1% /media/anntony/26e9b0c1-2c28-454d-84aa-a081bff28b61
+anntony-Lenovo-B590 ~ # umount /dev/sdb1
+anntony-Lenovo-B590 ~ # df -h
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/sda1       453G   88G  343G   21% /
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+udev            2.8G  4.0K  2.8G    1% /dev
+tmpfs           559M  1.4M  558M    1% /run
+none            5.0M     0  5.0M    0% /run/lock
+none            2.8G   28M  2.8G    2% /run/shm
+none            100M   48K  100M    1% /run/user
+anntony-Lenovo-B590 ~ # card=/dev/sdb
+anntony-Lenovo-B590 ~ # image=/home/anntony/downloads/aRUNTU_CB_CT_sd_0.888_3a49ee3d446e45ff478a624e9a31d9f3.img
+anntony-Lenovo-B590 ~ # bootloader=/home/anntony/downloads/u-boot-sunxi-with-spl-ct-20140107.bin
+anntony-Lenovo-B590 ~ # 
+anntony-Lenovo-B590 ~ # echo $card
+/dev/sdb
+anntony-Lenovo-B590 ~ # echo $image
+/home/anntony/downloads/aRUNTU_CB_CT_sd_0.888_3a49ee3d446e45ff478a624e9a31d9f3.img
+anntony-Lenovo-B590 ~ # echo $bootloader
+/home/anntony/downloads/u-boot-sunxi-with-spl-ct-20140107.bin
+anntony-Lenovo-B590 ~ # dd if=/dev/zero of=${card} bs=1M count=1
+輸入 1+0 個紀錄
+輸出 1+0 個紀錄
+複製了 1048576 個位元組 (1.0 MB), 0.11944 s, 8.8 MB/s
+anntony-Lenovo-B590 ~ # dd if=$bootloader of=$card bs=1024 seek=8
+輸入 254+1 個紀錄
+輸出 254+1 個紀錄
+複製了 261100 個位元組 (261 kB), 0.0514762 s, 5.1 MB/s
+anntony-Lenovo-B590 ~ # date; dd if=$image of=$card bs=1M; sync; date
+四  9月  4 15:45:22 CST 2014
+輸入 3681+0 個紀錄
+輸出 3681+0 個紀錄
+複製了 3859808256 個位元組 (3.9 GB), 332.413 s, 11.6 MB/s
+四  9月  4 15:50:55 CST 2014
+anntony-Lenovo-B590 ~ # 
+
+終於把影像檔寫進MicroSD卡了，3.9 GB的影像檔就寫了5分鐘
+真的很好奇剛才的指令到底作了什麼事
+所以我又從筆記型電腦退出了SD轉卡，再插回去，然後看著磁碟管理程式
+如下圖
+
+https://plus.google.com/photos/117546034720970496255/albums/6055093301282411841/6055123861505430530?pid=6055123861505430530&oid=117546034720970496255
+
+可以知道MicroSD卡的第一個分割區現在變成只有3.9 GB大小
+然後裝置代號是/dev/sdb1
+被掛載在/media/anntony/5f70abf0-69bc-468e-b875-5cf1378b476b/
+基於好奇心，就進去看看
+anntony-Lenovo-B590 ~ # cd /media/anntony/5f70abf0-69bc-468e-b875-5cf1378b476b/
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # ls
+aRUNTU_TITAN_EDITION_0.888  boot  etc   lib         media  opt   root  sbin           script-cubie-A20.bin  sys  uEnv.cb2  usr
+bin                         dev   home  lost+found  mnt    proc  run   script-ct.bin  srv                   tmp  uEnv.ct   var
+
+所以剛才的指令真的有把aRuntu 0.888影像檔寫入MicroSD卡
+順便一提，在0.777版的時候，影像檔寫入成功之後，MicroSD卡上面是變成兩個分割區
+分割區1是小小的15MB (bootfs)，然後分割區2是3.9 GB (rootfs)
+不過剛才寫完0.888版的影像檔之後，MicroSD卡上居然只有一個分割區
+原先應該是被放在分割區1 (bootfs)的檔案，像是script-ct.bin和uEnv.ct都被合併到rootfs裡了
+沒關係，我不在意，反正這張 MicroSD卡可以用來啟動CubieTruck就好
+目前我們完成了「把aRuntu 0.888影像檔寫入MicroSD卡」的目標
+但是現在還不能直接把 MicroSD卡插上CubieTruck來開機
+我們需要修改一些開機設定才行，接著請繼續看 objective 3
 
 
