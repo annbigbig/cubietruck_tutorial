@@ -1,0 +1,296 @@
+objective 3 : 如何修改開機參數？
+
+剛才在objective 2，我們把aRuntu 0.888的影像檔給寫進了MicroSD卡裡面，
+但是還不能直接把這張MicroSD卡插到CubieTruck裡面來開機
+我們需要再修改一些開機參數，像是我的螢幕是不支援HDMI的15 pin的VGA螢幕
+而且只有15吋（大概只支援到1024X768的解析度），
+還有我想把CubieTruck那個閃來閃去的四色LED燈給關閉
+為了修改這些參數，需要sunzi-tools的bin2fex和fex2bin工具程式
+回到筆記型電腦上，請打開套件管理員，先把libusb-1.0.0-dev和git-core套件裝上
+
+如圖：安裝了libusb-1.0.0-dev套件
+
+https://plus.google.com/photos/117546034720970496255/albums/6055093301282411841/6055141750124246690?pid=6055141750124246690&oid=117546034720970496255
+
+如圖：安裝git-core套件
+
+https://plus.google.com/photos/117546034720970496255/albums/6055093301282411841/6055141751278594546?pid=6055141751278594546&oid=117546034720970496255
+
+如果想直接在終端機用指令安裝，切換成root用戶之後，執行
+apt-get install libusb-1.0.0-dev
+apt-get install git-core
+
+安裝完libusb-1.0.0-dev和git-core套件之後
+以一般用戶的身份開啟終端機，現在我們要從github把sunzi-tools的代碼庫複製到筆記型電腦中
+然後再編譯它，來產生bin2fex和fex2bin工具程式
+以下是終端機的輸出
+
+anntony@anntony-Lenovo-B590 ~ $ pwd
+/home/anntony
+anntony@anntony-Lenovo-B590 ~ $ git --version
+git version 1.9.1
+anntony@anntony-Lenovo-B590 ~ $ git clone https://github.com/linux-sunxi/sunxi-tools
+Cloning into 'sunxi-tools'...
+remote: Counting objects: 1045, done.
+remote: Total 1045 (delta 0), reused 0 (delta 0)
+Receiving objects: 100% (1045/1045), 360.44 KiB | 243.00 KiB/s, done.
+Resolving deltas: 100% (556/556), done.
+Checking connectivity... done.
+anntony@anntony-Lenovo-B590 ~ $ ls
+cubietruck_tutorial  Documents  git-recipes  Real_CubieTruck_Images_I_made  testdoc         下載  圖片        影片  桌面  音樂
+dn                   downloads  mate-themes  sunxi-tools                    VirtualBox VMs  公共  文件  模板
+anntony@anntony-Lenovo-B590 ~ $ cd sunxi-tools/
+anntony@anntony-Lenovo-B590 ~/sunxi-tools $ ls
+adb-devprobe.sh  common.h    fel-pio.c       fexc.h         Makefile         nand-part.c       script_bin.c  script.h
+bin              COPYING     fel-pio.lds     include        meminfo.c        nand-part-main.c  script_bin.h  script_uboot.c
+boot_head.lds    fel.c       fel-sdboot.c    jtag-loop.c    nand-common.h    phoenix_info.c    script.c      script_uboot.h
+boot_head.S      fel-copy.c  fel-sdboot.lds  jtag-loop.lds  nand-part-a10.h  pio.c             script_fex.c  usb-boot
+bootinfo.c       fel-gpio    fexc.c          jtag-loop.S    nand-part-a20.h  README            script_fex.h
+anntony@anntony-Lenovo-B590 ~/sunxi-tools $ make
+gcc -g -O0 -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L -Iinclude/  -o fexc fexc.c script.c script_uboot.c script_bin.c script_fex.c 
+ln -s fexc bin2fex
+ln -s fexc fex2bin
+gcc -g -O0 -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L -Iinclude/  -o bootinfo bootinfo.c 
+bootinfo.c: In function ‘print_script’:
+bootinfo.c:274:25: warning: unused parameter ‘script’ [-Wunused-parameter]
+ void print_script(void *script)
+                         ^
+gcc -g -O0 -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L -Iinclude/ `pkg-config --cflags libusb-1.0`  -o fel fel.c  `pkg-config --libs libusb-1.0`
+gcc -g -O0 -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L -Iinclude/  -o pio pio.c 
+pio.c: In function ‘do_command’:
+pio.c:316:57: warning: unused parameter ‘argc’ [-Wunused-parameter]
+ static int do_command(char *buf, const char **args, int argc)
+                                                         ^
+gcc -g -O0 -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L -Iinclude/ -c -o nand-part-main.o nand-part-main.c
+gcc -g -O0 -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L -Iinclude/ -c -o nand-part-a10.o nand-part.c -D A10
+gcc -g -O0 -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L -Iinclude/ -c -o nand-part-a20.o nand-part.c -D A20
+gcc  -o nand-part nand-part-main.o nand-part-a10.o nand-part-a20.o 
+anntony@anntony-Lenovo-B590 ~/sunxi-tools $ ls
+adb-devprobe.sh  bootinfo.c  fel-gpio        fexc           jtag-loop.S      nand-part-a10.o   phoenix_info.c  script.c        usb-boot
+bin              common.h    fel-pio.c       fexc.c         Makefile         nand-part-a20.h   pio             script_fex.c
+bin2fex          COPYING     fel-pio.lds     fexc.h         meminfo.c        nand-part-a20.o   pio.c           script_fex.h
+boot_head.lds    fel         fel-sdboot.c    include        nand-common.h    nand-part.c       README          script.h
+boot_head.S      fel.c       fel-sdboot.lds  jtag-loop.c    nand-part        nand-part-main.c  script_bin.c    script_uboot.c
+bootinfo         fel-copy.c  fex2bin         jtag-loop.lds  nand-part-a10.h  nand-part-main.o  script_bin.h    script_uboot.h
+anntony@anntony-Lenovo-B590 ~/sunxi-tools $ 
+
+編譯完後在sunzi-tools目錄裡就會有bin2fex和fex2bin工具程式
+剛才在objective 2裡完成的MicroSD卡還插在筆記型電腦裡，而且還是掛載狀態
+現在再次回到終端機，準備來修改開機參數
+
+anntony@anntony-Lenovo-B590 ~/sunxi-tools $ sudo -i
+anntony-Lenovo-B590 ~ # df -h
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/sda1       453G   88G  343G   21% /
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+udev            2.8G  4.0K  2.8G    1% /dev
+tmpfs           559M  1.4M  558M    1% /run
+none            5.0M     0  5.0M    0% /run/lock
+none            2.8G   43M  2.7G    2% /run/shm
+none            100M   48K  100M    1% /run/user
+/dev/sdb1       3.5G  3.2G  117M   97% /media/anntony/5f70abf0-69bc-468e-b875-5cf1378b476b
+anntony-Lenovo-B590 ~ # cd /media/anntony/5f70abf0-69bc-468e-b875-5cf1378b476b/
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # ls
+aRUNTU_TITAN_EDITION_0.888  boot  etc   lib         media  opt   root  sbin           script-cubie-A20.bin  sys  uEnv.cb2  usr
+bin                         dev   home  lost+found  mnt    proc  run   script-ct.bin  srv                   tmp  uEnv.ct   var
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # cp uEnv.ct uEnv.ct.default
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # ls
+aRUNTU_TITAN_EDITION_0.888  boot  etc   lib         media  opt   root  sbin           script-cubie-A20.bin  sys  uEnv.cb2  uEnv.ct.default  var
+bin                         dev   home  lost+found  mnt    proc  run   script-ct.bin  srv                   tmp  uEnv.ct   usr
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # cat ./uEnv.ct
+###HDMI
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1280x720p50 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1280x720p60 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1920x1080p50 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1920x1080p60 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=3 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p50 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=3 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p60 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=3 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1920x1080p50 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=3 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1920x1080p60 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+
+###VGA
+#extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=3 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=4 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=10 cubietruck sunxi_ve_mem_reserve=128
+
+###ROOTFS
+root=/dev/mmcblk0p1 rootwait partition=0:1
+#root=/dev/sda1 rootwait partition=0:1
+#root=/dev/sda2 rootwait partition=0:1
+
+###BOOT
+kernel=/boot/uImage.3.4.98-sun7i+
+script=script-ct.bin
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # vi ./uEnv.ct
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # cat ./uEnv.ct
+###HDMI
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1280x720p50 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1280x720p60 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1920x1080p50 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1920x1080p60 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=3 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p50 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=3 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1280x720p60 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=3 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1920x1080p50 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=3 hdmi.audio=EDID:0 disp.screen0_output_mode=EDID:1920x1080p60 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+
+###VGA
+#extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=3 cubietruck sunxi_ve_mem_reserve=128
+extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=4 cubietruck sunxi_ve_mem_reserve=128
+#extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=10 cubietruck sunxi_ve_mem_reserve=128
+
+###ROOTFS
+root=/dev/mmcblk0p1 rootwait partition=0:1
+#root=/dev/sda1 rootwait partition=0:1
+#root=/dev/sda2 rootwait partition=0:1
+
+###BOOT
+kernel=/boot/uImage.3.4.98-sun7i+
+script=script-ct.bin
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # ls
+aRUNTU_TITAN_EDITION_0.888  boot  etc   lib         media  opt   root  sbin           script-cubie-A20.bin  sys  uEnv.cb2  uEnv.ct.default  var
+bin                         dev   home  lost+found  mnt    proc  run   script-ct.bin  srv                   tmp  uEnv.ct   usr
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # sunxi_tools_path=/home/anntony/sunxi-tools
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # $sunxi_tools_path/bin2fex script-ct.bin 1.fex
+fexc-bin: script-ct.bin: version: 0.1.2
+fexc-bin: script-ct.bin: size: 44228 (82 sections)
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # ls
+1.fex                       bin   dev  home  lost+found  mnt  proc  run   script-ct.bin         srv  tmp       uEnv.ct          usr
+aRUNTU_TITAN_EDITION_0.888  boot  etc  lib   media       opt  root  sbin  script-cubie-A20.bin  sys  uEnv.cb2  uEnv.ct.default  var
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # cat 1.fex | grep screen0
+screen0_output_type = 3
+screen0_output_mode = 5
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # vi ./1.fex 
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # cat 1.fex | grep screen0
+screen0_output_type = 4
+screen0_output_mode = 4
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # cat 1.fex | grep leds_use
+leds_used = 1
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # vi ./1.fex 
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # cat 1.fex | grep leds_use
+leds_used = 0
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # ls -al
+總計 236
+drwxr-xr-x   21 root    root     4096  9月  4 17:52 .
+drwxr-x---+   3 root    root     4096  9月  4 15:53 ..
+-rw-r--r--    1 root    root    23207  9月  4 17:52 1.fex
+-rw-r--r--    1 root    root       50  7月  5 07:04 aRUNTU_TITAN_EDITION_0.888
+drwxr-xr-x    2 root    root     4096  7月 11 00:20 bin
+drwxrwxr-x    2 anntony anntony  4096  7月 13 06:21 boot
+drwxr-xr-x    3 root    root     4096 10月 16  2013 dev
+drwxr-xr-x  161 root    root    12288  7月 13 08:39 etc
+drwxr-xr-x    4 root    root     4096  7月  1 23:31 home
+drwxr-xr-x   16 root    root     4096  7月 13 07:12 lib
+drwx------    2 root    root    16384  1月 25  2014 lost+found
+drwxr-xr-x    5 root    root     4096  7月  1 02:02 media
+drwxr-xr-x    2 root    root     4096 10月 14  2013 mnt
+drwxr-xr-x    2 root    root     4096 10月 16  2013 opt
+drwxr-xr-x    2 root    root     4096 10月 14  2013 proc
+drwx------   21 root    root     4096  7月 12 09:28 root
+drwxr-xr-x   10 root    root     4096  6月 29 21:22 run
+drwxr-xr-x    2 root    root     4096  7月  4 23:47 sbin
+-rwxrwxrwx    1 root    root    44228  7月  7 00:07 script-ct.bin
+-rwxrwxrwx    1 root    root    46096  7月  6 00:14 script-cubie-A20.bin
+drwxr-xr-x    2 root    root     4096 10月 16  2013 srv
+drwxr-xr-x    2 root    root     4096  6月  4  2013 sys
+drwxrwxrwt    2 root    root     4096  1月  1  2010 tmp
+-rw-r--r--    1 root    root     1629  7月 13 06:17 uEnv.cb2
+-rwxr-xr-x    1 root    root     1619  9月  4 17:42 uEnv.ct
+-rwxr-xr-x    1 root    root     1619  9月  4 17:41 uEnv.ct.default
+drwxr-xr-x   10 root    root     4096 10月 16  2013 usr
+drwxr-xr-x   15 root    root     4096  6月 29 19:40 var
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # $sunxi_tools_path/fex2bin 1.fex script-ct.bin
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # ls -al
+總計 236
+drwxr-xr-x   21 root    root     4096  9月  4 17:52 .
+drwxr-x---+   3 root    root     4096  9月  4 15:53 ..
+-rw-r--r--    1 root    root    23207  9月  4 17:52 1.fex
+-rw-r--r--    1 root    root       50  7月  5 07:04 aRUNTU_TITAN_EDITION_0.888
+drwxr-xr-x    2 root    root     4096  7月 11 00:20 bin
+drwxrwxr-x    2 anntony anntony  4096  7月 13 06:21 boot
+drwxr-xr-x    3 root    root     4096 10月 16  2013 dev
+drwxr-xr-x  161 root    root    12288  7月 13 08:39 etc
+drwxr-xr-x    4 root    root     4096  7月  1 23:31 home
+drwxr-xr-x   16 root    root     4096  7月 13 07:12 lib
+drwx------    2 root    root    16384  1月 25  2014 lost+found
+drwxr-xr-x    5 root    root     4096  7月  1 02:02 media
+drwxr-xr-x    2 root    root     4096 10月 14  2013 mnt
+drwxr-xr-x    2 root    root     4096 10月 16  2013 opt
+drwxr-xr-x    2 root    root     4096 10月 14  2013 proc
+drwx------   21 root    root     4096  7月 12 09:28 root
+drwxr-xr-x   10 root    root     4096  6月 29 21:22 run
+drwxr-xr-x    2 root    root     4096  7月  4 23:47 sbin
+-rwxrwxrwx    1 root    root    44228  9月  4 17:53 script-ct.bin
+-rwxrwxrwx    1 root    root    46096  7月  6 00:14 script-cubie-A20.bin
+drwxr-xr-x    2 root    root     4096 10月 16  2013 srv
+drwxr-xr-x    2 root    root     4096  6月  4  2013 sys
+drwxrwxrwt    2 root    root     4096  1月  1  2010 tmp
+-rw-r--r--    1 root    root     1629  7月 13 06:17 uEnv.cb2
+-rwxr-xr-x    1 root    root     1619  9月  4 17:42 uEnv.ct
+-rwxr-xr-x    1 root    root     1619  9月  4 17:41 uEnv.ct.default
+drwxr-xr-x   10 root    root     4096 10月 16  2013 usr
+drwxr-xr-x   15 root    root     4096  6月 29 19:40 var
+anntony-Lenovo-B590 5f70abf0-69bc-468e-b875-5cf1378b476b # cd ~
+anntony-Lenovo-B590 ~ # df -h
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/sda1       453G   88G  343G   21% /
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+udev            2.8G  4.0K  2.8G    1% /dev
+tmpfs           559M  1.4M  558M    1% /run
+none            5.0M     0  5.0M    0% /run/lock
+none            2.8G   38M  2.7G    2% /run/shm
+none            100M   40K  100M    1% /run/user
+/dev/sdb1       3.5G  3.2G  117M   97% /media/anntony/5f70abf0-69bc-468e-b875-5cf1378b476b
+anntony-Lenovo-B590 ~ # umount /dev/sdb1
+anntony-Lenovo-B590 ~ # 
+
+修改開機參數完成，在剛才的指令
+我修改了uEnv.ct
+在aRuntu 0.888影像檔寫入MicroSD卡之後，原來的uEnv.txt裡面有一行
+extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1920x1080p60 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+是規定CubieTruck開機的時候，要用HDMI那個埠來作影像輸出，這一行還規定了1920x1080解析度和60的更新頻率
+我在這一行的前面加上了#符號注解，讓這一行整個失效，也就是變成
+#extraargs=disp.screen0_output_type=3 disp.screen0_output_mode=1920x1080p60 consoleblank=0 cubietruck sunxi_ve_mem_reserve=128
+然後我把uEnv.ct檔案裡面的這一行
+#extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=4 cubietruck sunxi_ve_mem_reserve=128
+最前面的#注解符號拿掉，讓這一行的設定值生效，也就是變成
+extraargs=disp.screen0_output_type=4 disp.screen0_output_mode=4 cubietruck sunxi_ve_mem_reserve=128
+這一行的意思是，CubieTruck開機的時候使用15 pin的VGA作影像輸出 ( screen0_output_type=4 )
+然後使用1024X768的螢幕解析度 ( screen0_output_mode=4 )
+你可能會問為什麼 screen0_output_type=4 就是VGA輸出？
+然後又為什麼screen0_output_mode=4 就是規定解析度是1024X768？
+當然是偉大的開發者規定的，你可以在這裡的fex_guide查到這些設定參數所代表的意義
+
+http://linux-sunxi.org/Fex_Guide#lcd.5B0.2F1.5D_configuration
+
+除了修改純文字檔uEnv.ct
+我們還必須要修改script-ct.bin
+這個檔案是個二進制檔，所以必須先使用bin2fex把它的內容倒出成純文字檔 1.fex
+( 指令是：$sunxi_tools_path/bin2fex script-ct.bin 1.fex )
+然後我修改了原先的
+screen0_output_type = 3
+screen0_output_mode = 5
+我把它改成了
+screen0_output_type = 4
+screen0_output_mode = 4
+也就是解析度1024X768的VGA輸出
+
+還有我還修改了原先的
+leds_used = 1
+把它改成
+leds_used = 0
+這樣就關掉那個一直閃來閃去的四色LED，只剩下藍色的那個會一直亮著，告訴我CubieTruck電源還開著
+
+修改完純文字檔1.fex之後
+再用sunxi_tools目錄的fex2bin工具程式，把純文字設定給轉換成二進制檔script-ct.bin
+( 指令是：$sunxi_tools_path/fex2bin 1.fex script-ct.bin )
+
+我剛執行的指令解說完畢，現在筆記型電腦裡的MicroSD卡已經卸載，可以取出來插到CubieTruck上面
+在CubieTruck插上電源之前，請先確定網路線和VGA線還有usb鍵盤、滑鼠都已經接上了
+現在就插上CubieTruck的5V2A電源，然後就…開機中
+如果你和我一樣現在都看到了開機畫面，而且成功進入了aRuntu的操作界面（有點像MacOS），恭喜你
+你順利完成了objective 3
+接下來我們再繼續為aRuntu作更細部的客製化
+像是調整分割區大小、調整時區、繁體中文語系、安裝常用套件、加入swap檔之類的
+請繼續收看objective 4 .....
+
+
