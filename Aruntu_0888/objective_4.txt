@@ -282,7 +282,408 @@ https://plus.google.com/photos/117546034720970496255/albums/6055498881820930561/
 上面介紹的是常用的在aRuntu桌面環境裡設定網路參數的方法
 如果你對使用/etc/network/interfaces組態檔
 有著強烈的執著，那麼這裡我也會來示範，使用這個檔案要怎麼設定CubieTruck的網路連線？
+在手動編輯這個檔案之前，請先插上網路線，然後確定區網裡有一台DHCP Server會自動配發IP，
+我們要先為aRuntu安裝vim文字編輯器，不然預設的vi只要使用上下左右鍵，就會變成ABCD很令人討厭
+打開終端機，執行
 
+aruntu@aruntu:~$ sudo -i
+root@aruntu:~# apt-get remove vim-common
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following packages will be REMOVED:
+  vim-common vim-tiny
+0 upgraded, 0 newly installed, 2 to remove and 27 not upgraded.
+After this operation, 912 kB disk space will be freed.
+Do you want to continue [Y/n]? y
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = (unset),
+	LC_ALL = (unset),
+	LC_TIME = "en",
+	LC_MONETARY = "en",
+	LC_ADDRESS = "en",
+	LC_TELEPHONE = "en",
+	LC_NAME = "en",
+	LC_MEASUREMENT = "en",
+	LC_IDENTIFICATION = "en",
+	LC_NUMERIC = "en",
+	LC_PAPER = "en",
+	LANG = "zh_TW.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+locale: Cannot set LC_CTYPE to default locale: No such file or directory
+locale: Cannot set LC_MESSAGES to default locale: No such file or directory
+locale: Cannot set LC_ALL to default locale: No such file or directory
+(Reading database ... 157203 files and directories currently installed.)
+Removing vim-tiny ...
+update-alternatives: using /usr/bin/see to provide /usr/bin/view (view) in auto mode
+Removing vim-common ...
+Processing triggers for man-db ...
+locale: Cannot set LC_CTYPE to default locale: No such file or directory
+locale: Cannot set LC_MESSAGES to default locale: No such file or directory
+locale: Cannot set LC_ALL to default locale: No such file or directory
+Processing triggers for mime-support ...
+root@aruntu:~# apt-get install vim
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following extra packages will be installed:
+  vim-common vim-runtime
+Suggested packages:
+  ctags vim-doc vim-scripts
+The following NEW packages will be installed:
+  vim vim-common vim-runtime
+0 upgraded, 3 newly installed, 0 to remove and 27 not upgraded.
+Need to get 5755 kB of archives.
+After this operation, 27.5 MB of additional disk space will be used.
+Do you want to continue [Y/n]? y
+Get:1 http://ports.ubuntu.com/ubuntu-ports/ saucy/main vim-common armhf 2:7.4.000-1ubuntu2 [95.2 kB]
+Get:2 http://ports.ubuntu.com/ubuntu-ports/ saucy/main vim-runtime all 2:7.4.000-1ubuntu2 [4880 kB]
+Get:3 http://ports.ubuntu.com/ubuntu-ports/ saucy/main vim armhf 2:7.4.000-1ubuntu2 [780 kB]                
+Fetched 5755 kB in 12s (473 kB/s)                                                                           
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = (unset),
+	LC_ALL = (unset),
+	LC_TIME = "en",
+	LC_MONETARY = "en",
+	LC_ADDRESS = "en",
+	LC_TELEPHONE = "en",
+	LC_NAME = "en",
+	LC_MEASUREMENT = "en",
+	LC_IDENTIFICATION = "en",
+	LC_NUMERIC = "en",
+	LC_PAPER = "en",
+	LANG = "zh_TW.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+locale: Cannot set LC_CTYPE to default locale: No such file or directory
+locale: Cannot set LC_MESSAGES to default locale: No such file or directory
+locale: Cannot set LC_ALL to default locale: No such file or directory
+Selecting previously unselected package vim-common.
+(Reading database ... 157148 files and directories currently installed.)
+Unpacking vim-common (from .../vim-common_2%3a7.4.000-1ubuntu2_armhf.deb) ...
+Selecting previously unselected package vim-runtime.
+Unpacking vim-runtime (from .../vim-runtime_2%3a7.4.000-1ubuntu2_all.deb) ...
+Adding 'diversion of /usr/share/vim/vim74/doc/help.txt to /usr/share/vim/vim74/doc/help.txt.vim-tiny by vim-runtime'
+Adding 'diversion of /usr/share/vim/vim74/doc/tags to /usr/share/vim/vim74/doc/tags.vim-tiny by vim-runtime'
+Selecting previously unselected package vim.
+Unpacking vim (from .../vim_2%3a7.4.000-1ubuntu2_armhf.deb) ...
+Processing triggers for mime-support ...
+Processing triggers for man-db ...
+locale: Cannot set LC_CTYPE to default locale: No such file or directory
+locale: Cannot set LC_MESSAGES to default locale: No such file or directory
+locale: Cannot set LC_ALL to default locale: No such file or directory
+Setting up vim-common (2:7.4.000-1ubuntu2) ...
+Setting up vim-runtime (2:7.4.000-1ubuntu2) ...
+Processing /usr/share/vim/addons/doc
+Setting up vim (2:7.4.000-1ubuntu2) ...
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/vim (vim) in auto mode
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/vimdiff (vimdiff) in auto mode
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/rvim (rvim) in auto mode
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/rview (rview) in auto mode
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/vi (vi) in auto mode
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/view (view) in auto mode
+update-alternatives: using /usr/bin/vim.basic to provide /usr/bin/ex (ex) in auto mode
+root@aruntu:~# 
 
+這樣就安裝了vim文字編輯器
+上面的輸出很多
+重點是
+$ sudo -i
+# apt-get remove vim-common
+# apt-get install vim
+
+先切換到root身分，再移除vim-common套件，然後安裝vim套件
+安裝好vim文字編輯器之後
+現在來修改 /etc/network/interfaces
+
+在終端機執行
+# vi /etc/network/interfaces
+
+然後把檔案改成
+###############################################
+
+auto lo
+iface lo inet loopback
+
+#################################################
+
+auto eth0
+iface eth0 inet static
+address 192.168.0.132
+netmask 255.255.255.0
+network 192.168.0.0
+gateway 192.168.0.1
+broadcast 192.168.0.255
+dns-nameservers 8.8.8.8 8.8.4.4
+
+################################################
+
+以上的設定值，只有先給 eth0 綁上一個static IP
+無線網卡wlan1的部分暫時還沒設定
+參考了這一篇
+http://www.howtoforge.com/perfect-server-ubuntu-14.04-apache2-php-mysql-pureftpd-bind-dovecot-ispconfig-3-p3
+
+把CubieTruck重新開機，看看設定值有沒有生效？
+重開機的終端機指令是
+# init 6
+
+重新開機之後，發現eth0的IP真的變成了192.168.0.132
+還記得剛才在圖形介面裡給eth0設定的192.168.0.161嗎？
+這個設定還是在原來的地方
+可是被剛才我們直接在 /etc/network/interfaces 這裡設定的參數給蓋掉了
+
+現在我們知道，好像在/etc/network/interfaces裡設定的，比較神威
+比在aRuntu桌面環境裡面設定的還要威威威
+那麼繼續來用這個檔案設定無線網路
+
+接下來我把網路組態檔給改成了這樣
+# interfaces(5) file used by ifup(8) and ifdown(8)
+# Include files from /etc/network/interfaces.d:
+source-directory /etc/network/interfaces.d
+
+#auto usb0
+#iface usb0 inet static
+#address 192.168.0.2
+#netmask 255.255.255.0
+#broadcast 192.168.0.255
+       # prevent ifup from attempting to use usb0 as a route gateway
+       # gateway 192.168.0.1
+
+##############################################
+
+# interfaces(5) file used by ifup(8) and ifdown(8)
+# Include files from /etc/network/interfaces.d:
+#source-directory /etc/network/interfaces.d
+
+###############################################
+
+auto lo
+iface lo inet loopback
+
+#################################################
+
+auto eth0
+iface eth0 inet static
+address 192.168.0.132
+netmask 255.255.255.0
+network 192.168.0.0
+gateway 192.168.0.1
+broadcast 192.168.0.255
+dns-nameservers 8.8.8.8 8.8.4.4
+
+################################################
+
+#auto eth0
+
+#iface eth0 inet dhcp
+
+#################################################
+auto wlan1
+iface wlan1 inet dhcp
+wpa-ssid here_should_be_your_WIFI_SSID
+wpa-key-mgmt WPA-PSK
+wpa-group TKIP CCMP
+wpa-psk here_should_be_your_WIFI_password
+
+##########################################
+
+#auto wlan0
+#iface wlan0 inet static
+
+#address 192.168.1.102
+#netmask 255.255.255.0
+
+#network 192.168.1.0
+#gateway 192.168.1.1
+#broadcast 192.168.1.255
+
+#wpa-ssid yourWIFInetwork
+#wpa-key-mgmt WPA-PSK
+#wpa-group TKIP CCMP
+#wpa-psk yourWIFInetworkPASSWORD
+
+上面給出的是完整的，連comment的那些行也一起放了進去
+事實上如果只算真的有作用的行，那麼我的/etc/network/interfaces可以簡單表示成這樣：
+
+source-directory /etc/network/interfaces.d
+
+###############################################
+
+auto lo
+iface lo inet loopback
+
+#################################################
+
+auto eth0
+iface eth0 inet static
+address 192.168.0.132
+netmask 255.255.255.0
+network 192.168.0.0
+gateway 192.168.0.1
+broadcast 192.168.0.255
+dns-nameservers 8.8.8.8 8.8.4.4
+
+################################################
+
+auto wlan1
+iface wlan1 inet dhcp
+wpa-ssid here_should_be_your_WIFI_SSID
+wpa-key-mgmt WPA-PSK
+wpa-group TKIP CCMP
+wpa-psk here_should_be_your_WIFI_password
+
+##########################################
+
+這樣應該可以了，然後我滿心期待的重新啟動了我的CubieTruck
+結果重新開機之後，雖然我的eth0和wlan1都還是可以取得IP
+執行ifconfig和route和ping指令，終端機輸出訊息如下
+
+root@aruntu:/etc/network# ifconfig
+eth0      Link encap:Ethernet  HWaddr 02:cc:02:42:95:d3  
+          inet addr:192.168.0.132  Bcast:192.168.0.255  Mask:255.255.255.0
+          inet6 addr: fe80::cc:2ff:fe42:95d3/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:4242 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:4420 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:546719 (546.7 KB)  TX bytes:1344670 (1.3 MB)
+          Interrupt:117 Base address:0xc000 
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:8 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:8 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:480 (480.0 B)  TX bytes:480 (480.0 B)
+
+usb0      Link encap:Ethernet  HWaddr 9e:02:6c:f9:95:de  
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+wlan1     Link encap:Ethernet  HWaddr 98:3b:16:77:ed:88  
+          inet addr:192.168.0.11  Bcast:192.168.0.255  Mask:255.255.255.0
+          inet6 addr: fe80::9a3b:16ff:fe77:ed88/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:873 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:74 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:268824 (268.8 KB)  TX bytes:11712 (11.7 KB)
+
+root@aruntu:/etc/network# ping tw.yahoo.com
+PING ds-tw-fp3.wg1.b.yahoo.com (202.43.192.109) 56(84) bytes of data.
+64 bytes from ir1.fp.vip.tw1.yahoo.com (202.43.192.109): icmp_seq=1 ttl=56 time=23.7 ms
+64 bytes from ir1.fp.vip.tw1.yahoo.com (202.43.192.109): icmp_seq=2 ttl=56 time=23.7 ms
+64 bytes from ir1.fp.vip.tw1.yahoo.com (202.43.192.109): icmp_seq=3 ttl=56 time=24.4 ms
+^C
+--- ds-tw-fp3.wg1.b.yahoo.com ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 6054ms
+rtt min/avg/max/mdev = 23.738/23.977/24.444/0.375 ms
+root@aruntu:/etc/network# route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         192.168.0.1     0.0.0.0         UG    0      0        0 eth0
+169.254.0.0     0.0.0.0         255.255.0.0     U     1000   0        0 eth0
+192.168.0.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
+192.168.0.0     0.0.0.0         255.255.255.0   U     0      0        0 wlan1
+root@aruntu:/etc/network# 
+
+看起來網路是沒問題，對外也可以連線啊，可是回到aRuntu桌面圖形環境裡，發現
+
+（靠，悲劇了，原來桌面環境下方，時鐘旁邊那個藍色紅色代表網路連線的圖示，居然寫著No network connection，然後那一格就空白）
+https://plus.google.com/photos/117546034720970496255/albums/6055498881820930561/6055603790639871938?pid=6055603790639871938&oid=117546034720970496255
+
+（在那個原先藍色紅色圖示的地方按下左鍵，原來應該可以按的選項，除了最後一個VPN connections之外，
+全部變成灰色不能按，所以桌面環境是在不爽我剛才用/etc/network/interfaces組態檔來作網路設定嗎？)
+
+https://plus.google.com/photos/117546034720970496255/albums/6055498881820930561/6055605410033365170?pid=6055605410033365170&oid=117546034720970496255
+
+這樣子真的很醜，雖然說eth0和wlan1都是正常工作，可是這讓追求完美的我覺得不是很舒服
+那麼就把這個可以工作的 /etc/network/interfaces 另存一個檔名
+一樣照原先的方式，就讓/etc/network/interfaces這個檔案裡空無一物吧
+打開終端機，執行
+root@aruntu:/etc/network# cp /etc/network/interfaces /etc/network/interfaces.working.fine
+root@aruntu:/etc/network# rm /etc/network/interfaces
+root@aruntu:/etc/network# touch /etc/network/interfaces
+root@aruntu:/etc/network# cat /etc/network/interfaces
+root@aruntu:/etc/network# ls
+if-down.d       if-pre-up.d  interfaces    interfaces.default                 interfaces.working.fine
+if-post-down.d  if-up.d      interfaces.d  run
+
+我已經把/etc/network/interfaces又清空了
+那…把CubieTruck重開機吧，希望我的藍色紅色箭頭會回來，我開了…（會回來嗎？抖抖抖抖）
+過了三十秒，哦哦哦哦哦，我可愛的藍色紅色箭頭，你們又回來了（這時候應該有電影火戰車那段經典配樂…）
+
+https://plus.google.com/photos/117546034720970496255/albums/6055498881820930561/6055609404995784482?pid=6055609404995784482&oid=117546034720970496255
+
+哦我以後不會再用 /etc/network/interfaces　去設定我的網路連線了（啾咪），我TM真是一時鬼迷心竅，我臭了請原諒我
+
+這個時候再開終端機檢查一次
+aruntu@aruntu:~$ sudo -i
+root@aruntu:~# ifconfig
+eth0      Link encap:Ethernet  HWaddr 02:cc:02:42:95:d3  
+          inet addr:192.168.0.161  Bcast:192.168.0.255  Mask:255.255.255.0
+          inet6 addr: fe80::cc:2ff:fe42:95d3/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:2114 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1962 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:459420 (459.4 KB)  TX bytes:986229 (986.2 KB)
+          Interrupt:117 Base address:0xc000 
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:16436  Metric:1
+          RX packets:184 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:184 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:22613 (22.6 KB)  TX bytes:22613 (22.6 KB)
+
+usb0      Link encap:Ethernet  HWaddr 32:5b:6a:30:57:41  
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+wlan1     Link encap:Ethernet  HWaddr 00:90:4c:11:22:33  
+          inet addr:192.168.0.13  Bcast:192.168.0.255  Mask:255.255.255.0
+          inet6 addr: fe80::290:4cff:fe11:2233/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:810 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:91 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:247344 (247.3 KB)  TX bytes:15123 (15.1 KB)
+
+root@aruntu:~# ping tw.yahoo.com
+PING ds-tw-fp3.wg1.b.yahoo.com (202.43.192.109) 56(84) bytes of data.
+64 bytes from ir1.fp.vip.tw1.yahoo.com (202.43.192.109): icmp_seq=1 ttl=56 time=24.5 ms
+64 bytes from ir1.fp.vip.tw1.yahoo.com (202.43.192.109): icmp_seq=2 ttl=56 time=24.1 ms
+^C
+--- ds-tw-fp3.wg1.b.yahoo.com ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+rtt min/avg/max/mdev = 24.183/24.357/24.531/0.174 ms
+root@aruntu:~# route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         192.168.0.1     0.0.0.0         UG    0      0        0 eth0
+192.168.0.0     0.0.0.0         255.255.255.0   U     1      0        0 eth0
+192.168.0.0     0.0.0.0         255.255.255.0   U     9      0        0 wlan1
+root@aruntu:~# 
+
+還記得我在桌面環境裡，為eth0設定的static IP是192.168.0.161嗎？
+現在確實是使用桌面環境裡的網路設定（雖然我不知道它把設定寫在那個檔案裡）
+因為 /etc/network/interfaces 剛才也已經被我清空了，裡面空無一物
+
+所以CubieTruck的網路設定，也就是objective 4，算…完成了吧，居然花掉了一整天…
+請繼續收看objective 5，還有很多東西都還沒安裝沒設定，像是中文環境、時區，MicroSD卡的分割區也還沒resize .....
 
 
