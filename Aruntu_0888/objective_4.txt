@@ -1,73 +1,60 @@
 objective 4 : 成功開機後，如何設定網路參數？
 
-使用剛作好的MicroSD插入CubieTruck，開機之後，一開始我就先把
-/etc/network/interfaces 複製一份
-# cp /etc/network/interfaces /etc/network/interfaces.default
+如果CubieTruck是插著網路線開機的，然後你的區網裡又剛好有一個配發IP的DHCP Server
+（常見的IP分享器都有這個功能）
+那麼現在打開終端機，執行
 
-然後我就把那個原先的 /etc/network/interfaces給砍了
-指令是
-# rm -rf /etc/network/interfaces
-# touch /etc/network/interfaces
-
-接著再把CubieTruck重新開機一次
-指令是
-# init 6
-
-為什麼我這麼作，原因是如果我不這麼作
-每一次CubieTruck開機完成，然後我進入終端機的時候
-執行 ifconfig指令
-就會看到出現一個usb0的介面
-上面綁著一個192.168.0.2的IP
-就像這樣
-
-root@aruntu:/etc/network# ifconfig
+root@aruntu:~# ifconfig eth0
 eth0      Link encap:Ethernet  HWaddr 02:cc:02:42:95:d3  
           inet addr:192.168.0.11  Bcast:192.168.0.255  Mask:255.255.255.0
           inet6 addr: fe80::cc:2ff:fe42:95d3/64 Scope:Link
           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:1908 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:983 errors:0 dropped:0 overruns:0 carrier:0
+          RX packets:437 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:243 errors:0 dropped:0 overruns:0 carrier:0
           collisions:0 txqueuelen:1000 
-          RX bytes:1311495 (1.3 MB)  TX bytes:120246 (120.2 KB)
+          RX bytes:106356 (106.3 KB)  TX bytes:32527 (32.5 KB)
           Interrupt:117 Base address:0xc000 
 
-lo        Link encap:Local Loopback  
-          inet addr:127.0.0.1  Mask:255.0.0.0
-          inet6 addr: ::1/128 Scope:Host
-          UP LOOPBACK RUNNING  MTU:16436  Metric:1
-          RX packets:218 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:218 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:0 
-          RX bytes:19067 (19.0 KB)  TX bytes:19067 (19.0 KB)
-
-usb0      Link encap:Ethernet  HWaddr 2e:fa:33:52:53:f4  
-          inet addr:192.168.0.2  Bcast:192.168.0.255  Mask:255.255.255.0
-          UP BROADCAST MULTICAST  MTU:1500  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
-
-wlan1     Link encap:Ethernet  HWaddr 00:90:4c:11:22:33  
-          inet6 addr: fe80::9a3b:16ff:fe77:ed88/64 Scope:Link
-          UP BROADCAST MULTICAST  MTU:1500  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:33 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
-          RX bytes:0 (0.0 B)  TX bytes:5539 (5.5 KB)
-
-root@aruntu:/etc/network# route -n
+root@aruntu:~# ping tw.yahoo.com
+PING ds-tw-fp3.wg1.b.yahoo.com (202.43.192.109) 56(84) bytes of data.
+64 bytes from ir1.fp.vip.tw1.yahoo.com (202.43.192.109): icmp_seq=1 ttl=56 time=24.8 ms
+64 bytes from ir1.fp.vip.tw1.yahoo.com (202.43.192.109): icmp_seq=2 ttl=56 time=23.7 ms
+64 bytes from ir1.fp.vip.tw1.yahoo.com (202.43.192.109): icmp_seq=3 ttl=56 time=24.1 ms
+^C
+--- ds-tw-fp3.wg1.b.yahoo.com ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 23.726/24.239/24.829/0.453 ms
+root@aruntu:~# route -n
 Kernel IP routing table
 Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 0.0.0.0         192.168.0.1     0.0.0.0         UG    0      0        0 eth0
-169.254.0.0     0.0.0.0         255.255.0.0     U     1000   0        0 usb0
-192.168.0.0     0.0.0.0         255.255.255.0   U     0      0        0 usb0
-192.168.0.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
+192.168.0.0     0.0.0.0         255.255.255.0   U     1      0        0 eth0
+root@aruntu:~# 
 
-我覺得一頭霧水，那個usb0的interface到底是什麼鬼東西？
-預設的 (剛才被我砍掉的那個) 
-/etc/network/interfaces
-內容如下
+什麼設定都不用，這個時候你的CubieTruck已經接上網路了
+在aRuntu裡可以使用圖形介面（建議）或是網路組態檔 /etc/network/interfaces
+來設定網路參數，以下兩種方式都會介紹，但是在那之前，我們先清空aRuntu預設的網路組態檔
+請打開終端機，執行
+
+aruntu@aruntu:~$ sudo -i
+root@aruntu:~# cd /etc/network
+root@aruntu:/etc/network# ls
+if-down.d       if-pre-up.d  interfaces    interfaces.default
+if-post-down.d  if-up.d      interfaces.d  run
+root@aruntu:/etc/network# cp interfaces interfaces.default
+root@aruntu:/etc/network# rm /etc/network/interfaces
+root@aruntu:/etc/network# touch /etc/network/interfaces
+root@aruntu:/etc/network# cat ./interfaces
+root@aruntu:/etc/network# ls
+if-down.d       if-pre-up.d  interfaces    interfaces.default
+if-post-down.d  if-up.d      interfaces.d  run
+root@aruntu:/etc/network# 
+
+上面的指令把原先的/etc/network/interfaces
+備份成了/etc/network/interfaces.default
+然後刪除掉了這個檔案，再用一個空的檔案代替
+為什麼要這樣子作，因為aRuntu預設的/etc/network/interfaces
+是這樣子
 
 # interfaces(5) file used by ifup(8) and ifdown(8)
 # Include files from /etc/network/interfaces.d:
@@ -137,146 +124,39 @@ iface usb0 inet static
 #wpa-group TKIP CCMP
 #wpa-psk yourWIFInetworkPASSWORD
 
-我知道為什麼usb0上面綁著192.168.0.2這個IP
-因為
-/etc/network/interfaces
-這個檔案裡就寫著usb0的設定
-就是裡面的這其中5行
+
+裡面有一段設定是
 auto usb0
 iface usb0 inet static
        address 192.168.0.2
        netmask 255.255.255.0
        broadcast 192.168.0.255
+如果設定的最前面沒有#符號，那麼這裡這5行設定值是生效的
+它會在CubieTruck開機之後，為usb0接口綁上一個192.168.0.2的IP
+所以執行ifconfig指令的結果，會像這樣
 
-（網路設定還剛好和我家裡的區網設定一致）
-可是我真的不知道，這裡的usb0指的是什麼裝置
-eht0是我的有線網卡
-wlan0是我的無線網卡
-這都很容易懂
-可是這個usb0到底是什麼鬼？
-我的CubieTruck上面除了插著一個usb hub，然後usb hub上面再插著usb keyboard和usb mouse之外
-再沒有別的usb裝置了
-是製作aRuntu的開發人員，他的CubieTruck上面插著的usb無線網卡嗎？
-然後就這樣包出了aRuntu…然後忘了刪掉自已usb無線網卡的設定…是這樣嗎？
-（我亂猜的，知道的人麻煩寫信來告訴我一下）
-
-滿腦子問號的我查了Google，用「ubuntu ifconfig usb0」當作關鍵字
-然後這是排在最前面第一個的result
-
-http://en.qi-hardware.com/wiki/Ethernet_over_USB
-
-稍微看了一下這篇文章
-好像是有一個叫作NanoNote的電子產品，它可以藉由另一台已經連上網路的桌機或是筆記型電腦（文件裡稱為宿主機 host）
-透過宿主機上面設定好的usb0介面 (此文章裡宿主機的IP設定成192.168.254.100 )，
-NanoNote可以藉由連接它自身和宿主機的usb埠，而取得網路連線能力 (此文章裡提及NanoNote的出廠預設IP是192.168.254.101)
-（為何要這麼辛苦呢？NanoNote它自已沒有網路接口嗎？）
-
-所以為什麼/etc/network/interfaces裡面會有usb0的設定
-也許是要用來作這種「分享自已的網路連線」的用途
-可是我的CubieTruck既有RJ45的有線乙太網路接口，也有WiFi wireless模組
-我拿來工作的筆記型電腦也同時有RJ45接口和Wifi網卡
-我家裡其他的3C裝置就算沒有RJ45接口，也都有Wifi連線的能力
-那麼對我來說，這個/etc/network/interfaces裡寫的usb0介面到底用來幹啥的？
-？？？？？
-突然想起星爺那句「多了塊餘」
-
-Linux真的很深奧，我第一次在/etc/network/interfaces裡面看到usb0的存在
-第一次，它的出現讓我真的一頭霧水
-而且只要這個usb0介面上綁著192.168.0.2的IP
-很奇怪的，我的筆記型電腦的IP即使是在同一個網段 192.168.0.X/24
-完全ping不到我的CubieTruck
-前面列出的，在CubieTruck上面執行的ifconfig訊息
-可以知道我的CubieTruck的eth0的IP是192.168.0.11
-而那個詭異的usb0的IP是192.168.0.2
-而我的筆記型電腦的wlan0的IP是192.168.0.12
-即使CubieTruck和筆記型電腦都在同一個網段192.168.0.X/24
-gateway也都是192.168.0.1
-但是就是沒辦法ping到對方的存在
-
-可是只要把CubieTruck機器的預設的 /etc/network/interfaces
-給刪除掉
-也就是有詭異設定
-auto usb0
-iface usb0 inet static
-       address 192.168.0.2
-       netmask 255.255.255.0
-       broadcast 192.168.0.255
-的這5行給清除掉（我是直接砍了預設的 /etc/network/interfaces，再餵給機器一個同名的空檔案 )
-再重新開機之後，那麼一切就恢復正常了
-
-現在正在我的筆記型電腦的終端機裡
-anntony@anntony-Lenovo-B590 ~ $ ifconfig
-eth0      Link encap:Ethernet  HWaddr 54:ee:75:09:dc:3e  
-          UP BROADCAST MULTICAST  MTU:1500  Metric:1
-          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
-
-lo        Link encap:Local Loopback  
-          inet addr:127.0.0.1  Mask:255.0.0.0
-          inet6 addr: ::1/128 Scope:Host
-          UP LOOPBACK RUNNING  MTU:65536  Metric:1
-          RX packets:3492 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:3492 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:0 
-          RX bytes:316415 (316.4 KB)  TX bytes:316415 (316.4 KB)
-
-wlan0     Link encap:Ethernet  HWaddr 9c:d2:1e:f1:0a:53  
-          inet addr:192.168.0.12  Bcast:192.168.0.255  Mask:255.255.255.0
-          inet6 addr: fe80::9ed2:1eff:fef1:a53/64 Scope:Link
-          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:1480471 errors:0 dropped:0 overruns:0 frame:105947
-          TX packets:1500192 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
-          RX bytes:2016468354 (2.0 GB)  TX bytes:177124434 (177.1 MB)
-          Interrupt:17 
-
-anntony@anntony-Lenovo-B590 ~ $ ping 192.168.0.11
-PING 192.168.0.11 (192.168.0.11) 56(84) bytes of data.
-64 bytes from 192.168.0.11: icmp_seq=1 ttl=64 time=1.22 ms
-64 bytes from 192.168.0.11: icmp_seq=2 ttl=64 time=1.08 ms
-^C
---- 192.168.0.11 ping statistics ---
-2 packets transmitted, 2 received, 0% packet loss, time 1001ms
-rtt min/avg/max/mdev = 1.089/1.157/1.225/0.068 ms
-
-很正常，可以ping到CubieTruck的eth0介面的IP (192.168.0.11)的存在
-扯了一堆廢話，還沒講到怎麼設定網路參數
-我本來以為和之前的Lubuntu的影像檔一樣，是要手動去修改/etc/network/interfaces組態檔
-
-
-我家裡的無線IP分享器有開DHCP server
-所以只要把網路線插在CubieTruck上面，開機成功之後，eth0自已會取得IP
-然後進入aRuntu桌面，在正下方的地方，時鐘的左邊一點，可以看到
-Ethernet network connection 'Wired conntction 1' active
-按下去之後，可以看到家裡的無線網路的SSID (D-Link_DIR-600M)
-再按下去之後，跳出一個對話框
-Authentication required by Wi-Fi network
-然後輸入我的無線網路的密碼，再按下Connect鍵，設定就完成了
-
-接著我再進入了CubieTruck的終端機執行一次
-root@aruntu:~# ifconfig
+root@aruntu:/etc/network# ifconfig
 eth0      Link encap:Ethernet  HWaddr 02:cc:02:42:95:d3  
           inet addr:192.168.0.11  Bcast:192.168.0.255  Mask:255.255.255.0
           inet6 addr: fe80::cc:2ff:fe42:95d3/64 Scope:Link
           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:6058 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:539 errors:0 dropped:0 overruns:0 carrier:0
+          RX packets:951 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:691 errors:0 dropped:0 overruns:0 carrier:0
           collisions:0 txqueuelen:1000 
-          RX bytes:2001294 (2.0 MB)  TX bytes:58739 (58.7 KB)
+          RX bytes:93747 (93.7 KB)  TX bytes:84337 (84.3 KB)
           Interrupt:117 Base address:0xc000 
 
 lo        Link encap:Local Loopback  
           inet addr:127.0.0.1  Mask:255.0.0.0
           inet6 addr: ::1/128 Scope:Host
           UP LOOPBACK RUNNING  MTU:16436  Metric:1
-          RX packets:215 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:215 errors:0 dropped:0 overruns:0 carrier:0
+          RX packets:134 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:134 errors:0 dropped:0 overruns:0 carrier:0
           collisions:0 txqueuelen:0 
-          RX bytes:18221 (18.2 KB)  TX bytes:18221 (18.2 KB)
+          RX bytes:11702 (11.7 KB)  TX bytes:11702 (11.7 KB)
 
-usb0      Link encap:Ethernet  HWaddr 9a:90:3e:be:70:8f  
+usb0      Link encap:Ethernet  HWaddr 52:49:48:e0:e5:ee  
+          inet addr:192.168.0.2  Bcast:192.168.0.255  Mask:255.255.255.0
           UP BROADCAST MULTICAST  MTU:1500  Metric:1
           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
@@ -287,63 +167,71 @@ wlan1     Link encap:Ethernet  HWaddr 00:90:4c:11:22:33
           inet addr:192.168.0.13  Bcast:192.168.0.255  Mask:255.255.255.0
           inet6 addr: fe80::290:4cff:fe11:2233/64 Scope:Link
           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:113 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:86 errors:0 dropped:0 overruns:0 carrier:0
+          RX packets:1496 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:110 errors:0 dropped:0 overruns:0 carrier:0
           collisions:0 txqueuelen:1000 
-          RX bytes:34345 (34.3 KB)  TX bytes:15500 (15.5 KB)
+          RX bytes:482491 (482.4 KB)  TX bytes:16452 (16.4 KB)
 
-root@aruntu:~# ping tw.yahoo.com
-PING ds-tw-fp3.wg1.b.yahoo.com (202.43.192.109) 56(84) bytes of data.
-64 bytes from ir1.fp.vip.tw1.yahoo.com (202.43.192.109): icmp_seq=1 ttl=56 time=25.6 ms
-64 bytes from ir1.fp.vip.tw1.yahoo.com (202.43.192.109): icmp_seq=2 ttl=56 time=23.6 ms
-64 bytes from ir1.fp.vip.tw1.yahoo.com (202.43.192.109): icmp_seq=3 ttl=56 time=24.5 ms
-^C
---- ds-tw-fp3.wg1.b.yahoo.com ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2003ms
-rtt min/avg/max/mdev = 23.607/24.596/25.603/0.834 ms
-root@aruntu:~# route -n
-Kernel IP routing table
-Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-0.0.0.0         192.168.0.1     0.0.0.0         UG    0      0        0 eth0
-192.168.0.0     0.0.0.0         255.255.255.0   U     1      0        0 eth0
-192.168.0.0     0.0.0.0         255.255.255.0   U     9      0        0 wlan1
+多了一個IP不是很好？而且剛好usb0綁上的網路參數
+address 192.168.0.2
+netmask 255.255.255.0
+broadcast 192.168.0.255
+和我家裡的IP分享器的區網是同一個網段
+這一段設定留著又有什麼關係呢？
+我之所以要把aRuntu預設的/etc/network/interfaces刪除掉
+就是要讓這一段綁在usb0介面上的網路設定完全失效
+因為它會讓我區網裡的筆記型電腦
+沒有辦法直接透過區網連接到CubieTruck
 
+筆電 wlan0 (192.168.0.12) ping <------> ping CubieTruck eth0  (192.168.0.11)    X   不通
+筆電 wlan0 (192.168.0.12) ping <------> ping CubieTruck usb0  (192.168.0.2)     X   不通
+筆電 wlan0 (192.168.0.12) ping <------> ping CubieTruck wlan1 (192.168.0.13)    X   不通
 
-不錯，這樣一來不只是有線網路的eth0，連無線網路的wlan1都確實取得IP了
-啦啦啦超快樂不用去手動修改/etc/network/interfaces
-如果是使用static IP組態的人，就是在aRuntu的桌面環境裡直接用圖形介面設定網路參數就行了
-在：時鐘左邊的藍色紅色箭頭上面按右鍵，選「Edit connections...」就可以了
-可是剛才那個usb0還是讓我很unhappy，噗
+筆電 ping CubieTruck或是反過來CubieTruck去ping筆電都一樣
+但是只要把aRuntu預設的 /etc/network/interfaces清空
+（讓那5行usb0接口的IP設定失效）
+那麼筆電和CubieTruck又可以透過區網連通了
 
-要睡之前，不小心搜出了這一篇
+為什麼/etc/network/interfaces裡面會有usb0接口的設定？
+我看過eth0、eth1、wlan0、wlan1，可是就是沒看過usb0
+其實我也不是很瞭，不過這裡有搜尋到一些資料
+
 http://en.wikipedia.org/wiki/Ethernet_over_USB
 
-
-重要的內文有
-Treat USB as an Ethernet network
+裡面有一段重點
+Treat USB as an Ethernet network[edit]
 The USB-eth module in Linux emulates an Ethernet device that uses USB as the physical medium. Once created, this network interface can be assigned an IP address and otherwise treated as though it were ordinary Ethernet hardware. The USB-eth module allows the USB device to "see" a network, ping other IP addresses, and even "talk" DHCP, HTTP, NFS, telnet, and e-mail. In short, any applications that work over real Ethernet interfaces will work over a USB-eth interface without modification, because they can't tell that they aren't using real Ethernet hardware.[1]
 
 On Linux hosts, the corresponding Ethernet-over-USB kernel module is called usbnet. A recently announced usbnet-style driver for Win32 hosts is called the Bahia Network Driver.[2]
 
 The approach allows devices with very limited communications hardware to operate over IP networks. The Linux kernel for the iPAQ uses this communications strategy exclusively, since the iPAQ hardware has neither an accessible legacy (RS-232/RS-422) serial port nor a dedicated network interface.
 
-我哭了
-我一直以為/etc/network/interfaces組態檔裡只有eth0、eth1、wlan0、wlan1這種interface才能夠綁上一個IP
-原來那個usb0介面本來就可以指定一個IP
-它是拿來模擬Ethernet device用的（使用USB當成實體傳輸媒介）
-所以上面我看到那個莫名奇妙的連接方式
-就是兩台機器上都有usb0 interface，然後兩邊都各綁上一個同網段的IP
-他們兩個usb設備都要被當成真實的Ethernet interfaces來對待
-可是我在家裡暫時用不到這樣的網路架構
-累斃了不能再Google深入探索
-我想如果有兩台安裝了Linux的電腦，剛好兩台上面都沒有任何有線或無線網卡
-只有usb port可以對接
-那麼此時在兩台電腦各自的usb0 interface上
-各自綁上兩個同網段的IP (例：192.168.0.100 和192.168.0.101)
-然後就可以使用ssh或ftp或nfs來互連或是交換資料了
-這個架構在USB上的Ethernet的核心模組叫作usbnet
-好我大概知道了
-寫得亂七八糟，明天睡醒要來改，不然會被大家恥笑
+反正我應該用不到usb0接口，所以不研究了
+目前如果我的CubieTruck上面的usb0接口，綁上了一個192.168.0.2的IP，
+只會干擾我，讓我沒辦法用筆電和CubieTruck互連
+看了上面查到的解釋，我在猜想usb0接口的使用時機，
+也許是有兩台電腦，完全沒有RJ45網路接口，也沒有WiFi無線網卡
+但是它們兩台電腦還是想要使用TCP/IP網路來對接，分享資料
+於是就靠著一條USB線，然後連接兩台電腦，並在這兩台電腦裝上Linux，並成功載入了usbnet模組
+然後就照著上面的 /etc/network/interfaces 為兩台電腦各自的usb0接口綁上了同一個網段的IP
+（例：一台是192.168.0.100，另一台是192.168.0.101，然後Netmask都是255.255.255.0）
+我想應該可以就這樣讓這兩台電腦，照著我們一般使用乙太網路的方式來連接，ssh還是http還是ftp或nfs什麼都行
+如果有高人曾經這樣克難的用過usb線來對接，希望可以分享出來，
+因為我的桌機或是筆電或是CubieTruck或是平板，至少都可以透過WiFi來連接到家裡的無線IP分享器
+所以我好像沒必要去啟動這個usb0接口
+
+=======================================================================================================
+
+把aRuntu預設的/etc/network/interfaces　換成一個空白檔案之後
+以下有兩種方式可以設定網路參數：
+
+（一）透過aRuntu的桌面環境
+（二）直接設定 /etc/network/interfaces 組態檔
+
+第一個方式比較簡單
+
+（注意桌面環境下方的藍色紅色箭頭處，對著它按下右鍵，選Edit Connections...）
+https://plus.google.com/photos/117546034720970496255/albums/6055498881820930561/6055498892520889714?pid=6055498892520889714&oid=117546034720970496255
 
 
-objective 5 待續
+
