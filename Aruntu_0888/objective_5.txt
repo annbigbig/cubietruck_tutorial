@@ -1,0 +1,205 @@
+objective 5 : 客製化aRuntu系統
+
+到現在為止，我們在MicroSD卡上面的aRuntu 0.888作業系統，已經接上螢幕調整好解析度
+然後有網路連線，不過它還不是我們熟悉的中文介面，系統時區也是西班牙馬德里，
+還有一些我常用的套件也沒有安裝上
+所以在objective 5，我再次細分為以下的幾個任務
+
+　（零）調整MicroSD卡的分割區大小
+　（一）中文環境，包括locale、timezone還有安裝中文輸入法
+　（二）安裝git，然後把sunzi-tools的repo從github上拉下來編譯出bin2fex和fex2bin工具程式
+　（三）偶爾可能還是會寫到Java代碼，所以要把Oracle JDK裝上，順便也裝上Netbeans IDE
+　（四）還有LibreOffice和影像處理程式Gimp也裝上
+　（五）修改CubieTruck的主機名稱 ( hostname )
+
+==============================================================================================
+（零）調整MicroSD卡的分割區大小 - Resize the partition size on my 16GB MicroSD card
+==============================================================================================
+CubieTruck開機之後，進入終端機，然後執行
+aruntu@aruntu:~$ sudo -i
+root@aruntu:~# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/root       3.6G  3.3G  100M  98% /
+devtmpfs        888M  4.0K  888M   1% /dev
+/dev/root       3.6G  3.3G  100M  98% /var/log.hdd
+ramlog-tmpfs    984M   15M  969M   2% /var/log
+none            4.0K     0  4.0K   0% /sys/fs/cgroup
+tmpfs           984M  4.0K  984M   1% /tmp
+none            197M  452K  197M   1% /run
+tmpfs           984M     0  984M   0% /var/tmp
+none            5.0M     0  5.0M   0% /run/lock
+none            984M   72K  984M   1% /run/shm
+none            100M  8.0K  100M   1% /run/user
+
+啊啊啊靠腰這是怎樣，怎麼我的根目錄( / )總共只有3.6G，而且已經用掉98%，現在只剩100M的空間？
+這是因為在我們把aRuntu的Image寫入MicroSD卡之後，我們沒有去調整分割區的大小
+現在請先把CubieTruck關機，在終端機執行關機的指令
+# init 0
+然後把MicroSD記憶卡給取出，插上SD轉卡再插上筆記型電腦
+我懶得再開圖形化的磁碟管理程式了，直接在終端機把分割區變大吧，進入終端機，然後如下操作
+
+anntony@anntony-Lenovo-B590 ~ $ sudo -i
+[sudo] password for anntony: 
+anntony-Lenovo-B590 ~ # df -h
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/sda1       453G   91G  340G   22% /
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+udev            2.8G  4.0K  2.8G    1% /dev
+tmpfs           559M  1.4M  558M    1% /run
+none            5.0M     0  5.0M    0% /run/lock
+none            2.8G   22M  2.8G    1% /run/shm
+none            100M   44K  100M    1% /run/user
+/dev/sdb1       3.5G  3.2G   84M   98% /media/anntony/5f70abf0-69bc-468e-b875-5cf1378b476b
+anntony-Lenovo-B590 ~ # umount /dev/sdb1
+anntony-Lenovo-B590 ~ # df -h
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/sda1       453G   91G  340G   22% /
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+udev            2.8G  4.0K  2.8G    1% /dev
+tmpfs           559M  1.4M  558M    1% /run
+none            5.0M     0  5.0M    0% /run/lock
+none            2.8G   22M  2.8G    1% /run/shm
+none            100M   44K  100M    1% /run/user
+anntony-Lenovo-B590 ~ # fdisk /dev/sdb
+
+命令 (m 以獲得說明)： m
+命令動作
+   a   切換可開機的旗標
+   b   編輯 bsd 磁碟標籤
+   c   切換 DOS 相容性旗標
+   d   刪除分割區
+   l   列出已知分割區類型
+   m   印出這個選單
+   n   加入新的分割區
+   o   建立新的空白 DOS 分割表
+   p   印出分割表
+   q   離開而不需儲存變更
+   s   建立新的空白 Sun 磁碟標籤
+   t   變更分割區系統識別號
+   u   變更顯示/輸入單位
+   v   驗證分割表
+   w   分割表寫入磁碟然後離開
+   x   額外功能 (專家限用)
+
+命令 (m 以獲得說明)： p
+
+Disk /dev/sdb: 15.7 GB, 15720251392 bytes
+67 磁頭，45 磁區/磁軌，10183 磁柱，總計 30703616 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sdb1            2048     7538687     3768320   83  Linux
+
+命令 (m 以獲得說明)： d
+已選分割區 1
+
+命令 (m 以獲得說明)： p
+
+Disk /dev/sdb: 15.7 GB, 15720251392 bytes
+67 磁頭，45 磁區/磁軌，10183 磁柱，總計 30703616 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+
+命令 (m 以獲得說明)： w
+分割表已變更！
+
+呼叫 ioctl() 以重新讀取分割表。
+同步磁碟。
+anntony-Lenovo-B590 ~ # fdisk /dev/sdb
+
+命令 (m 以獲得說明)： p
+
+Disk /dev/sdb: 15.7 GB, 15720251392 bytes
+64 磁頭，32 磁區/磁軌，14992 磁柱，總計 30703616 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+
+命令 (m 以獲得說明)： n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): 
+Using default response p
+分割區編號 (1-4, 預設 1)： 1
+起初 磁區 (2048-30703615, 預設 2048)：   
+使用預設值 2048
+最後 磁區, +磁區 或 +大小{K,M,G} (2048-30703615, 預設 30703615)： 15077374
+
+命令 (m 以獲得說明)： p
+
+Disk /dev/sdb: 15.7 GB, 15720251392 bytes
+64 磁頭，32 磁區/磁軌，14992 磁柱，總計 30703616 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 512 位元組
+I/O 大小 (最小/最佳化)：512 位元組 / 512 位元組
+磁碟識別碼：0x00062524
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sdb1            2048    15077374     7537663+  83  Linux
+
+命令 (m 以獲得說明)： w
+分割表已變更！
+
+呼叫 ioctl() 以重新讀取分割表。
+同步磁碟。
+anntony-Lenovo-B590 ~ # e2fsck -f /dev/sdb1
+e2fsck 1.42.9 (4-Feb-2014)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/dev/sdb1: 177549/237568 files (0.2% non-contiguous), 869590/942079 blocks
+anntony-Lenovo-B590 ~ # resize2fs /dev/sdb1
+resize2fs 1.42.9 (4-Feb-2014)
+Resizing the filesystem on /dev/sdb1 to 1884415 (4k) blocks.
+The filesystem on /dev/sdb1 is now 1884415 blocks long.
+
+anntony-Lenovo-B590 ~ # mkdir /tmp/testsdb1
+anntony-Lenovo-B590 ~ # mount /dev/sdb1 /tmp/testsdb1
+anntony-Lenovo-B590 ~ # df -h
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/sda1       453G   91G  340G   22% /
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+udev            2.8G  4.0K  2.8G    1% /dev
+tmpfs           559M  1.4M  558M    1% /run
+none            5.0M     0  5.0M    0% /run/lock
+none            2.8G   22M  2.8G    1% /run/shm
+none            100M   48K  100M    1% /run/user
+/dev/sdb1       7.1G  3.2G  3.5G   49% /tmp/testsdb1
+anntony-Lenovo-B590 ~ # cd /tmp/testsdb1/
+anntony-Lenovo-B590 testsdb1 # ls
+1.fex                       boot  home        media  proc  sbin                  srv  uEnv.cb2         usr
+aRUNTU_TITAN_EDITION_0.888  dev   lib         mnt    root  script-ct.bin         sys  uEnv.ct          var
+bin                         etc   lost+found  opt    run   script-cubie-A20.bin  tmp  uEnv.ct.default
+anntony-Lenovo-B590 testsdb1 # cd -
+/root
+anntony-Lenovo-B590 ~ # umount /tmp/testsdb1
+anntony-Lenovo-B590 ~ # 
+
+這樣就把MicroSD卡上面的唯一的分割區（裝置代號/dev/sdb1）給變大了
+本來調整前的大小，由df指令告訴我們的，可以看到只有3.5G，然後還用掉了98%
+調整之後裝置代號一樣是/dev/sdb1，分割區大小變成了7.1G，已經用掉的百分比是49%
+上面的終端機指令，先使用fdisk指令把分割區1刪除，然後再重新新建立一個大小約是兩倍大的分割區1
+仔細注意調整前和調整後，開始的磁區都是2048，
+也就是MicroSD卡前面的0-2047個磁區，大小總共是1MB，都是保留給Partition Table使用的 （Booloader也寫在這個範圍內）
+（0-2047共有2048個磁區，每個512 bytes，故2048 X 512bytes = 1048576 bytes = 1024 Kbytes = 1MB）
+然後再執行e2fsck -f /dev/sdb1檢查分割區，檢查完之後再執行resize2fs /dev/sdb1擴充分割區大小
+現在任務（零）調整MicroSD卡的分割區大小已經完成，把記憶卡插回去CubieTruck開機，我們要執行下一個任務
+
+==============================================================================================
+（一）中文環境，包括locale、timezone還有安裝中文輸入法
+==============================================================================================
+
+
