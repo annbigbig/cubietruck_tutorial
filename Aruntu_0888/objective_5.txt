@@ -432,7 +432,23 @@ However, if you do not want to install any additional packages and simply change
 而ntpd是於系統背景裡持續略微修正系統時間的NTP服務
 因為翻譯很累，所以後面的我懶得翻了
 總之如果是一般用戶的工作機，不是用來當服務器的Ubuntu機器，一般裝上ntpdate工具程式，
-然後每次開機的時候讓Ubuntu自動去從npt.ubuntu.com自動去抓時間下來更新，就很夠用了
+然後每次開機的時候讓Ubuntu自動去從ntp.ubuntu.com自動去抓時間下來更新，就很夠用了
 上面還講到當你安裝Ubuntu Desktop版本的時候，ntpdate都是預先安裝好的（但是aRuntu真的沒有，還要我手動去synaptic套件管理員去選上來安裝）
+
+然後我試著執行了一下
+# ntpdate ntp.ubuntu.com
+然後結果會輸出
+ 8 Sep 03:31:48 ntpdate[5134]: adjust time server 91.189.89.199 offset 0.158540 sec
+嗯，真的有去NTP服務器抓時間下來校正
+
+注意前方的提示符是root身分用的#，我是用root身分才可以執行ntpdate去抓NTP服務器上面的時間
+我已經不想去屌到底每一次aRuntu開機的時候是不是真的有去執行一次ntpdate？
+我在想，那乾脆我每一個小時就執行一次ntpdate來校時，這樣不是很妥當嗎？
+於是可以參考這一篇
+
+https://help.ubuntu.com/10.04/serverguide/NTP.html
+
+（我是用ubuntu cron hourly ntpdate四個關鍵字搜出來的）
+
 
 
