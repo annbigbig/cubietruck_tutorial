@@ -345,8 +345,94 @@ https://plus.google.com/photos/117546034720970496255/albums/6055982289683005713/
 結果告訴我Could not install package，羚羊七百卡好哩
 https://plus.google.com/photos/117546034720970496255/albums/6055982289683005713/6056252871898183394?pid=6056252871898183394&oid=117546034720970496255
 
-
 NTP套件待會兒我再開Synaptic套件管理員手動裝上，先處理這裡的事，在「日期及時間設定」對話框按下「關閉」鈕
 https://plus.google.com/photos/117546034720970496255/albums/6055982289683005713/6056254009548582514?pid=6056254009548582514&oid=117546034720970496255
+
+現在已經有中文環境，然後時區也調整到Asia/Taipei了，可是沒有NTP網路校時讓我覺得不是很完美，所以打開Synaptic套件管理員
+https://plus.google.com/photos/117546034720970496255/albums/6056347191996684577/6056347199773141906?pid=6056347199773141906&oid=117546034720970496255
+
+還是要輸入密碼aruntu，輸入完按下「核對」鈕
+https://plus.google.com/photos/117546034720970496255/albums/6056347191996684577/6056348201300798066?pid=6056348201300798066&oid=117546034720970496255
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+在上面的「快速過濾」輸入ntp，然後下面出現了這些套件，選擇ntpdate
+https://plus.google.com/photos/117546034720970496255/albums/6056347191996684577/6056349117466193170?pid=6056349117466193170&oid=117546034720970496255
+
+請把ntpdate套件標記為「安裝」
+https://plus.google.com/photos/117546034720970496255/albums/6056347191996684577/6056362917543003010?pid=6056362917543003010&oid=117546034720970496255
+
+套件管理員會和你說，安裝ntpdate套件還會再安裝這些依賴套件，請按「標記」鈕
+https://plus.google.com/photos/117546034720970496255/albums/6056347191996684577/6056364312447414034?pid=6056364312447414034&oid=117546034720970496255
+
+按下套件管理員上面的「套用」按鈕，準備安裝剛才選取的套件
+https://plus.google.com/photos/117546034720970496255/albums/6056347191996684577/6056365295851076658?pid=6056365295851076658&oid=117546034720970496255
+
+套用以下的變更？是的，按下「套用」
+https://plus.google.com/photos/117546034720970496255/albums/6056347191996684577/6056366246723532946?pid=6056366246723532946&oid=117546034720970496255
+
+安裝中，請稍候一下…
+https://plus.google.com/photos/117546034720970496255/albums/6056347191996684577/6056366910205460066?pid=6056366910205460066&oid=117546034720970496255
+
+安裝完成，可以關閉套件管理員了
+https://plus.google.com/photos/117546034720970496255/albums/6056347191996684577/6056365295851076658?pid=6056365295851076658&oid=117546034720970496255
+
+然後我再打開「偏好設定」-> 「日期及時間設定」
+https://plus.google.com/photos/117546034720970496255/albums/6056347191996684577/6056369796432184722?pid=6056369796432184722&oid=117546034720970496255
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+然後和剛才一樣，按下Unlock鈕，輸入密碼aruntu，我又試著要再把那個「手動」給調整成「與網路伺服器保持同步」的時候
+又出現了「沒有安裝NTP支援」的對話框，我一樣選了「Install NTP Support」
+https://plus.google.com/photos/117546034720970496255/albums/6056347191996684577/6056379209396677954?pid=6056379209396677954&oid=117546034720970496255
+
+然後一樣的跳出來「Could not install package」，然後我一樣按下「關閉」
+https://plus.google.com/photos/117546034720970496255/albums/6056347191996684577/6056380030138663202?pid=6056380030138663202&oid=117546034720970496255
+
+我再一次仔細看了「沒有安裝NTP支援」，也就是前前一張我剛擷取下來的照片，我仔細看了對話框下方的文字寫著
+「請在系統安裝並啟用NTP支援，令您的本地時間伺服器能與網路時間伺服器進行同步。」
+本地時間伺服器？本地時間伺服器？本地時間伺服器？
+所以我在想，我剛才安裝的套件是ntpdate，我有在Synaptic套件管理員裡，看ntpdate套件下面的英文注解
+它是寫著
+client for setting system time from NTP servers
+
+NTP, the Network Time Protocol, is used to keep computer clocks
+accurate by synchronizing them over the Internet or a local network,
+or by following an accurate hardware receiver that interprets GPS,
+DCF-77, NIST or similar time signals.
+
+ntpdate is a simple NTP client that sets a system's clock to match
+the time obtained by communicating with one or more NTP servers.  It
+is not sufficient, however, for maintaining an accurate clock in the
+long run.  ntpdate by itself is useful for occasionally setting the
+time on machines that do not have full-time network access, such as
+laptops.
+
+臭基巴毛我應該是沒裝錯，我裝的是ntp client難道也臭了嗎？
+呃…好像真的錯了，因為我又在Ask Ubuntu找到一篇文章
+
+文章出處：
+http://askubuntu.com/questions/391089/how-to-change-the-time-server-in-ubuntu-12-04-lts-without-installing-the-ntp-p
+
+其中一個重要的回答是
+There are two main ways to set the current time via NTP: ntpdate is a command-line tool that, when run, fetches the current time from an NTP server and sets the system time accordingly. ntpd is the NTP daemon which runs in the background and continuously adjusts the time slightly.
+
+For servers, production environments and such, ntpd is better. However, for normal desktop PCs and end users, ntpdate is perfectly fine. In fact, when you install Ubuntu Desktop, it comes with ntpdate preinstalled, but not ntpd.
+
+When you select "Automatically from the Internet" in your Ubuntu system settings as shown in your screenshot above, what happens is that at each boot Ubuntu will fetch the current time using ntpdate from ntp.ubuntu.com. If you want to change that server, you can edit the file /etc/default/ntpdate. Note that you will have to also set NTPDATE_USE_NTP_CONF to no.
+
+The alternative is to install ntpd (in package ntp), and configure that via /etc/ntp.conf. This is explained here in more detail:
+
+https://help.ubuntu.com/12.10/serverguide/NTP.html
+
+However, if you do not want to install any additional packages and simply change the default server for ntpdate which comes pre-installed with Ubuntu, the first solution is the way to go.
+
+所以看完這個回答，我可以用我拙劣的英文為大家翻譯一下，上面的英文答案說道：
+有兩種透過NTP來設定目前時間的主要方法，ntpdate是從NTP服務器拉時間然後更新系統時間的命令列工具程式，
+而ntpd是於系統背景裡持續略微修正系統時間的NTP服務
+因為翻譯很累，所以後面的我懶得翻了
+總之如果是一般用戶的工作機，不是用來當服務器的Ubuntu機器，一般裝上ntpdate工具程式，
+然後每次開機的時候讓Ubuntu自動去從npt.ubuntu.com自動去抓時間下來更新，就很夠用了
+上面還講到當你安裝Ubuntu Desktop版本的時候，ntpdate都是預先安裝好的（但是aRuntu真的沒有，還要我手動去synaptic套件管理員去選上來安裝）
 
 
