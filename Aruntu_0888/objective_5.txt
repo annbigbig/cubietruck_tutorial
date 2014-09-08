@@ -520,7 +520,7 @@ https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289
 在「快速過濾」的地方輸入「ibus」，然後在左邊的地方選「已安裝」，就會出現這個畫面，aRuntu已經安裝上一堆ibus相關的套件了
 https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056588538043766178?pid=6056588538043766178&oid=117546034720970496255
 
-先別關掉套件管理員，在「偏好設定」-> 「語言支援」
+在「偏好設定」-> 「語言支援」
 https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056590454963782818?pid=6056590454963782818&oid=117546034720970496255
 
 把鍵盤輸入法系統從「預設」改為「IBus」，然後按下「關閉」
@@ -566,9 +566,725 @@ https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/
 順便一提，在終端機安裝deb包的指令是
 # dpkg -i your_deb_file_name.deb
 
+
 弄到想哭，超漫長的過程，aRuntu終於有了繁體中文操作介面，Asia/Taipei時區，網路NTP校時，還有ibus中文輸入
 接下來要來完成下一個任務
 
+==============================================================================================
+（二）安裝git，然後把sunzi-tools的repo從github上拉下來編譯出bin2fex和fex2bin工具程式
+==============================================================================================
+
+一直擷圖超累的，乾脆都用終端機好了，這樣我就直接把終端機的輸出訊息複製貼上就好了，耶～懶鬼萬歲
+aruntu@aruntu:~$ pwd
+/home/aruntu
+aruntu@aruntu:~$ sudo -i
+root@aruntu:~# apt-get install libusb-1.0-0-dev
+正在讀取套件清單... 完成
+正在重建相依關係          
+正在讀取狀態資料... 完成
+下列的額外套件將被安裝：
+  libusb-1.0-doc
+下列【新】套件將會被安裝：
+  libusb-1.0-0-dev libusb-1.0-doc
+升級 0 個，新安裝 2 個，移除 0 個，有 27 個未被升級。
+需要下載 157 kB 的套件檔。
+此操作完成之後，會多佔用 1,312 kB 的磁碟空間。
+是否繼續進行 [Y/n]？y
+下載:1 http://ports.ubuntu.com/ubuntu-ports/ saucy/main libusb-1.0-0-dev armhf 2:1.0.16-3 [50.1 kB]
+下載:2 http://ports.ubuntu.com/ubuntu-ports/ saucy/main libusb-1.0-doc all 2:1.0.16-3 [107 kB]
+取得 157 kB 用了 2秒 (54.2 kB/s)         
+選取了原先未選的套件 libusb-1.0-0-dev:armhf。
+（讀取資料庫 ... 目前共安裝了 161845 個檔案和目錄。）
+解開 libusb-1.0-0-dev:armhf（從 .../libusb-1.0-0-dev_2%3a1.0.16-3_armhf.deb）...
+選取了原先未選的套件 libusb-1.0-doc。
+解開 libusb-1.0-doc（從 .../libusb-1.0-doc_2%3a1.0.16-3_all.deb）...
+執行 doc-base 的觸發程式 ...
+Processing 1 added doc-base file...
+Registering documents with scrollkeeper...
+設定 libusb-1.0-0-dev:armhf (2:1.0.16-3) ...
+設定 libusb-1.0-doc (2:1.0.16-3) ...
+root@aruntu:~# apt-get install git
+正在讀取套件清單... 完成
+正在重建相依關係          
+正在讀取狀態資料... 完成
+git 已經是最新版本了。
+升級 0 個，新安裝 0 個，移除 0 個，有 27 個未被升級。
+root@aruntu:~# git --version
+git version 1.8.3.2
+root@aruntu:~# pwd
+/root
+root@aruntu:~# git clone https://github.com/linux-sunxi/sunxi-tools
+Cloning into 'sunxi-tools'...
+remote: Counting objects: 1066, done.
+remote: Compressing objects: 100% (21/21), done.
+remote: Total 1066 (delta 12), reused 0 (delta 0)
+Receiving objects: 100% (1066/1066), 369.00 KiB | 107.00 KiB/s, done.
+Resolving deltas: 100% (568/568), done.
+Checking connectivity... done
+root@aruntu:~# ls
+Desktop  Documents  Downloads  Music  nano.save  Pictures  Public  sunxi-tools  syslog.2  Templates  Videos
+root@aruntu:~# cd sunxi-tools/
+root@aruntu:~/sunxi-tools# ls
+adb-devprobe.sh  bootinfo.c  fel-copy.c   fel-sdboot.c    include        Makefile         nand-part-a20.h   pio.c         script.c      script_uboot.c
+bin              common.h    fel-gpio     fel-sdboot.lds  jtag-loop.c    meminfo.c        nand-part.c       README        script_fex.c  script_uboot.h
+boot_head.lds    COPYING     fel-pio.c    fexc.c          jtag-loop.lds  nand-common.h    nand-part-main.c  script_bin.c  script_fex.h  usb-boot
+boot_head.S      fel.c       fel-pio.lds  fexc.h          jtag-loop.S    nand-part-a10.h  phoenix_info.c    script_bin.h  script.h
+root@aruntu:~/sunxi-tools# make
+gcc -g -O0 -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L -Iinclude/  -o fexc fexc.c script.c script_uboot.c script_bin.c script_fex.c 
+ln -s fexc bin2fex
+ln -s fexc fex2bin
+gcc -g -O0 -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L -Iinclude/  -o bootinfo bootinfo.c 
+bootinfo.c: In function ‘print_script’:
+bootinfo.c:274:25: warning: unused parameter ‘script’ [-Wunused-parameter]
+ void print_script(void *script)
+                         ^
+gcc -g -O0 -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L -Iinclude/ `pkg-config --cflags libusb-1.0`  -o fel fel.c  `pkg-config --libs libusb-1.0`
+gcc -g -O0 -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L -Iinclude/  -o pio pio.c 
+pio.c: In function ‘do_command’:
+pio.c:316:57: warning: unused parameter ‘argc’ [-Wunused-parameter]
+ static int do_command(char *buf, const char **args, int argc)
+                                                         ^
+gcc -g -O0 -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L -Iinclude/ -c -o nand-part-main.o nand-part-main.c
+gcc -g -O0 -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L -Iinclude/ -c -o nand-part-a10.o nand-part.c -D A10
+gcc -g -O0 -Wall -Wextra -std=c99 -D_POSIX_C_SOURCE=200112L -Iinclude/ -c -o nand-part-a20.o nand-part.c -D A20
+gcc  -o nand-part nand-part-main.o nand-part-a10.o nand-part-a20.o 
+root@aruntu:~/sunxi-tools# ls
+adb-devprobe.sh  bootinfo    fel.c        fel-sdboot.c    fexc.h         Makefile         nand-part-a10.o   nand-part-main.o  script_bin.c  script.h
+bin              bootinfo.c  fel-copy.c   fel-sdboot.lds  include        meminfo.c        nand-part-a20.h   phoenix_info.c    script_bin.h  script_uboot.c
+bin2fex          common.h    fel-gpio     fex2bin         jtag-loop.c    nand-common.h    nand-part-a20.o   pio               script.c      script_uboot.h
+boot_head.lds    COPYING     fel-pio.c    fexc            jtag-loop.lds  nand-part        nand-part.c       pio.c             script_fex.c  usb-boot
+boot_head.S      fel         fel-pio.lds  fexc.c          jtag-loop.S    nand-part-a10.h  nand-part-main.c  README            script_fex.h
+root@aruntu:~/sunxi-tools# 
+
+完成，直接看終端機輸出就知道我作了些什麼，無需解釋
+現在來進行下一個任務
+==============================================================================================
+　（三）偶爾可能還是會寫到Java代碼，所以要把Oracle JDK裝上，順便也裝上Netbeans IDE
+==============================================================================================
+參考了這篇來作JDK的安裝
+http://www.wikihow.com/Install-Oracle-Java-JDK-on-Ubuntu-Linux
+
+首先去Oracle官網抓JDK8的arm版本
+我TM真的被wget和curl指令惹毛了
+只要我在終端機執行
+# wget http://download.oracle.com/otn-pub/java/jdk/8u6-b23/jdk-8u6-linux-arm-vfp-hflt.tar.gz
+那麼抓下來的jdk-8u6-linux-arm-vfp-hflt.tar.gz永遠都只會有5307 Bytes那麼小
+如果我執行
+# curl -O http://download.oracle.com/otn-pub/java/jdk/8u6-b23/jdk-8u6-linux-arm-vfp-hflt.tar.gz
+就會得到
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+那麼下載永遠不會開始，煩死了，我只好直接在aRuntu開瀏覽器去Oracle官網下載
+這樣讓我感覺很不爽很LOW，我真的不知道為什麼這兩個那麼簡單的指令不能使用，我也不想管
+
+記得下載的是JDK8的Arm版本，官網載點如圖
+https://plus.google.com/photos/117546034720970496255/albums/6056347191996684577/6056736695414647666?pid=6056736695414647666&oid=117546034720970496255
+
+進入aRuntu的終端機，開始安裝JDK了
+aruntu@aruntu:~$ sudo -i
+root@aruntu:~# apt-get purge openjdk-\*
+正在讀取套件清單... 完成
+正在重建相依關係          
+正在讀取狀態資料... 完成
+注意，為 openjdk-* regex 選取 openjdk-7-jre
+注意，為 openjdk-* regex 選取 openjdk-6-jre-headless
+注意，為 openjdk-* regex 選取 openjdk-jre
+注意，為 openjdk-* regex 選取 uwsgi-plugin-jvm-openjdk-6
+注意，為 openjdk-* regex 選取 uwsgi-plugin-jvm-openjdk-7
+注意，為 openjdk-* regex 選取 openjdk-7
+注意，為 openjdk-* regex 選取 openjdk-7-doc
+注意，為 openjdk-* regex 選取 openjdk-7-jre-lib
+注意，為 openjdk-* regex 選取 openjdk-7-jre-headless
+注意，為 openjdk-* regex 選取 openjdk-7-demo
+注意，為 openjdk-* regex 選取 openjdk-7-source
+注意，為 openjdk-* regex 選取 openjdk-6-demo
+注意，為 openjdk-* regex 選取 uwsgi-plugin-jwsgi-openjdk-6
+注意，為 openjdk-* regex 選取 uwsgi-plugin-jwsgi-openjdk-7
+注意，為 openjdk-* regex 選取 openjdk-6-jdk
+注意，為 openjdk-* regex 選取 openjdk-7-jre-zero
+注意，為 openjdk-* regex 選取 openjdk-6-jre-zero
+注意，為 openjdk-* regex 選取 openjdk-6-dbg
+注意，為 openjdk-* regex 選取 openjdk-7-jdk
+注意，為 openjdk-* regex 選取 openjdk-6-jre-lib
+注意，為 openjdk-* regex 選取 openjdk-6-source
+注意，為 openjdk-* regex 選取 openjdk-6-jre
+注意，為 openjdk-* regex 選取 openjdk-7-dbg
+注意，為 openjdk-* regex 選取 openjdk-6-doc
+注意，選取 openjdk-7-jre-headless 而非 openjdk-7-jre-zero
+Package 'openjdk-7' is not installed, so not removed
+注意，選取 openjdk-6-jre-headless 而非 openjdk-6-jre-zero
+Package 'openjdk-jre' is not installed, so not removed
+Package 'uwsgi-plugin-jvm-openjdk-6' is not installed, so not removed
+Package 'uwsgi-plugin-jvm-openjdk-7' is not installed, so not removed
+Package 'uwsgi-plugin-jwsgi-openjdk-6' is not installed, so not removed
+Package 'uwsgi-plugin-jwsgi-openjdk-7' is not installed, so not removed
+Package 'openjdk-7-dbg' is not installed, so not removed
+Package 'openjdk-7-demo' is not installed, so not removed
+Package 'openjdk-7-doc' is not installed, so not removed
+Package 'openjdk-7-jdk' is not installed, so not removed
+Package 'openjdk-7-jre-lib' is not installed, so not removed
+Package 'openjdk-7-source' is not installed, so not removed
+Package 'openjdk-6-dbg' is not installed, so not removed
+Package 'openjdk-6-demo' is not installed, so not removed
+Package 'openjdk-6-doc' is not installed, so not removed
+Package 'openjdk-6-jdk' is not installed, so not removed
+Package 'openjdk-6-jre' is not installed, so not removed
+Package 'openjdk-6-jre-headless' is not installed, so not removed
+Package 'openjdk-6-jre-lib' is not installed, so not removed
+Package 'openjdk-6-source' is not installed, so not removed
+下列套件將會被【移除】：
+  ca-certificates-java* default-jre* default-jre-headless* icedtea-7-jre-jamvm* libatk-wrapper-java* libatk-wrapper-java-jni* openjdk-7-jre*
+  openjdk-7-jre-headless*
+升級 0 個，新安裝 0 個，移除 8 個，有 27 個未被升級。
+此操作完成之後，會空出 48.2 MB 的磁碟空間。
+是否繼續進行 [Y/n]？y
+（讀取資料庫 ... 目前共安裝了 161934 個檔案和目錄。）
+移除 default-jre ...
+移除 icedtea-7-jre-jamvm:armhf ...
+移除 default-jre-headless ...
+移除 libatk-wrapper-java-jni:armhf ...
+清除 libatk-wrapper-java-jni:armhf 的設定檔 ...
+移除 ca-certificates-java ...
+清除 ca-certificates-java 的設定檔 ...
+移除 libatk-wrapper-java ...
+移除 openjdk-7-jre:armhf ...
+移除 openjdk-7-jre-headless:armhf ...
+update-alternatives: 警告: 找不到 java 連結群組的替換項目 /usr/local/jdk/bin/java 的替換項目；由替換清單中移除
+清除 openjdk-7-jre-headless:armhf 的設定檔 ...
+執行 libc-bin 的觸發程式 ...
+執行 ca-certificates 的觸發程式 ...
+Updating certificates in /etc/ssl/certs... 0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d....done.
+執行 bamfdaemon 的觸發程式 ...
+Rebuilding /usr/share/applications/bamf-2.index...
+執行 gnome-menus 的觸發程式 ...
+執行 desktop-file-utils 的觸發程式 ...
+執行 mime-support 的觸發程式 ...
+執行 hicolor-icon-theme 的觸發程式 ...
+root@aruntu:~# cp /home/aruntu/Downloads/jdk-8u6-linux-arm-vfp-hflt.tar.gz /usr/local
+root@aruntu:~# cd /uar/local
+-bash: cd: /uar/local: 沒有此一檔案或目錄
+root@aruntu:~# cd /usr/local
+root@aruntu:/usr/local# ls
+bin  etc  games  include  jdk-8u6-linux-arm-vfp-hflt.tar.gz  lib  man  sbin  share  src
+root@aruntu:/usr/local# tar zxvf jdk-8u6-linux-arm-vfp-hflt.tar.gz 
+jdk1.8.0_06/COPYRIGHT
+jdk1.8.0_06/LICENSE
+jdk1.8.0_06/README.html
+jdk1.8.0_06/THIRDPARTYLICENSEREADME-JAVAFX.txt
+jdk1.8.0_06/THIRDPARTYLICENSEREADME.txt
+jdk1.8.0_06/bin/
+jdk1.8.0_06/bin/javah
+jdk1.8.0_06/bin/appletviewer
+jdk1.8.0_06/bin/extcheck
+jdk1.8.0_06/bin/jps
+jdk1.8.0_06/bin/wsimport
+jdk1.8.0_06/bin/unpack200
+jdk1.8.0_06/bin/jarsigner
+jdk1.8.0_06/bin/jdb
+jdk1.8.0_06/bin/policytool
+jdk1.8.0_06/bin/pack200
+jdk1.8.0_06/bin/xjc
+jdk1.8.0_06/bin/native2ascii
+jdk1.8.0_06/bin/orbd
+jdk1.8.0_06/bin/jdeps
+jdk1.8.0_06/bin/jinfo
+jdk1.8.0_06/bin/rmic
+jdk1.8.0_06/bin/idlj
+jdk1.8.0_06/bin/tnameserv
+jdk1.8.0_06/bin/rmiregistry
+jdk1.8.0_06/bin/java-rmi.cgi
+jdk1.8.0_06/bin/rmid
+jdk1.8.0_06/bin/jhat
+jdk1.8.0_06/bin/keytool
+jdk1.8.0_06/bin/jstack
+jdk1.8.0_06/bin/javap
+jdk1.8.0_06/bin/wsgen
+jdk1.8.0_06/bin/java
+jdk1.8.0_06/bin/jjs
+jdk1.8.0_06/bin/serialver
+jdk1.8.0_06/bin/jstatd
+jdk1.8.0_06/bin/jconsole
+jdk1.8.0_06/bin/javac
+jdk1.8.0_06/bin/schemagen
+jdk1.8.0_06/bin/servertool
+jdk1.8.0_06/bin/jsadebugd
+jdk1.8.0_06/bin/jar
+jdk1.8.0_06/bin/jmap
+jdk1.8.0_06/bin/javadoc
+jdk1.8.0_06/bin/jrunscript
+jdk1.8.0_06/bin/jcmd
+jdk1.8.0_06/bin/jstat
+jdk1.8.0_06/db/
+jdk1.8.0_06/db/RELEASE-NOTES.html
+jdk1.8.0_06/db/3RDPARTY
+jdk1.8.0_06/db/README-JDK.html
+jdk1.8.0_06/db/LICENSE
+jdk1.8.0_06/db/lib/
+jdk1.8.0_06/db/lib/derbyLocale_zh_CN.jar
+jdk1.8.0_06/db/lib/derbyLocale_it.jar
+jdk1.8.0_06/db/lib/derbyLocale_zh_TW.jar
+jdk1.8.0_06/db/lib/derbynet.jar
+jdk1.8.0_06/db/lib/derbyLocale_hu.jar
+jdk1.8.0_06/db/lib/derbyLocale_es.jar
+jdk1.8.0_06/db/lib/derbyLocale_fr.jar
+jdk1.8.0_06/db/lib/derby.jar
+jdk1.8.0_06/db/lib/derbyLocale_cs.jar
+jdk1.8.0_06/db/lib/derbyLocale_pl.jar
+jdk1.8.0_06/db/lib/derbyLocale_ja_JP.jar
+jdk1.8.0_06/db/lib/derbyclient.jar
+jdk1.8.0_06/db/lib/derbytools.jar
+jdk1.8.0_06/db/lib/derbyLocale_ru.jar
+jdk1.8.0_06/db/lib/derbyrun.jar
+jdk1.8.0_06/db/lib/derbyLocale_de_DE.jar
+jdk1.8.0_06/db/lib/derbyLocale_pt_BR.jar
+jdk1.8.0_06/db/lib/derby.war
+jdk1.8.0_06/db/lib/derbyLocale_ko_KR.jar
+jdk1.8.0_06/db/NOTICE
+jdk1.8.0_06/db/bin/
+jdk1.8.0_06/db/bin/ij.bat
+jdk1.8.0_06/db/bin/sysinfo.bat
+jdk1.8.0_06/db/bin/sysinfo
+jdk1.8.0_06/db/bin/setNetworkClientCP.bat
+jdk1.8.0_06/db/bin/startNetworkServer.bat
+jdk1.8.0_06/db/bin/setNetworkClientCP
+jdk1.8.0_06/db/bin/setNetworkServerCP.bat
+jdk1.8.0_06/db/bin/setEmbeddedCP.bat
+jdk1.8.0_06/db/bin/ij
+jdk1.8.0_06/db/bin/dblook
+jdk1.8.0_06/db/bin/NetworkServerControl.bat
+jdk1.8.0_06/db/bin/startNetworkServer
+jdk1.8.0_06/db/bin/setEmbeddedCP
+jdk1.8.0_06/db/bin/derby_common.bat
+jdk1.8.0_06/db/bin/NetworkServerControl
+jdk1.8.0_06/db/bin/dblook.bat
+jdk1.8.0_06/db/bin/stopNetworkServer.bat
+jdk1.8.0_06/db/bin/setNetworkServerCP
+jdk1.8.0_06/db/bin/stopNetworkServer
+jdk1.8.0_06/include/
+jdk1.8.0_06/include/jvmti.h
+jdk1.8.0_06/include/jdwpTransport.h
+jdk1.8.0_06/include/linux/
+jdk1.8.0_06/include/linux/jni_md.h
+jdk1.8.0_06/include/linux/jawt_md.h
+jdk1.8.0_06/include/jvmticmlr.h
+jdk1.8.0_06/include/jawt.h
+jdk1.8.0_06/include/jni.h
+jdk1.8.0_06/include/classfile_constants.h
+jdk1.8.0_06/jre/
+jdk1.8.0_06/jre/THIRDPARTYLICENSEREADME.txt
+jdk1.8.0_06/jre/README
+jdk1.8.0_06/jre/COPYRIGHT
+jdk1.8.0_06/jre/LICENSE
+jdk1.8.0_06/jre/bin/
+jdk1.8.0_06/jre/bin/keytool
+jdk1.8.0_06/jre/bin/policytool
+jdk1.8.0_06/jre/bin/pack200
+jdk1.8.0_06/jre/bin/java
+jdk1.8.0_06/jre/bin/jjs
+jdk1.8.0_06/jre/bin/unpack200
+jdk1.8.0_06/jre/bin/rmid
+jdk1.8.0_06/jre/bin/orbd
+jdk1.8.0_06/jre/bin/servertool
+jdk1.8.0_06/jre/bin/tnameserv
+jdk1.8.0_06/jre/bin/rmiregistry
+jdk1.8.0_06/jre/THIRDPARTYLICENSEREADME-JAVAFX.txt
+jdk1.8.0_06/jre/Welcome.html
+jdk1.8.0_06/jre/lib/
+jdk1.8.0_06/jre/lib/net.properties
+jdk1.8.0_06/jre/lib/fontconfig.SuSE.11.properties.src
+jdk1.8.0_06/jre/lib/fontconfig.SuSE.10.bfc
+jdk1.8.0_06/jre/lib/psfontj2d.properties
+jdk1.8.0_06/jre/lib/classlist
+jdk1.8.0_06/jre/lib/jce.jar
+jdk1.8.0_06/jre/lib/charsets.jar
+jdk1.8.0_06/jre/lib/ext/
+jdk1.8.0_06/jre/lib/ext/sunjce_provider.jar
+jdk1.8.0_06/jre/lib/ext/sunpkcs11.jar
+jdk1.8.0_06/jre/lib/ext/cldrdata.jar
+jdk1.8.0_06/jre/lib/ext/jfxrt-controls.jar
+jdk1.8.0_06/jre/lib/ext/zipfs.jar
+jdk1.8.0_06/jre/lib/ext/jfxrt-graphics.jar
+jdk1.8.0_06/jre/lib/ext/dnsns.jar
+jdk1.8.0_06/jre/lib/ext/nashorn.jar
+jdk1.8.0_06/jre/lib/ext/localedata.jar
+jdk1.8.0_06/jre/lib/ext/sunec.jar
+jdk1.8.0_06/jre/lib/ext/meta-index
+jdk1.8.0_06/jre/lib/jfr/
+jdk1.8.0_06/jre/lib/jfr/default.jfc
+jdk1.8.0_06/jre/lib/jfr/profile.jfc
+jdk1.8.0_06/jre/lib/javafx.properties
+jdk1.8.0_06/jre/lib/security/
+jdk1.8.0_06/jre/lib/security/java.policy
+jdk1.8.0_06/jre/lib/security/blacklisted.certs
+jdk1.8.0_06/jre/lib/security/blacklist
+jdk1.8.0_06/jre/lib/security/US_export_policy.jar
+jdk1.8.0_06/jre/lib/security/local_policy.jar
+jdk1.8.0_06/jre/lib/security/trusted.libraries
+jdk1.8.0_06/jre/lib/security/cacerts
+jdk1.8.0_06/jre/lib/security/java.security
+jdk1.8.0_06/jre/lib/fontconfig.bfc
+jdk1.8.0_06/jre/lib/cmm/
+jdk1.8.0_06/jre/lib/cmm/LINEAR_RGB.pf
+jdk1.8.0_06/jre/lib/cmm/CIEXYZ.pf
+jdk1.8.0_06/jre/lib/cmm/GRAY.pf
+jdk1.8.0_06/jre/lib/cmm/PYCC.pf
+jdk1.8.0_06/jre/lib/cmm/sRGB.pf
+jdk1.8.0_06/jre/lib/fontconfig.RedHat.5.properties.src
+jdk1.8.0_06/jre/lib/resources.jar
+jdk1.8.0_06/jre/lib/psfont.properties.ja
+jdk1.8.0_06/jre/lib/fontconfig.SuSE.11.bfc
+jdk1.8.0_06/jre/lib/flavormap.properties
+jdk1.8.0_06/jre/lib/hijrah-config-umalqura.properties
+jdk1.8.0_06/jre/lib/images/
+jdk1.8.0_06/jre/lib/images/cursors/
+jdk1.8.0_06/jre/lib/images/cursors/motif_MoveDrop32x32.gif
+jdk1.8.0_06/jre/lib/images/cursors/motif_CopyDrop32x32.gif
+jdk1.8.0_06/jre/lib/images/cursors/motif_LinkNoDrop32x32.gif
+jdk1.8.0_06/jre/lib/images/cursors/invalid32x32.gif
+jdk1.8.0_06/jre/lib/images/cursors/cursors.properties
+jdk1.8.0_06/jre/lib/images/cursors/motif_LinkDrop32x32.gif
+jdk1.8.0_06/jre/lib/images/cursors/motif_CopyNoDrop32x32.gif
+jdk1.8.0_06/jre/lib/images/cursors/motif_MoveNoDrop32x32.gif
+jdk1.8.0_06/jre/lib/arm/
+jdk1.8.0_06/jre/lib/arm/libverify.so
+jdk1.8.0_06/jre/lib/arm/client/
+jdk1.8.0_06/jre/lib/arm/client/libjvm.so
+jdk1.8.0_06/jre/lib/arm/client/libjsig.so
+jdk1.8.0_06/jre/lib/arm/client/Xusage.txt
+jdk1.8.0_06/jre/lib/arm/libjdwp.so
+jdk1.8.0_06/jre/lib/arm/libjawt.so
+jdk1.8.0_06/jre/lib/arm/libj2pkcs11.so
+jdk1.8.0_06/jre/lib/arm/liblcms.so
+jdk1.8.0_06/jre/lib/arm/libjaas_unix.so
+jdk1.8.0_06/jre/lib/arm/libjava_crw_demo.so
+jdk1.8.0_06/jre/lib/arm/libprism_es2_eglfb.so
+jdk1.8.0_06/jre/lib/arm/libawt_headless.so
+jdk1.8.0_06/jre/lib/arm/libsaproc.so
+jdk1.8.0_06/jre/lib/arm/server/
+jdk1.8.0_06/jre/lib/arm/server/libjvm.so
+jdk1.8.0_06/jre/lib/arm/server/libjsig.so
+jdk1.8.0_06/jre/lib/arm/server/Xusage.txt
+jdk1.8.0_06/jre/lib/arm/libjavafx_font.so
+jdk1.8.0_06/jre/lib/arm/libprism_common.so
+jdk1.8.0_06/jre/lib/arm/libinstrument.so
+jdk1.8.0_06/jre/lib/arm/libjpeg.so
+jdk1.8.0_06/jre/lib/arm/libzip.so
+jdk1.8.0_06/jre/lib/arm/libsunec.so
+jdk1.8.0_06/jre/lib/arm/libawt.so
+jdk1.8.0_06/jre/lib/arm/libjsig.so
+jdk1.8.0_06/jre/lib/arm/libunpack.so
+jdk1.8.0_06/jre/lib/arm/libsctp.so
+jdk1.8.0_06/jre/lib/arm/libawt_xawt.so
+jdk1.8.0_06/jre/lib/arm/libdt_socket.so
+jdk1.8.0_06/jre/lib/arm/libjfr.so
+jdk1.8.0_06/jre/lib/arm/libjsoundalsa.so
+jdk1.8.0_06/jre/lib/arm/jli/
+jdk1.8.0_06/jre/lib/arm/jli/libjli.so
+jdk1.8.0_06/jre/lib/arm/libmanagement.so
+jdk1.8.0_06/jre/lib/arm/libjava.so
+jdk1.8.0_06/jre/lib/arm/libglass_lens_dfb.so
+jdk1.8.0_06/jre/lib/arm/libjsound.so
+jdk1.8.0_06/jre/lib/arm/libprism_sw.so
+jdk1.8.0_06/jre/lib/arm/libjavafx_font_t2k.so
+jdk1.8.0_06/jre/lib/arm/libglass.so
+jdk1.8.0_06/jre/lib/arm/libjavafx_iio.so
+jdk1.8.0_06/jre/lib/arm/libfontmanager.so
+jdk1.8.0_06/jre/lib/arm/libnpt.so
+jdk1.8.0_06/jre/lib/arm/jvm.cfg
+jdk1.8.0_06/jre/lib/arm/libdcpr.so
+jdk1.8.0_06/jre/lib/arm/liblens_porting.so
+jdk1.8.0_06/jre/lib/arm/libnet.so
+jdk1.8.0_06/jre/lib/arm/libhprof.so
+jdk1.8.0_06/jre/lib/arm/libattach.so
+jdk1.8.0_06/jre/lib/arm/libj2gss.so
+jdk1.8.0_06/jre/lib/arm/libjsdt.so
+jdk1.8.0_06/jre/lib/arm/libnio.so
+jdk1.8.0_06/jre/lib/arm/libmlib_image.so
+jdk1.8.0_06/jre/lib/arm/libglass_lens_eglfb.so
+jdk1.8.0_06/jre/lib/arm/libsplashscreen.so
+jdk1.8.0_06/jre/lib/arm/libkcms.so
+jdk1.8.0_06/jre/lib/arm/libj2pcsc.so
+jdk1.8.0_06/jre/lib/arm/libt2k.so
+jdk1.8.0_06/jre/lib/javafx.platform.properties
+jdk1.8.0_06/jre/lib/fontconfig.RedHat.6.bfc
+jdk1.8.0_06/jre/lib/jvm.hprof.txt
+jdk1.8.0_06/jre/lib/applet/
+jdk1.8.0_06/jre/lib/sound.properties
+jdk1.8.0_06/jre/lib/rt.jar
+jdk1.8.0_06/jre/lib/fonts/
+jdk1.8.0_06/jre/lib/fonts/LucidaTypewriterBold.ttf
+jdk1.8.0_06/jre/lib/fonts/LucidaBrightDemiItalic.ttf
+jdk1.8.0_06/jre/lib/fonts/fonts.dir
+jdk1.8.0_06/jre/lib/fonts/LucidaSansDemiBold.ttf
+jdk1.8.0_06/jre/lib/fonts/LucidaSansRegular.ttf
+jdk1.8.0_06/jre/lib/fonts/LucidaBrightDemiBold.ttf
+jdk1.8.0_06/jre/lib/fonts/LucidaBrightItalic.ttf
+jdk1.8.0_06/jre/lib/fonts/LucidaBrightRegular.ttf
+jdk1.8.0_06/jre/lib/fonts/LucidaTypewriterRegular.ttf
+jdk1.8.0_06/jre/lib/fontconfig.RedHat.6.properties.src
+jdk1.8.0_06/jre/lib/logging.properties
+jdk1.8.0_06/jre/lib/currency.data
+jdk1.8.0_06/jre/lib/fontconfig.RedHat.5.bfc
+jdk1.8.0_06/jre/lib/management-agent.jar
+jdk1.8.0_06/jre/lib/management/
+jdk1.8.0_06/jre/lib/management/management.properties
+jdk1.8.0_06/jre/lib/management/jmxremote.password.template
+jdk1.8.0_06/jre/lib/management/jmxremote.access
+jdk1.8.0_06/jre/lib/management/snmp.acl.template
+jdk1.8.0_06/jre/lib/fontconfig.Turbo.properties.src
+jdk1.8.0_06/jre/lib/fontconfig.Turbo.bfc
+jdk1.8.0_06/jre/lib/tzdb.dat
+jdk1.8.0_06/jre/lib/jexec
+jdk1.8.0_06/jre/lib/jsse.jar
+jdk1.8.0_06/jre/lib/fontconfig.properties.src
+jdk1.8.0_06/jre/lib/jfr.jar
+jdk1.8.0_06/jre/lib/content-types.properties
+jdk1.8.0_06/jre/lib/fontconfig.SuSE.10.properties.src
+jdk1.8.0_06/jre/lib/meta-index
+jdk1.8.0_06/jre/lib/calendars.properties
+jdk1.8.0_06/jre/lib/oblique-fonts/
+jdk1.8.0_06/jre/lib/oblique-fonts/fonts.dir
+jdk1.8.0_06/jre/lib/oblique-fonts/LucidaSansDemiOblique.ttf
+jdk1.8.0_06/jre/lib/oblique-fonts/LucidaSansOblique.ttf
+jdk1.8.0_06/jre/lib/oblique-fonts/LucidaTypewriterOblique.ttf
+jdk1.8.0_06/jre/lib/oblique-fonts/LucidaTypewriterBoldOblique.ttf
+jdk1.8.0_06/lib/
+jdk1.8.0_06/lib/jconsole.jar
+jdk1.8.0_06/lib/orb.idl
+jdk1.8.0_06/lib/jexec
+jdk1.8.0_06/lib/sa-jdi.jar
+jdk1.8.0_06/lib/dt.jar
+jdk1.8.0_06/lib/arm/
+jdk1.8.0_06/lib/arm/jli/
+jdk1.8.0_06/lib/arm/jli/libjli.so
+jdk1.8.0_06/lib/arm/libjawt.so
+jdk1.8.0_06/lib/ir.idl
+jdk1.8.0_06/lib/ct.sym
+jdk1.8.0_06/lib/tools.jar
+jdk1.8.0_06/man/
+jdk1.8.0_06/man/man1/
+jdk1.8.0_06/man/man1/javap.1
+jdk1.8.0_06/man/man1/unpack200.1
+jdk1.8.0_06/man/man1/extcheck.1
+jdk1.8.0_06/man/man1/xjc.1
+jdk1.8.0_06/man/man1/jar.1
+jdk1.8.0_06/man/man1/jdeps.1
+jdk1.8.0_06/man/man1/rmic.1
+jdk1.8.0_06/man/man1/jmap.1
+jdk1.8.0_06/man/man1/jconsole.1
+jdk1.8.0_06/man/man1/jrunscript.1
+jdk1.8.0_06/man/man1/serialver.1
+jdk1.8.0_06/man/man1/jps.1
+jdk1.8.0_06/man/man1/appletviewer.1
+jdk1.8.0_06/man/man1/jmc.1
+jdk1.8.0_06/man/man1/jstack.1
+jdk1.8.0_06/man/man1/javadoc.1
+jdk1.8.0_06/man/man1/keytool.1
+jdk1.8.0_06/man/man1/policytool.1
+jdk1.8.0_06/man/man1/pack200.1
+jdk1.8.0_06/man/man1/wsimport.1
+jdk1.8.0_06/man/man1/java.1
+jdk1.8.0_06/man/man1/jhat.1
+jdk1.8.0_06/man/man1/jinfo.1
+jdk1.8.0_06/man/man1/jcmd.1
+jdk1.8.0_06/man/man1/rmid.1
+jdk1.8.0_06/man/man1/javac.1
+jdk1.8.0_06/man/man1/wsgen.1
+jdk1.8.0_06/man/man1/jdb.1
+jdk1.8.0_06/man/man1/jstatd.1
+jdk1.8.0_06/man/man1/tnameserv.1
+jdk1.8.0_06/man/man1/jarsigner.1
+jdk1.8.0_06/man/man1/orbd.1
+jdk1.8.0_06/man/man1/servertool.1
+jdk1.8.0_06/man/man1/javah.1
+jdk1.8.0_06/man/man1/idlj.1
+jdk1.8.0_06/man/man1/schemagen.1
+jdk1.8.0_06/man/man1/javaws.1
+jdk1.8.0_06/man/man1/jjs.1
+jdk1.8.0_06/man/man1/jstat.1
+jdk1.8.0_06/man/man1/native2ascii.1
+jdk1.8.0_06/man/man1/jsadebugd.1
+jdk1.8.0_06/man/man1/jvisualvm.1
+jdk1.8.0_06/man/man1/rmiregistry.1
+jdk1.8.0_06/man/ja
+jdk1.8.0_06/man/ja_JP.UTF-8/
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/pack200.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jstack.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jmc.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/native2ascii.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/rmid.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jcmd.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/servertool.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jstat.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jps.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/tnameserv.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jarsigner.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/orbd.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/keytool.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/javadoc.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/xjc.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/schemagen.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jinfo.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/wsgen.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/javac.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/idlj.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jvisualvm.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jsadebugd.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jar.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/javah.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/unpack200.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jjs.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/appletviewer.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/javaws.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jrunscript.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jmap.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/rmic.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/wsimport.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/extcheck.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/policytool.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jstatd.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/javap.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jdb.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/rmiregistry.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/serialver.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jdeps.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jconsole.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/jhat.1
+jdk1.8.0_06/man/ja_JP.UTF-8/man1/java.1
+jdk1.8.0_06/release
+jdk1.8.0_06/src.zip
+root@aruntu:/usr/local# ls
+bin  etc  games  include  jdk1.8.0_06  jdk-8u6-linux-arm-vfp-hflt.tar.gz  lib  man  sbin  share  src
+root@aruntu:/usr/local# ln -s jdk1.8.0_06 jdk
+root@aruntu:/usr/local# ls -al
+總計 85872
+drwxr-xr-x 11 root root     4096  9月  9 00:57 .
+drwxr-xr-x 10 root root     4096 10月 16  2013 ..
+drwxr-xr-x  2 root root     4096 10月 16  2013 bin
+drwxr-xr-x  2 root root     4096 10月 16  2013 etc
+drwxr-xr-x  2 root root     4096 10月 16  2013 games
+drwxr-xr-x  4 root root     4096  6月 10 22:18 include
+lrwxrwxrwx  1 root root       11  9月  9 00:57 jdk -> jdk1.8.0_06
+drwxr-xr-x  8 root root     4096  9月  9 00:55 jdk1.8.0_06
+-rw-r--r--  1 root root 87885180  9月  9 00:54 jdk-8u6-linux-arm-vfp-hflt.tar.gz
+drwxr-xr-x  5 root root     4096  6月 30 05:27 lib
+lrwxrwxrwx  1 root root        9 10月 16  2013 man -> share/man
+drwxr-xr-x  2 root root     4096 10月 16  2013 sbin
+drwxr-xr-x  7 root root     4096  6月 10 21:58 share
+drwxr-xr-x  2 root root     4096 10月 16  2013 src
+root@aruntu:/usr/local# rm jdk-8u6-linux-arm-vfp-hflt.tar.gz 
+
+把這4行加到/etc/profile的最後面
+JAVA_HOME=/usr/local/jdk
+PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
+export JAVA_HOME
+export PATH
+
+繼續回到終端機
+root@aruntu:/usr/local# update-alternatives --install "/usr/bin/java" "java" "/usr/local/jdk/bin/java" 1
+update-alternatives: 以 /usr/local/jdk/bin/java 提供 自動模式 中的 /usr/bin/java (java)
+root@aruntu:/usr/local# update-alternatives --install "/usr/bin/javac" "javac" "/usr/local/jdk/bin/javac" 1
+root@aruntu:/usr/local# update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/local/jdk/bin/javaws" 1
+update-alternatives: 錯誤: 找不到替代路徑 /usr/local/jdk/bin/javaws
+root@aruntu:/usr/local# update-alternatives --set java /usr/local/jdk/bin/java
+root@aruntu:/usr/local# update-alternatives --set javac /usr/local/jdk/bin/javac
+root@aruntu:/usr/local# update-alternatives --set javaws /usr/local/jdk/bin/javaws
+update-alternatives: 錯誤: 沒有 javaws 的替換檔
+root@aruntu:/usr/local# source /etc/profile
+root@aruntu:/usr/local# which java
+/usr/bin/java
+root@aruntu:/usr/local# java -version
+java version "1.8.0_06"
+Java(TM) SE Runtime Environment (build 1.8.0_06-b23)
+Java HotSpot(TM) Client VM (build 25.6-b23, mixed mode)
+root@aruntu:/usr/local# javac -version
+javac 1.8.0_06
 
 
+這樣就安裝好JDK8了，不過有一點我要抱怨的是
+在上面我已經發現，JDK8沒有javaws（雖然我不知道這是什麼工具程式）
+還有我原本期待會和32bit或64bit的JDK一樣
+會有一個libnpjp2.so檔案在這樣的地方
+/usr/local/jdk/jre/lib/arm/libnpjp2.so
+這樣我就可以執行
+ln -s <JAVA_HOME>/lib/arm/libnpjp2.so <MOZILLA_DIR>/plugins/libnpjp2.so
+或是
+ln -s <JAVA_HOME>/lib/arm/libnpjp2.so /opt/google/chrome/plugins/libnpjp2.so
+這好像是我的瀏覽器的Java Plugin
+可是JDK8沒有、沒有、就是沒有
+
+好吧既然我上面的JDK8都用這樣子安裝了
+我再去下載JDK7
+那麼要切換JDK8和JDK7的時候怎麼辦呢？
+就把這個
+/usr/local/jdk
+給刪除掉
+它是一個symbolic link
+然後再指向你想要起作用的JDK版本就好了
+實際在JDK8到JDK7之間切換的指令我待會兒會寫上
+我們先再去Oracle官網下載JDK7
+和剛才下載JDK8的方法差不多，我不再詳述了
+下載完之後請進終端機
+一樣把下載來的jdk-7u60-linux-arm-vfp-hflt.tar.gz
+解壓縮在
+/usr/local
+
+接著在終端機
+root@aruntu:/usr/local# ls -al
+總計 48
+drwxr-xr-x 12 root root 4096  9月  9 01:29 .
+drwxr-xr-x 10 root root 4096 10月 16  2013 ..
+drwxr-xr-x  2 root root 4096 10月 16  2013 bin
+drwxr-xr-x  2 root root 4096 10月 16  2013 etc
+drwxr-xr-x  2 root root 4096 10月 16  2013 games
+drwxr-xr-x  4 root root 4096  6月 10 22:18 include
+lrwxrwxrwx  1 root root   11  9月  9 00:57 jdk -> jdk1.8.0_06
+drwxr-xr-x  8 uucp  143 4096  5月  8 05:37 jdk1.7.0_60
+drwxr-xr-x  8 root root 4096  9月  9 00:55 jdk1.8.0_06
+drwxr-xr-x  5 root root 4096  6月 30 05:27 lib
+lrwxrwxrwx  1 root root    9 10月 16  2013 man -> share/man
+drwxr-xr-x  2 root root 4096 10月 16  2013 sbin
+drwxr-xr-x  7 root root 4096  6月 10 21:58 share
+drwxr-xr-x  2 root root 4096 10月 16  2013 src
+
+你可以看到，現在jdk這個symbolic link是指向jdk1.8.0_06
+那麼如果我這樣作
+
+root@aruntu:/usr/local# rm jdk
+root@aruntu:/usr/local# ln -s jdk1.7.0_60 jdk
+root@aruntu:/usr/local# ls -al
+總計 48
+drwxr-xr-x 12 root root 4096  9月  9 01:32 .
+drwxr-xr-x 10 root root 4096 10月 16  2013 ..
+drwxr-xr-x  2 root root 4096 10月 16  2013 bin
+drwxr-xr-x  2 root root 4096 10月 16  2013 etc
+drwxr-xr-x  2 root root 4096 10月 16  2013 games
+drwxr-xr-x  4 root root 4096  6月 10 22:18 include
+lrwxrwxrwx  1 root root   11  9月  9 01:32 jdk -> jdk1.7.0_60
+drwxr-xr-x  8 uucp  143 4096  5月  8 05:37 jdk1.7.0_60
+drwxr-xr-x  8 root root 4096  9月  9 00:55 jdk1.8.0_06
+drwxr-xr-x  5 root root 4096  6月 30 05:27 lib
+lrwxrwxrwx  1 root root    9 10月 16  2013 man -> share/man
+drwxr-xr-x  2 root root 4096 10月 16  2013 sbin
+drwxr-xr-x  7 root root 4096  6月 10 21:58 share
+drwxr-xr-x  2 root root 4096 10月 16  2013 src
+root@aruntu:/usr/local# java -version
+java version "1.7.0_60"
+Java(TM) SE Runtime Environment (build 1.7.0_60-b19)
+Java HotSpot(TM) Client VM (build 24.60-b09, mixed mode)
+root@aruntu:/usr/local# javac -version
+javac 1.7.0_60
+
+哦哦太方便了
+我如果要從JDK8切到JDK7，或是反過來從JDK7切換到JDK8
+我只要把那個jdk連結刪掉，再重新把它指向我要的JDK版本的目錄就行了
+不過很可惜，JDK7一樣沒有javaws（雖然我不知道這什麼東西）
+然後也一樣沒有/usr/local/jdk/jre/lib/libnpjp2.so
+
+這裡有人在討論
+不過好累好晚了
+該睡了
 
