@@ -433,7 +433,8 @@ However, if you do not want to install any additional packages and simply change
 因為翻譯很累，所以後面的我懶得翻了
 總之如果是一般用戶的工作機，不是用來當服務器的Ubuntu機器，一般裝上ntpdate工具程式，
 然後每次開機的時候讓Ubuntu自動去從ntp.ubuntu.com自動去抓時間下來更新，就很夠用了
-上面還講到當你安裝Ubuntu Desktop版本的時候，ntpdate都是預先安裝好的（但是aRuntu真的沒有，還要我手動去synaptic套件管理員去選上來安裝）
+上面還講到當你安裝Ubuntu Desktop版本的時候，ntpdate都是預先安裝好的
+（但是aRuntu真的沒有，還要我手動去synaptic套件管理員去選上來安裝）
 
 然後我試著執行了一下
 # ntpdate ntp.ubuntu.com
@@ -442,13 +443,132 @@ However, if you do not want to install any additional packages and simply change
 嗯，真的有去NTP服務器抓時間下來校正
 
 注意前方的提示符是root身分用的#，我是用root身分才可以執行ntpdate去抓NTP服務器上面的時間
-我已經不想去屌到底每一次aRuntu開機的時候是不是真的有去執行一次ntpdate？
-我在想，那乾脆我每一個小時就執行一次ntpdate來校時，這樣不是很妥當嗎？
+
+接著什麼也沒作就重新開機了，
+我剛才看了一下/var/log/syslog裡的內容
+root@aruntu:/var/log# cat /var/log/syslog | grep ntp
+Sep  8 11:22:14 aruntu ntpdate[617]: Can't find host ntp.ubuntu.com: Name or service not known (-2)
+Sep  8 11:22:14 aruntu ntpdate[617]: no servers can be used, exiting
+Sep  8 11:22:45 aruntu ntpdate[1290]: step time server 91.189.89.199 offset 10.569016 sec
+Sep  8 11:23:02 aruntu ntpdate[1633]: adjust time server 91.189.89.199 offset 0.000325 sec
+
+有的，確實在開機的時候已經有執行ntpdate指令來校時了，
+我在想，除了每次開機的時候，如果每一個小時也可以執行一次ntpdate來校時，這樣不是很妥當嗎？
 於是可以參考這一篇
 
 https://help.ubuntu.com/10.04/serverguide/NTP.html
 
 （我是用ubuntu cron hourly ntpdate四個關鍵字搜出來的）
+參考上面那篇文篇，依樣畫葫蘆，進入終端機執行
+
+aruntu@aruntu:~$ sudo -i
+root@aruntu:~# cd /etc
+root@aruntu:/etc# ls -al |grep cron
+-rw-r--r--   1 root             root        401 12月 20  2012 anacrontab
+drwxr-xr-x   2 root             root       4096  6月 29 19:09 cron.d
+drwxr-xr-x   2 root             root       4096  6月 29 19:40 cron.daily
+drwxr-xr-x   2 root             root       4096  6月 29 07:49 cron.hourly
+drwxr-xr-x   2 root             root       4096  6月 29 08:50 cron.monthly
+-rw-r--r--   1 root             root        722  2月  9  2013 crontab
+drwxr-xr-x   2 root             root       4096  6月 29 08:50 cron.weekly
+root@aruntu:/etc# cd /etc/cron.hourly/
+root@aruntu:/etc/cron.hourly# ls
+root@aruntu:/etc/cron.hourly# echo "ntpdate ntp.ubuntu.com" >> ./ntpdate
+root@aruntu:/etc/cron.hourly# chmod 755 /etc/cron.hourly/ntpdate
+root@aruntu:/etc/cron.hourly# ls -al
+總計 24
+drwxr-xr-x   2 root root  4096  9月  8 13:34 .
+drwxr-xr-x 161 root root 12288  9月  8 11:22 ..
+-rwxr-xr-x   1 root root    23  9月  8 13:34 ntpdate
+-rw-r--r--   1 root root   102  2月  9  2013 .placeholder
+root@aruntu:/etc/cron.hourly# cat /etc/cron.hourly/ntpdate 
+ntpdate ntp.ubuntu.com
+
+然後我又重新啟動了一次cron
+root@aruntu:/etc/cron.hourly# /etc/init.d/cron restart
+Rather than invoking init scripts through /etc/init.d, use the service(8)
+utility, e.g. service cron restart
+
+Since the script you are attempting to invoke has been converted to an
+Upstart job, you may also use the stop(8) and then start(8) utilities,
+e.g. stop cron ; start cron. The restart(8) utility is also available.
+cron stop/waiting
+cron start/running, process 2620
+root@aruntu:/etc/cron.hourly# which service
+/usr/sbin/service
+root@aruntu:/etc/cron.hourly# service cron restart
+cron stop/waiting
+cron start/running, process 2643
+root@aruntu:/etc/cron.hourly# 
+
+（直接把CubieTruck重新開機，不用上面的service cron restart指令應該也可以吧）
+
+這樣關於系統時間的部分就完成了，由於CubieTruck不是個人電腦，主機板上面沒有CMOS電池
+所以NTP網路校時很重要，如果沒有設定的話，系統時間會不正確
+
+剛才還記得上面有個地方我想要把「手動」調整成「與網路伺服器保持同步」嗎？
+然後只要一調整成「與網路伺服器保持同步」就會跳一個對話框出來靠腰說「沒有安裝NTP支援」
+那裡不用再去管它了，在/var/log/syslog這裡我已經確定它每次開機的時候都會自已去執行ntpdate指令，
+然後去ntp.ubuntu.com抓正確時間來調整本機的系統時間，
+而且我還在/etc/cron.hourly/ntpdate寫了一個指令讓它每小時都自動校時
+這樣就夠了，不用再去管剛才那裡為什麼不能選「與網路伺服器保持同步」
+
+接著要來安裝中文輸入法，請打開Synaptic套件管理員
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289
+
+輸入密碼aruntu，按下「核對」的圖片我就不抓了，因為很累，直接來到Synaptic套件管理員
+在「快速過濾」的地方輸入「ibus」，然後在左邊的地方選「已安裝」，就會出現這個畫面，aRuntu已經安裝上一堆ibus相關的套件了
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056588538043766178?pid=6056588538043766178&oid=117546034720970496255
+
+先別關掉套件管理員，在「偏好設定」-> 「語言支援」
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056590454963782818?pid=6056590454963782818&oid=117546034720970496255
+
+把鍵盤輸入法系統從「預設」改為「IBus」，然後按下「關閉」
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056591384382606706?pid=6056591384382606706&oid=117546034720970496255
+
+然後在「偏好設定」->「鍵盤輸入法」的地方
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056592398395083698?pid=6056592398395083698&oid=117546034720970496255
+
+在「下一個輸入法」的地方按下「…」
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056593156912959874?pid=6056593156912959874&oid=117546034720970496255
+
+把預設的用來切換中英文輸入法的組合鍵「Super<Space>」給刪掉
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056593596043153586?pid=6056593596043153586&oid=117546034720970496255
+
+勾選「Control」然後按鍵碼保留預設的「Space」然後按「加入」
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056594487805515730?pid=6056594487805515730&oid=117546034720970496255
+
+然後按下「確定」關閉對話框
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056594886153194338?pid=6056594886153194338&oid=117546034720970496255
+
+在對話框上方選擇「輸入法」，可以看到我現在有「漢語-Chewing」和「英語-English(US)」兩種輸入法可以切換，按下右下角的「關閉」
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056595493793503074?pid=6056595493793503074&oid=117546034720970496255
+
+然後打開「附屬應用程式-> Leafpad」，現在你可以用Control鍵加上空白鍵來切換中英文輸入法了
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056596509248618722?pid=6056596509248618722&oid=117546034720970496255
+
+再一次「偏好設定」-> 「鍵盤輸入法」，如果你覺得只有注音和英文不夠用，其實這裡還有倉頡第三代、倉頡第五代、海峰、速成…
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056598124448808082?pid=6056598124448808082&oid=117546034720970496255
+
+如果我要再加一個倉頡第五代輸入法，我就選它，然後按下「加入」
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056600257215191906?pid=6056600257215191906&oid=117546034720970496255
+
+加入倉頡第五代輸入法之後，選擇「關閉」
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056600871851947746?pid=6056600871851947746&oid=117546034720970496255
+
+這樣我在按Control加空白鍵的時候就有三個輸入法（注音、倉頡、英文可以選）
+https://plus.google.com/photos/117546034720970496255/albums/6056587332228632289/6056601317664893666?pid=6056601317664893666&oid=117546034720970496255
+
+如果你常用的中文輸入法沒有在上面
+你可以自已Google搜尋「ubuntu ibus 你常用的中文輸入法名稱」
+然後會有很多的教學頁面出來
+大致上就是安裝套件後，再把ibus重新啟動，然後在上面這個地方再把漢語輸入法加入
+順便一提，在終端機安裝deb包的指令是
+# dpkg -i your_deb_file_name.deb
+
+弄到想哭，超漫長的過程，aRuntu終於有了繁體中文操作介面，Asia/Taipei時區，網路NTP校時，還有ibus中文輸入
+接下來要來完成下一個任務
+
 
 
 
