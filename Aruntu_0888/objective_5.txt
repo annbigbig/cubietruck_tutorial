@@ -1177,11 +1177,13 @@ drwxr-xr-x  7 root root     4096  6月 10 21:58 share
 drwxr-xr-x  2 root root     4096 10月 16  2013 src
 root@aruntu:/usr/local# rm jdk-8u6-linux-arm-vfp-hflt.tar.gz 
 
-把這4行加到/etc/profile的最後面
+把這6行加到/etc/profile的最後面
 JAVA_HOME=/usr/local/jdk
 PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
+CLASSPATH=.:$JAVA_HOME/lib:$JAVA_HOME/jre/lib
 export JAVA_HOME
 export PATH
+export CLASSPATH
 
 繼續回到終端機
 root@aruntu:/usr/local# update-alternatives --install "/usr/bin/java" "java" "/usr/local/jdk/bin/java" 1
@@ -1282,9 +1284,124 @@ javac 1.7.0_60
 我如果要從JDK8切到JDK7，或是反過來從JDK7切換到JDK8
 我只要把那個jdk連結刪掉，再重新把它指向我要的JDK版本的目錄就行了
 不過很可惜，JDK7一樣沒有javaws（雖然我不知道這什麼東西）
+
+啊…維基有寫，這就是javaws
+http://en.wikipedia.org/wiki/Java_Web_Start
+
 然後也一樣沒有/usr/local/jdk/jre/lib/libnpjp2.so
 
+為什麼呢？我下錯版本了嗎？我是到Oracle官網下載的JDK沒錯啊
+我中了幻術是不是
+然後又搜出了這一篇放在官網上的文章
+
+http://www.oracle.com/technetwork/java/javase/7u6-relnotes-1729681.html
+
+這好像是
+Java™ SE Development Kit 7, Update 6 (JDK 7u6)
+在發布的時候一起發出的官方公告
+有段重點是
+
+JDK for Linux on ARM
+
+This release includes support for a new platform, JDK for Linux on ARM. The product offers headful support for ARMv6 and ARMv7.
+
+No support is available for WebStart, Plug-In, Java Flight Recorder, and Garbage First (G1) Collector. Also some features of the Serviceability Agent are not available for Linux on ARM platform.
+
+The JDK for Linux on ARM does not include support for JavaFX SDK or JavaFX Runtime.
+
+Java support on ARM is specific to the GNOME Desktop Environment version 1:2.30+7.
+
+The demos and samples for Linux on ARM contain samples of webstart and applets, technologies that are not supported on Linux on ARM. These samples are still left in the demos and samples bundle to help developers who want to host applets on Linux on ARM, which can be accessed from other platforms.
+
+官網寫著給ARM平台用的JDK就是不支援某些功能
+像是WebStart (javaws)，插件 (libnpjp2.so)
+還有啊啦啦啦啦
+所以我該怎麼辦呢？
+
 這裡有人在討論
-不過好累好晚了
-該睡了
+http://forum.odroid.com/viewtopic.php?f=77&t=6094&view=unread
+
+我看到這個建議
+, why not simply stick with openjdk-7-jre ?
+In Firefox, for example, there is Icedtea web plugin which supports OpenJDK 7 out-of-the box
+
+然後我在同一篇文章裡也看到這個連結
+http://www.oracle.com/technetwork/java/javase/emb7u4-relnotes-1579536.html#plugin
+然後連結到了Oracle JDK官網
+
+
+重點是在Oracle JDK 7u4有支持browser-plugin
+How to Enable Java Plug-In
+The headful version of Java SE for Embedded 7 Update 4 on ARMv7 supports Java™ Plug-In technology. (See Applet Developer's Guide for more information.) We have verified that Java SE for Embedded 7 Update 4 works with the Firefox 3.6 web browser. Mozilla's Gecko rendering engine version 1.9.0 FCS or later is required. Non-Mozilla web browsers, including the WebKit rendering engine (used in some non-Mozilla web browsers), are not supported at the time of this writing.
+
+A symbolic link needs to be created in order to get the Java Plug-In to work. This link should point from the browser's plugins directory to the Java Plug-In shared library included in the JRE, and it can be created with the following command from a shell:
+
+ln -s <JAVA_HOME>/lib/arm/libnpjp2.so <MOZILLA_DIR>/plugins/libnpjp2.so
+
+In the above command, <JAVA_HOME> represents the directory where you installed the headful Java SE for Embedded 7 Update 4 bundle (for example, /usr/java/ejre1.7.0_4), and <MOZILLA_DIR> represents the directory where you installed your web browser (for example, /usr/lib/mozilla).
+
+我快看到神經錯亂了
+7u4的時候有Browser-plugin，然後7u6又不知道什麼原因不支援了
+然後我現在裝的是JDK 7u60…
+我只是想TM讓我的瀏覽器支援Java Plugin
+煩死了，我直接裝OpenJDK的Icedtea web plugin好了
+
+
+可是我剛才才把OpenJDK整個移除掉
+現在我在aRuntu裡看鉅亨網Java線圖的時候
+我的瀏覽器就會這樣
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6056972299070166498?pid=6056972299070166498&oid=117546034720970496255
+
+打開Synaptic套件管理員，選擇「icedtea-7-plugin」套件
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6056977604640177746?pid=6056977604640177746&oid=117546034720970496255
+
+按下「標記為安裝」
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6056979632637738338?pid=6056979632637738338&oid=117546034720970496255
+
+系統提示會一起安裝這些依賴套件，按下標記
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6056980102516231826?pid=6056980102516231826&oid=117546034720970496255
+
+按下上面的「套用」鈕
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6056980302615238322?pid=6056980302615238322&oid=117546034720970496255
+
+跳出「套用以下的變更」對話框，再按下一次「套用」鈕
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6056980841294219890?pid=6056980841294219890&oid=117546034720970496255
+
+開始安裝了，忍耐一下
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6056981266675350738?pid=6056981266675350738&oid=117546034720970496255
+
+安裝完成，按下套件管理員右上角的X關閉視窗
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6056982049643756690?pid=6056982049643756690&oid=117546034720970496255
+
+我再次戰戰競競的心情，打開了我的chromium瀏覽器，來到了鉅亨網的美股，選了蘋果這支股票，然後按了「Java線圖」，這一次哦耶哦耶，
+看到瀏覽器上方的「需要您的授權才能執行IcedTea-Web Plugin (using IcedTea-Web 1.4 (1.4-3ubuntu2.1))...永遠在這個網站上執行　　僅限這次」了嗎？
+那就選「永遠在這個網站上執行」
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6056984368752293506?pid=6056984368752293506&oid=117546034720970496255
+
+
+再跳一個對話框出來，選「For applet」和「Remember this option」，然後按下「Proceed」鈕
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6056985600740468562?pid=6056985600740468562&oid=117546034720970496255
+
+第一次載入Java Applet的時候，IcedTea-Web plugin居然Crash掉，太快了那個訊息只有兩秒我來不及擷圖
+不過它叫我重新整理一下網頁，好吧我試試，結果在重新整理網頁之後，我的Java Applet線圖終於跳出來了
+哦哦哦好爽，這是蘋果的股價的Java線圖
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6056987134659108418?pid=6056987134659108418&oid=117546034720970496255
+
+所以我的aRuntu系統上面，那個我稍早前安裝的Oracle JDK有因為我後來安裝IcedTea-Web Plugin（會安裝OpenJDK的JRE）
+有因為這樣把我的Oracle JDK給蓋掉嗎？我去了終端機檢查了一下
+root@aruntu:/usr/local# java -version
+java version "1.7.0_60"
+Java(TM) SE Runtime Environment (build 1.7.0_60-b19)
+Java HotSpot(TM) Client VM (build 24.60-b09, mixed mode)
+root@aruntu:/usr/local# javac -version
+javac 1.7.0_60
+
+沒有，很好，這是我剛才安裝的Oracle JDK 7沒錯
+現在我們再把Netbeans IDE開發環境給安裝上
+
+
+
+
+
+
 
