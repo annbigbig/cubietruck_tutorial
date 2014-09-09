@@ -1787,5 +1787,60 @@ https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/
 現在我常用的影像處理軟體gimp還有辦公室軟體libreoffice都安裝上了
 接下來繼續下一個任務
 
+==============================================================================================
+　（五）修改CubieTruck的主機名稱 ( hostname )
+==============================================================================================
+參考了這一篇
+http://www.unixmen.com/change-hostname-ubuntu-13-10/
+
+內文是
+Question:
+
+How  to change  hostname in Ubuntu  13.x ?
+
+Answer:
 
 
+1. First make a backup of the following files.
+
+cp /etc/hosts /etc/hosts.back
+cp /etc/hostname /etc/hostname.back
+2. Edit the ‘hosts’ file:
+
+vi /etc/hosts
+The file should look like this:
+
+127.0.0.1 localhost
+127.0.1.1 your_new_hostname
+Here, change “some_hostname” to the new hostname / computer name.
+
+3. Edit the hostname file:
+
+vi  /etc/hostname
+This file only contains your hostname so change it again to the new_hostname
+
+4. Now restart the hostname and networking services:
+
+service networking restart
+it could be that you will disconnected for a wail. after this re-login and check your new hostname with:
+
+hostname -f
+Cheers!
+
+好吧我承認我懶了…
+上面的老外教的我照著作了
+不過我發現我執行
+service networking restart
+之後，我的主機名稱並沒有立刻改變
+我要重新開機之後，我的
+# hostname -f
+才會打印新的主機名稱
+原來的主機名稱是aruntu (和預設用戶名稱一樣)
+我改成了cubie001
+這樣就修改完主機名稱了
+
+這樣objective 5 
+客製化aRuntu系統
+超漫長的
+完成
+請繼續收看objective 6
