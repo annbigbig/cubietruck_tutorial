@@ -1399,9 +1399,160 @@ javac 1.7.0_60
 沒有，很好，這是我剛才安裝的Oracle JDK 7沒錯
 現在我們再把Netbeans IDE開發環境給安裝上
 
+在安裝Netbeans之前，我剛才發現一件事，我的/usr/local/jdk1.7.0_60這個目錄
+它的owner和group居然是
+root@aruntu:/usr/local# ls -al
+總計 48
+drwxr-xr-x 12 root root 4096  9月  9 01:32 .
+drwxr-xr-x 10 root root 4096 10月 16  2013 ..
+drwxr-xr-x  2 root root 4096 10月 16  2013 bin
+drwxr-xr-x  2 root root 4096 10月 16  2013 etc
+drwxr-xr-x  2 root root 4096 10月 16  2013 games
+drwxr-xr-x  4 root root 4096  6月 10 22:18 include
+lrwxrwxrwx  1 root root   11  9月  9 01:32 jdk -> jdk1.7.0_60
+drwxr-xr-x  8 uucp  143 4096  5月  8 05:37 jdk1.7.0_60
+drwxr-xr-x  8 root root 4096  9月  9 00:55 jdk1.8.0_06
+drwxr-xr-x  5 root root 4096  6月 30 05:27 lib
+lrwxrwxrwx  1 root root    9 10月 16  2013 man -> share/man
+drwxr-xr-x  2 root root 4096 10月 16  2013 sbin
+drwxr-xr-x  7 root root 4096  6月 10 21:58 share
+drwxr-xr-x  2 root root 4096 10月 16  2013 src
 
+什麼狗屁uucp什麼143啊？
+那是誰？什麼group叫143
+所以再去終端機執行了
+root@aruntu:/usr/local# chown -R root:root /usr/local/jdk1.7.0_60
+root@aruntu:/usr/local# ls -al
+總計 48
+drwxr-xr-x 12 root root 4096  9月  9 01:32 .
+drwxr-xr-x 10 root root 4096 10月 16  2013 ..
+drwxr-xr-x  2 root root 4096 10月 16  2013 bin
+drwxr-xr-x  2 root root 4096 10月 16  2013 etc
+drwxr-xr-x  2 root root 4096 10月 16  2013 games
+drwxr-xr-x  4 root root 4096  6月 10 22:18 include
+lrwxrwxrwx  1 root root   11  9月  9 01:32 jdk -> jdk1.7.0_60
+drwxr-xr-x  8 root root 4096  5月  8 05:37 jdk1.7.0_60
+drwxr-xr-x  8 root root 4096  9月  9 00:55 jdk1.8.0_06
+drwxr-xr-x  5 root root 4096  6月 30 05:27 lib
+lrwxrwxrwx  1 root root    9 10月 16  2013 man -> share/man
+drwxr-xr-x  2 root root 4096 10月 16  2013 sbin
+drwxr-xr-x  7 root root 4096  6月 10 21:58 share
+drwxr-xr-x  2 root root 4096 10月 16  2013 src
 
+把/usr/local/jdk1.7.0_60起所有的子目錄也一起都換成了owner和group都是root
+現在來安裝netbeans了，到它的官網去
+https://netbeans.org/
 
+如下圖，選右上角的「Download」
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057043351390717250?pid=6057043351390717250&oid=117546034720970496255
+
+上面的語言我選「English」，然後平台我選「Linux(x86/x64)」不用再找了，沒有「Linux(Arm)」
+我知道不一定能裝起來，但是拼一下，有機會滴，在最右邊那個All, Free 203 MB的那個版本，按下「Download」鈕
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057044459165017970?pid=6057044459165017970&oid=117546034720970496255
+
+按下「保留」之後，開始下載
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057046257551564786?pid=6057046257551564786&oid=117546034720970496255
+
+下載完之後，在aRuntu裡打開終端機，執行這些指令
+為什麼一定要在aRuntu裡執行這些，是因為待會兒會跳出圖形介面對話框輔助安裝netbeans
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057047542997371794?pid=6057047542997371794&oid=117546034720970496255
+
+按下Enter之後，出現了Netbeans的安裝歡迎畫面，我在這裡選擇Customize
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057048536803718962?pid=6057048536803718962&oid=117546034720970496255
+
+預設是沒有安裝Apache Tomcat 8.0
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057049243557072994?pid=6057049243557072994&oid=117546034720970496255
+
+我把它選了起來，當然要安裝Apache Tomcat 8.0啊，又不用錢，選了之後就按下OK鈕
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057049900306378690?pid=6057049900306378690&oid=117546034720970496255
+
+又回到歡迎畫面了，按下Next鈕
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057050383558613938?pid=6057050383558613938&oid=117546034720970496255
+
+好好好我按受授權條款，可以趕快開始安裝嗎？
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057050847961276594?pid=6057050847961276594&oid=117546034720970496255
+
+好好好安裝JUnit，快點快點我要安裝
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057051391459850354?pid=6057051391459850354&oid=117546034720970496255
+
+接下來我選擇了安裝目錄在/home/aruntu/netbeans-8.0
+然後選擇我的JDK目錄在/usr/local/jdk
+然後按下Next鈕
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057052452528321682?pid=6057052452528321682&oid=117546034720970496255
+
+接下來還會問glassfish的安裝目錄
+我保留預設值的/home/aruntu/glassfish-4.0
+然後按下Next鈕
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057052818747230898?pid=6057052818747230898&oid=117546034720970496255
+
+然後還會問tomcat 8.0的安裝目錄
+我一樣保留預設值的/home/aruntu/apache-tomcat-8.0.3
+我TM的臭基bye我的耐心快消耗光了，到底TM要問幾萬個問題
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057053430776763330?pid=6057053430776763330&oid=117546034720970496255
+
+接著再跳出一個Summary對話框，再重複和你確認一次剛才的設定
+好…按下「Install」鈕，我的理智線快斷裂了…應該沒有其他的對話框要確認了吧？
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057054185873925170?pid=6057054185873925170&oid=117546034720970496255
+
+謝天謝地，開始安裝了，忍耐一下
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057054867350972386?pid=6057054867350972386&oid=117546034720970496255
+
+謝天謝地，過了快十分鐘終於安裝好了，
+這一個對話框重要的訊息只有要啟動netbeans的話從桌面的圖示來啟動，按下Finish鈕
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057063028742902402?pid=6057063028742902402&oid=117546034720970496255
+
+現在來看看我aRuntu的桌面上，哦真的有一個Netbeans-8.0.desktop的圖示，按下去看看
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057064408816902210?pid=6057064408816902210&oid=117546034720970496255
+
+按下去之後居然TM的跳出了一個「拒絕不符權限的操作」對話框，按下「確定」關掉它
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057065189409133602?pid=6057065189409133602&oid=117546034720970496255
+
+把這個桌面圖示檔的權限改成777，執行
+# cd /home/aruntu/Desktop
+# chmod 777 netbeans-8.0-desktop
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057065816269914354?pid=6057065816269914354&oid=117546034720970496255
+
+再執行桌面的netbeans-8.0-desktop試試看，哇靠，開始啟動了，我High了
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057066781379961858?pid=6057066781379961858&oid=117546034720970496255
+
+哦哦真TM的我折騰了那麼久終於值得了，終於成功啟動了Netbeans IDE開發環境
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057067303408464194?pid=6057067303408464194&oid=117546034720970496255
+
+廢話少說，new一個Java Web Project來看看
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057068231022519906?pid=6057068231022519906&oid=117546034720970496255
+
+上啊，螺旋丸
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057068951062401170?pid=6057068951062401170&oid=117546034720970496255
+
+填入我的專案名稱為annTestUse01，然後按下Next鈕
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057069439792361538?pid=6057069439792361538&oid=117546034720970496255
+
+然後Netbeans要求我設定一個master password，我先不設定，保持預設的空白，按Cancel
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057070373569951330?pid=6057070373569951330&oid=117546034720970496255
+
+接著在Server的地方選擇熟悉的Apache Tomcat 8.0.3，然後再按Next，不直接按Finish是因為我很好奇還有什麼鬼屁要選？
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057071099208311634?pid=6057071099208311634&oid=117546034720970496255
+
+哦我看到了熟悉的Spring MVC Framework和Hibernate應用程式框架
+隨便選個Spring Framework 3.2.7，按下Finish
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057071964576210818?pid=6057071964576210818&oid=117546034720970496255
+
+正在產生專案，耐心等一下
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057072635076741250?pid=6057072635076741250&oid=117546034720970496255
+
+完成了，看到了那讓我TM中風指數增加的又似曾相識的applicationContext.xml
+https://plus.google.com/photos/117546034720970496255/albums/6056972294083012833/6057073593895618514?pid=6057073593895618514&oid=117546034720970496255
+
+好了，在CubieTruck上面居然能運行Netbeans IDE真是令人愉快
+你也許會有疑問，為什麼我不安裝常用的Java開發工具Eclipse呢？
+那是因為Eclipse還沒有辦法在Arm架構的開發板上面跑，我可以找到給X86用的32bit版本或是給X64架構用的64bit版本
+可是就是沒有給Arm架構用的Eclipse arm版本，所以我才會想安裝Netbeans IDE
+我們在這個任務裡安裝了Oracle JDK 8和7，後來我覺得還是用7這個版本好了，
+所以現在/usr/local/jdk是指向/usr/local/jdk1.7.0_60
+接著我們又安裝了瀏覽器的Java Plugin也就是IcedTea-Web Plugin，並成功在鉅亨網上面看到蘋果股價的Java Applet股價線圖
+現在Netbeans又安裝完成，哦啊啊人生真是太美好了呀你說是嗎？
+你能看到這裡，耐心真的超強，我要先給你鼓鼓掌
+接下來我們進行下一個任務了
 
 
 
