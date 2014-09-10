@@ -293,7 +293,7 @@ root@cubie001:/etc/ssh# ls
 moduli      sshd_config          ssh_host_dsa_key      ssh_host_ecdsa_key      ssh_host_rsa_key      ssh_import_id
 ssh_config  sshd_config.default  ssh_host_dsa_key.pub  ssh_host_ecdsa_key.pub  ssh_host_rsa_key.pub
 root@cubie001:/etc/ssh# cat sshd_config|grep PasswordAu
-PasswordAuthentication yes
+PasswordAuthentication no
 # PasswordAuthentication.  Depending on your PAM configuration,
 # PAM authentication, then enable this but set PasswordAuthentication
 root@cubie001:/etc/ssh# vi /etc/ssh/sshd_config
@@ -378,6 +378,7 @@ Run 'do-release-upgrade' to upgrade to it.
 Last login: Wed Sep 10 21:54:54 2014 from anntony-lenovo-b590.local
 aruntu@cubie001:~$ 
 
+沒辦法不打密碼就連線，它還是會提示你要輸入aruntu用戶的密碼
 因為ssh服務器（CubieTruck）不認識這一支private key
 /home/anntony/.ssh/id_rsa
 更正確的說
