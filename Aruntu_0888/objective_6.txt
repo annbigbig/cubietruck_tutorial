@@ -1,3 +1,176 @@
 objective 6 : 設定ssh server
 
+預設的aRuntu已經安裝好了ssh server
+我的CubieTruck的IP是192.168.0.161
+然後我同一個區網裡面我用來工作的筆記型電腦IP是192.168.0.12
+現在我在筆記型電腦上
+可以執行
+# ssh aruntu@192.168.0.161
+或是
+# ssh root@192.168.0.161
+來登入CubieTruck
 
+aruntu用戶的密碼是aruntu
+root用戶的密碼是root
+
+實際透過ssh連接的終端機輸出如下
+以aruntu用戶登入
+anntony@anntony-Lenovo-B590 ~/.ssh $ ssh aruntu@192.168.0.161
+aruntu@192.168.0.161's password: 
+Welcome to Ubuntu 13.10 (GNU/Linux 3.4.98-sun7i+ armv7l)
+
+ * Documentation:  https://help.ubuntu.com/
+
+Your Ubuntu release is not supported anymore.
+For upgrade information, please visit:
+http://www.ubuntu.com/releaseendoflife
+
+New release '14.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Wed Sep 10 15:24:51 2014 from anntony-lenovo-b590.local
+aruntu@cubie001:~$ 
+
+以root用戶登入
+anntony@anntony-Lenovo-B590 ~/.ssh $ ssh root@192.168.0.161
+root@192.168.0.161's password: 
+Welcome to Ubuntu 13.10 (GNU/Linux 3.4.98-sun7i+ armv7l)
+
+ * Documentation:  https://help.ubuntu.com/
+
+Your Ubuntu release is not supported anymore.
+For upgrade information, please visit:
+http://www.ubuntu.com/releaseendoflife
+
+New release '14.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Fri Sep  5 14:43:30 2014 from anntony-lenovo-b590.local
+root@cubie001:~# 
+
+不過現在我想要讓CubieTruck的ssh server更安全一點
+我想要讓root不能登入，然後我會在/home/aruntu/.ssh目錄產生一對RSA key
+只有在ssh client端持有這對RSA key其中的private key，才可以使用aruntu用戶身份登入我的CubieTruck
+以aruntu用戶登入後，如果需要root權限再自行執行sudo -i變身成root用戶
+
+參考了這一篇文章：
+http://askubuntu.com/questions/387892/how-to-deny-root-ssh-login-require-ssh-key-for-user
+
+重要的回答是：
+If you want to disallow password logins then just set PasswordAuthentication no in the sshd_conf on the server.
+
+I don't recall exactly, but I think at least no root login is the default.
+
+Attempting to log in as any user on the system, who does not have your public key in their ~/.ssh/authorized_keys will ask for the password, whether or not a password is set, or a shell is available, if password login has not been disabled.
+
+I think what you want is simply:
+
+PasswordAuthentication no
+PermitRootLogin no
+This will disallow any root login, either with ssh key or password, and will require users to login with a valid key, as included by having the public key in that user's ~/.ssh/authorized_keys file.
+
+先試試禁止root登入好了
+在CubieTruck的終端機裡，執行
+aruntu@cubie001:~$ sudo -i
+root@cubie001:~# cd /etc/ssh
+root@cubie001:/etc/ssh# ls
+moduli      sshd_config       ssh_host_dsa_key.pub  ssh_host_ecdsa_key.pub  ssh_host_rsa_key.pub
+ssh_config  ssh_host_dsa_key  ssh_host_ecdsa_key    ssh_host_rsa_key        ssh_import_id
+root@cubie001:/etc/ssh# cat sshd_config |grep PermitRoot
+PermitRootLogin yes
+# the setting of "PermitRootLogin without-password".
+root@cubie001:/etc/ssh# cp sshd_config sshd_config.default
+root@cubie001:/etc/ssh# vi /etc/ssh/sshd_config
+root@cubie001:/etc/ssh# cat sshd_config |grep PermitRoot
+PermitRootLogin no
+# the setting of "PermitRootLogin without-password".
+root@cubie001:/etc/ssh# /etc/init.d/ssh restart
+root@cubie001:/etc/ssh# service ssh restart
+ssh stop/waiting
+ssh start/running, process 2227
+root@cubie001:/etc/ssh# 
+
+好，修改完/etc/ssh/sshd_config設定檔之後，我把ssh服務重新啟動了
+現在來看看是不是真的不能再使用root用戶登入CubieTruck了
+回到終端機，執行
+anntony-Lenovo-B590 ~ # ssh root@192.168.0.161
+root@192.168.0.161's password: 
+Permission denied, please try again.
+root@192.168.0.161's password: 
+Permission denied, please try again.
+root@192.168.0.161's password: 
+Permission denied (publickey,password).
+anntony-Lenovo-B590 ~ # 
+
+帥呀，那麼如果是用aruntu用戶來登入ssh主機，會有影響嗎？
+回到終端機，執行
+anntony-Lenovo-B590 ~ # ssh aruntu@192.168.0.161
+aruntu@192.168.0.161's password: 
+Welcome to Ubuntu 13.10 (GNU/Linux 3.4.98-sun7i+ armv7l)
+
+ * Documentation:  https://help.ubuntu.com/
+
+Your Ubuntu release is not supported anymore.
+For upgrade information, please visit:
+http://www.ubuntu.com/releaseendoflife
+
+New release '14.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Wed Sep 10 16:26:36 2014 from anntony-lenovo-b590.local
+aruntu@cubie001:~$ sudo -i
+root@cubie001:~# 
+可以，沒問題，而且也可以用sudo -i變身成root
+
+那麼如果我再把/etc/ssh/sshd_config設定檔裡面的
+#PasswordAuthentication yes
+改成
+PasswordAuthentication no
+會發生什麼事呢？來實驗一下，請到CubieTruck的終端機裡
+aruntu@cubie001:~$ sudo -i
+root@cubie001:~# cd /etc/ssh
+root@cubie001:/etc/ssh# ls
+moduli      sshd_config          ssh_host_dsa_key      ssh_host_ecdsa_key      ssh_host_rsa_key      ssh_import_id
+ssh_config  sshd_config.default  ssh_host_dsa_key.pub  ssh_host_ecdsa_key.pub  ssh_host_rsa_key.pub
+root@cubie001:/etc/ssh# cat sshd_config |grep PasswordAu
+#PasswordAuthentication yes
+# PasswordAuthentication.  Depending on your PAM configuration,
+# PAM authentication, then enable this but set PasswordAuthentication
+root@cubie001:/etc/ssh# vi ./sshd_config
+root@cubie001:/etc/ssh# cat sshd_config |grep PasswordAu
+PasswordAuthentication no
+# PasswordAuthentication.  Depending on your PAM configuration,
+# PAM authentication, then enable this but set PasswordAuthentication
+root@cubie001:/etc/ssh# sync
+root@cubie001:/etc/ssh# service ssh restart
+ssh stop/waiting
+ssh start/running, process 2548
+root@cubie001:/etc/ssh# 
+
+好，現在我把CubieTruck上面的
+/etc/ssh/sshd_config設定檔裡的
+PasswordAuthentication no
+打開了，而且重啟ssh服務器了，那會發生什麼事呢？
+
+回到我的筆記型電腦上的終端機，執行
+anntony-Lenovo-B590 ~ # ssh root@192.168.0.161
+Permission denied (publickey).
+anntony-Lenovo-B590 ~ # ssh aruntu@192.168.0.161
+Permission denied (publickey).
+anntony-Lenovo-B590 ~ # 
+
+不管是用root用戶或是aruntu用戶去ssh連線
+都沒辦法再用鍵盤輸入密碼來認證，它叫你要有一把public　key
+你要有一把public　key，什麼意思呢？
+如果你剛才是執行
+# ssh aruntu@192.168.0.161
+那麼在CubieTruck的
+/home/aruntu/.ssh/authorized_keys
+這個文字檔案裡面，必須有記錄著一把public　key
+然後你的ssh client端（筆記型電腦）必須持有一把private key
+記住：ssh服務器端這個public　key和ssh用戶端的private key是一對的
+他們是一對的
+
+回來再解釋
+現在是我的跑步時間了
+啦啦啦
