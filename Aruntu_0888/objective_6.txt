@@ -171,6 +171,454 @@ anntony-Lenovo-B590 ~ #
 記住：ssh服務器端這個public　key和ssh用戶端的private key是一對的
 他們是一對的
 
-回來再解釋
-現在是我的跑步時間了
-啦啦啦
+現在我要在CubieTruck的aRuntu作業系統上，產生一對RSA key
+在這個路徑
+/home/aruntu/.ssh/id_rsa
+/home/aruntu/.ssh/id_rsa.pub
+其中id_rsa是private key(私鑰)，而id_rsa.pub是public key(公鑰)
+
+參考了這一篇：
+https://help.github.com/articles/generating-ssh-keys
+
+還有git-recipes的第297頁的Generating keys小節
+
+請進入aRuntu的終端機，執行
+aruntu@cubie001:~$ whoami
+aruntu
+aruntu@cubie001:~$ pwd
+/home/aruntu
+aruntu@cubie001:~$ ls -al|grep ssh
+aruntu@cubie001:~$ mkdir .ssh
+aruntu@cubie001:~$ chmod 700 .ssh
+aruntu@cubie001:~$ ls -al|grep ssh
+drwx------  2 aruntu aruntu   4096  9月 10 21:14 .ssh
+aruntu@cubie001:~$ ssh-keygen -t rsa -C tony@stark.com -N "" -f .ssh/id_rsa
+Generating public/private rsa key pair.
+Your identification has been saved in .ssh/id_rsa.
+Your public key has been saved in .ssh/id_rsa.pub.
+The key fingerprint is:
+76:dd:a6:ba:b1:65:bb:3e:01:dd:98:e2:c8:a2:d5:96 tony@stark.com
+The key's randomart image is:
++--[ RSA 2048]----+
+|                 |
+|                 |
+|           . +   |
+|          o.+..  |
+|       oS+.o. o  |
+|      o.E.. .o   |
+|     o o  . +.   |
+|    .      *..   |
+|          +o+o   |
++-----------------+
+aruntu@cubie001:~$ cd .ssh
+aruntu@cubie001:~/.ssh$ ls -al
+總計 16
+drwx------  2 aruntu aruntu 4096  9月 10 21:15 .
+drwxr-xr-x 42 aruntu aruntu 4096  9月 10 21:14 ..
+-rw-------  1 aruntu aruntu 1679  9月 10 21:15 id_rsa
+-rw-r--r--  1 aruntu aruntu  396  9月 10 21:15 id_rsa.pub
+aruntu@cubie001:~/.ssh$ 
+
+使用ssh-keygen指令產生RSA keypair的時候，我隨便填了電子郵件信箱是tony@stark.com
+你應該把它置換成你自已的電子郵件信箱地址
+現在我們在CubieTruck上面有了private key
+/home/aruntu/.ssh/id_rsa
+還有public key
+/home/aruntu/.ssh/id_rsa.pub
+
+然後再把剛才產生的public key
+也就是id_rsa.pub的內容
+添加到
+/home/aruntu/.ssh/authorized_keys
+這個檔案的最後面
+在終端機裡如下操作
+
+aruntu@cubie001:~$ cd .ssh
+aruntu@cubie001:~/.ssh$ ls
+id_rsa  id_rsa.pub
+aruntu@cubie001:~/.ssh$ ls -al
+總計 16
+drwx------  2 aruntu aruntu 4096  9月 10 21:15 .
+drwxr-xr-x 42 aruntu aruntu 4096  9月 10 21:14 ..
+-rw-------  1 aruntu aruntu 1679  9月 10 21:15 id_rsa
+-rw-r--r--  1 aruntu aruntu  396  9月 10 21:15 id_rsa.pub
+aruntu@cubie001:~/.ssh$ pwd
+/home/aruntu/.ssh
+aruntu@cubie001:~/.ssh$ touch authorized_keys
+aruntu@cubie001:~/.ssh$ cat id_rsa.pub >> authorized_keys
+aruntu@cubie001:~/.ssh$ cat authorized_keys 
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDC9wqgv2LjeND5Q5CnHU5JJi3ObHjoqXQJ5kTcU168XVTq1l1S9xGhoi/WnUpft7T8bw3fCXVm6qzDSy1/kBEVG2fQ+KKB+Bg2SfIXHEGhQSCq0pI9641DxiAR9dzMoT+YeP3MUsmNOxJde7wwo5G3C0EtKXdN1gvL4pF9eeqDEXN2SZdR5cHtFRpE3hmLTgX0alBde8JwLVbG5bYyqKTHFZaWURzhFuNZVpSf6U1ospbb1veC1Cba+qWqrQA9tB5I5+vwyb/Jm++vfykPLONGxbzyHeWLxqxT6UyweArD2o3J5F7AUJorRTOZPONfU1ZlWVioNWcZ/4xtHbVcsDIj tony@stark.com
+aruntu@cubie001:~/.ssh$ ls -al
+總計 20
+drwx------  2 aruntu aruntu 4096  9月 10 21:44 .
+drwxr-xr-x 42 aruntu aruntu 4096  9月 10 21:14 ..
+-rw-rw-r--  1 aruntu aruntu  396  9月 10 21:44 authorized_keys
+-rw-------  1 aruntu aruntu 1679  9月 10 21:15 id_rsa
+-rw-r--r--  1 aruntu aruntu  396  9月 10 21:15 id_rsa.pub
+aruntu@cubie001:~/.ssh$ 
+
+
+回到筆記型電腦的終端機，我們要把private key複製到家目錄下的.ssh目錄裡
+anntony@anntony-Lenovo-B590 ~ $ pwd
+/home/anntony
+anntony@anntony-Lenovo-B590 ~ $ ls -al|grep .ssh
+-rw-------   1 anntony anntony   159  9月 10 21:21 .lesshst
+drwx------   3 anntony anntony  4096  8月 22 23:16 .ssh
+anntony@anntony-Lenovo-B590 ~ $ mkdir temp
+anntony@anntony-Lenovo-B590 ~ $ ls -al|grep temp
+drwxr-xr-x   2 anntony anntony  4096  9月 10 21:22 temp
+anntony@anntony-Lenovo-B590 ~ $ cd temp
+anntony@anntony-Lenovo-B590 ~/temp $ pwd
+/home/anntony/temp
+anntony@anntony-Lenovo-B590 ~/temp $ scp -P 22 aruntu@192.168.0.161:.ssh/id_rsa ./private_key_from_cubie
+Permission denied (publickey).
+anntony@anntony-Lenovo-B590 ~/temp $ 
+
+不能用scp指令來複製，為什麼呢？
+還記得剛才我們把CubieTruck上面
+設定ssh服務器組態檔
+/etc/ssh/sshd_config
+的這個選項
+PasswordAuthentication no
+然後重新啟動了ssh服務器嗎？
+
+所以現在CubieTruck上面的ssh服務器
+完全不能使用密碼登入
+那先到CubieTruck上面的終端機，把ssh服務器的設定改回來，
+讓它可以接受輸入鍵盤密碼的登入
+在終端機執行
+aruntu@cubie001:~$ sudo -i
+root@cubie001:~# cd /etc/ssh
+root@cubie001:/etc/ssh# ls
+moduli      sshd_config          ssh_host_dsa_key      ssh_host_ecdsa_key      ssh_host_rsa_key      ssh_import_id
+ssh_config  sshd_config.default  ssh_host_dsa_key.pub  ssh_host_ecdsa_key.pub  ssh_host_rsa_key.pub
+root@cubie001:/etc/ssh# cat sshd_config|grep PasswordAu
+PasswordAuthentication yes
+# PasswordAuthentication.  Depending on your PAM configuration,
+# PAM authentication, then enable this but set PasswordAuthentication
+root@cubie001:/etc/ssh# vi /etc/ssh/sshd_config
+root@cubie001:/etc/ssh# cat sshd_config|grep PasswordAu
+PasswordAuthentication yes
+# PasswordAuthentication.  Depending on your PAM configuration,
+# PAM authentication, then enable this but set PasswordAuthentication
+root@cubie001:/etc/ssh# service ssh restart
+ssh stop/waiting
+ssh start/running, process 2295
+root@cubie001:/etc/ssh# 
+
+現在再回到筆記型電腦(ssh client)
+在終端機執行
+anntony@anntony-Lenovo-B590 ~/temp $ pwd
+/home/anntony/temp
+anntony@anntony-Lenovo-B590 ~/temp $ scp -P 22 aruntu@192.168.0.161:.ssh/id_rsa ./private_key_from_cubie
+aruntu@192.168.0.161's password: 
+id_rsa                                                                                                                  100% 1679     1.6KB/s   00:00    
+anntony@anntony-Lenovo-B590 ~/temp $ ls
+private_key_from_cubie
+anntony@anntony-Lenovo-B590 ~/temp $ mv ./private_key_from_cubie /home/anntony/.ssh/
+anntony@anntony-Lenovo-B590 ~/temp $ ls -al
+總計 8
+drwxr-xr-x  2 anntony anntony 4096  9月 10 21:37 .
+drwxr-xr-x 43 anntony anntony 4096  9月 10 21:22 ..
+anntony@anntony-Lenovo-B590 ~/temp $ cd /home/anntony/.ssh
+anntony@anntony-Lenovo-B590 ~/.ssh $ ls -al
+總計 40
+drwx------  3 anntony anntony 4096  9月 10 21:37 .
+drwxr-xr-x 43 anntony anntony 4096  9月 10 21:22 ..
+-rw-r--r--  1 anntony anntony  222  8月 22 23:16 config
+-rw-r--r--  1 anntony anntony  230  8月 22 14:42 config.bak
+-rw-------  1 anntony anntony 1679  8月  5 16:44 id_rsa
+-rw-r--r--  1 anntony anntony  401  8月  5 16:44 id_rsa.pub
+-rw-r--r--  1 anntony anntony 5096  9月  5 22:26 known_hosts
+drwxr-xr-x  2 anntony anntony 4096  8月  5 16:42 old-keys
+-rw-------  1 anntony anntony 1679  9月 10 21:37 private_key_from_cubie
+anntony@anntony-Lenovo-B590 ~/.ssh $ 
+
+現在我們已經把剛才在CubieTruck上面產生的private key
+複製到
+/home/anntony/.ssh/private_key_from_cubie
+我們現在的位置在筆記型電腦上(ssh client端)
+現在來試試看ssh連線，這一次ssh指令的下達方式和先前不一樣
+我們要指定使用這一支剛才從CubieTruck複製下來的private key
+來和CubieTruck (ssh服務器)建立ssh連線
+在筆記型電腦的終端機，執行
+anntony@anntony-Lenovo-B590 ~/.ssh $ ssh -i ./private_key_from_cubie aruntu@192.168.0.161
+Welcome to Ubuntu 13.10 (GNU/Linux 3.4.98-sun7i+ armv7l)
+
+ * Documentation:  https://help.ubuntu.com/
+
+Your Ubuntu release is not supported anymore.
+For upgrade information, please visit:
+http://www.ubuntu.com/releaseendoflife
+
+New release '14.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Wed Sep 10 21:49:18 2014 from anntony-lenovo-b590.local
+aruntu@cubie001:~$ 
+哇靠，好快樂，不用打密碼就可以連線了
+先執行
+# exit
+退出來，那如果 -i指定的是我筆記型電腦已經存在的
+/home/anntony/.ssh/id_rsa會怎樣？
+想當然爾
+anntony@anntony-Lenovo-B590 ~ $ ssh -i .ssh/id_rsa aruntu@192.168.0.161
+aruntu@192.168.0.161's password: 
+Welcome to Ubuntu 13.10 (GNU/Linux 3.4.98-sun7i+ armv7l)
+
+ * Documentation:  https://help.ubuntu.com/
+
+Your Ubuntu release is not supported anymore.
+For upgrade information, please visit:
+http://www.ubuntu.com/releaseendoflife
+
+New release '14.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Wed Sep 10 21:54:54 2014 from anntony-lenovo-b590.local
+aruntu@cubie001:~$ 
+
+因為ssh服務器（CubieTruck）不認識這一支private key
+/home/anntony/.ssh/id_rsa
+更正確的說
+CubieTruck上面的
+/home/aruntu/.ssh/authorized_keys
+這個檔案裡面，沒有記錄筆記型電腦上的
+/home/anntony/.ssh/id_rsa.pub
+因為沒有這支public key的記錄，
+所以ssh服務器也就是CubieTruck理所當然不認識
+/home/anntony/.ssh/id_rsa
+這一支private key
+所以在你剛才執行
+$ ssh -i .ssh/id_rsa aruntu@192.168.0.161
+的時候
+它不會讓你那麼方便，你還是要輸入aruntu帳號的密碼才能登入CubieTruck
+
+現在看起來一切都很愉快
+在ssh client端（筆記型電腦）只要執行
+$ ssh -i /home/anntony/.ssh/private_key_from_cubie aruntu@192.168.0.161
+就可以連線到ssh服務器（CubieTruck）了
+不用再輸入aruntu的密碼就可以登入CubieTruck
+但是，你還可以更懶隋一點
+在ssh client端（筆記型電腦）的終端機裡，執行
+anntony@anntony-Lenovo-B590 ~/.ssh $ ls -al
+總計 44
+drwx------  3 anntony anntony 4096  9月 10 22:05 .
+drwxr-xr-x 43 anntony anntony 4096  9月 10 21:22 ..
+-rw-r--r--  1 anntony anntony  222  8月 22 23:16 config
+-rw-r--r--  1 anntony anntony  230  8月 22 14:42 config.bak
+-rw-r--r--  1 anntony anntony  222  9月 10 22:05 config.working
+-rw-------  1 anntony anntony 1679  8月  5 16:44 id_rsa
+-rw-r--r--  1 anntony anntony  401  8月  5 16:44 id_rsa.pub
+-rw-r--r--  1 anntony anntony 5096  9月  5 22:26 known_hosts
+drwxr-xr-x  2 anntony anntony 4096  8月  5 16:42 old-keys
+-rw-------  1 anntony anntony 1679  9月 10 21:37 private_key_from_cubie
+anntony@anntony-Lenovo-B590 ~/.ssh $ vi ./config
+anntony@anntony-Lenovo-B590 ~/.ssh $ cat ./config
+Host virt
+  HostName 192.168.0.11
+  User git
+  Port 3333
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  PasswordAuthentication no
+  IdentityFile /home/anntony/.ssh/id_rsa
+  IdentitiesOnly yes
+  LogLevel FATAL
+
+Host mycubie
+  HostName 192.168.0.161
+  User aruntu
+  Port 22
+  IdentityFile /home/anntony/.ssh/private_key_from_cubie
+
+這裡有點混亂，我解釋一下
+我在筆記型電腦上的
+/home/anntony/.ssh/config
+這個檔案裡
+多寫了這5行
+Host mycubie
+  HostName 192.168.0.161
+  User aruntu
+  Port 22
+  IdentityFile /home/anntony/.ssh/private_key_from_cubie
+
+因為有這個設定
+所以我可以在筆記型電腦上直接執行
+anntony@anntony-Lenovo-B590 ~ $ ssh mycubie
+Welcome to Ubuntu 13.10 (GNU/Linux 3.4.98-sun7i+ armv7l)
+
+ * Documentation:  https://help.ubuntu.com/
+
+Your Ubuntu release is not supported anymore.
+For upgrade information, please visit:
+http://www.ubuntu.com/releaseendoflife
+
+New release '14.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Wed Sep 10 22:07:24 2014 from anntony-lenovo-b590.local
+aruntu@cubie001:~$ 
+
+哇靠，真是太快樂了
+所以現在，我在ssh client端（筆記型電腦）上面執行的這兩行指令，是同等效力的
+$ ssh mycubie
+$ ssh -i /home/anntony/.ssh/private_key_from_cubie aruntu@192.168.0.161
+
+感謝
+/home/anntony/.ssh/config
+的努力
+
+不要忘記剛才為了使用scp指令，
+把CubieTruck上面的private key，也就是
+/home/aruntu/.ssh/id_rsa
+複製到筆記型電腦上的
+/home/anntony/.ssh/private_key_from_cubie
+所以我沒有把ssh服務器（CubieTruck）的組態檔
+/etc/ssh/sshd_config
+裡面的
+PasswordAuthentication yes
+改成
+PasswordAuthentication no
+現在我們把它調整成no，然後重新啟動ssh服務器
+
+雖然上面已經重複了兩三次
+不過我還是再作一次
+這次直接在ssh client端（筆記型電腦）
+連線過去CubieTruck作設定
+終端機指令如下
+anntony@anntony-Lenovo-B590 ~ $ ssh mycubie
+Welcome to Ubuntu 13.10 (GNU/Linux 3.4.98-sun7i+ armv7l)
+
+ * Documentation:  https://help.ubuntu.com/
+
+Your Ubuntu release is not supported anymore.
+For upgrade information, please visit:
+http://www.ubuntu.com/releaseendoflife
+
+New release '14.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Wed Sep 10 22:29:16 2014 from anntony-lenovo-b590.local
+aruntu@cubie001:~$ sudo -i
+root@cubie001:~# cd /etc/ssh
+root@cubie001:/etc/ssh# ls
+moduli      sshd_config          ssh_host_dsa_key      ssh_host_ecdsa_key      ssh_host_rsa_key      ssh_import_id
+ssh_config  sshd_config.default  ssh_host_dsa_key.pub  ssh_host_ecdsa_key.pub  ssh_host_rsa_key.pub
+root@cubie001:/etc/ssh# cat sshd_config |grep PasswordAu
+PasswordAuthentication yes
+# PasswordAuthentication.  Depending on your PAM configuration,
+# PAM authentication, then enable this but set PasswordAuthentication
+root@cubie001:/etc/ssh# vi /etc/ssh/sshd_config
+root@cubie001:/etc/ssh# cat sshd_config |grep PasswordAu
+PasswordAuthentication no
+# PasswordAuthentication.  Depending on your PAM configuration,
+# PAM authentication, then enable this but set PasswordAuthentication
+root@cubie001:/etc/ssh# service ssh restart
+ssh stop/waiting
+ssh start/running, process 3264
+root@cubie001:/etc/ssh# exit
+logout
+aruntu@cubie001:~$ exit
+logout
+
+Connection to 192.168.0.161 closed.
+anntony@anntony-Lenovo-B590 ~ $ 
+現在我們已經又把ssh服務器（CubieTruck）的
+PasswordAuthentication yes
+改成
+PasswordAuthentication no
+而且又把ssh服務器重新啟動了
+
+現在我們在ssh client（筆記型電腦）這裡試試看
+如果沒有指定建立連線時的那支叫作private_key_from_cubie的私鑰
+我們是否還可以透過輸入aruntu密碼，與CubieTruck成功建立ssh連線
+在筆記型電腦的終端機輸入
+anntony@anntony-Lenovo-B590 ~ $ ssh aruntu@192.168.0.161
+Permission denied (publickey).
+anntony@anntony-Lenovo-B590 ~ $ ssh root@192.168.0.161
+Permission denied (publickey).
+anntony@anntony-Lenovo-B590 ~ $ ssh mycubie
+Welcome to Ubuntu 13.10 (GNU/Linux 3.4.98-sun7i+ armv7l)
+
+ * Documentation:  https://help.ubuntu.com/
+
+Your Ubuntu release is not supported anymore.
+For upgrade information, please visit:
+http://www.ubuntu.com/releaseendoflife
+
+New release '14.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Wed Sep 10 22:29:20 2014 from anntony-lenovo-b590.local
+aruntu@cubie001:~$ exit
+logout
+
+Connection to 192.168.0.161 closed.
+anntony@anntony-Lenovo-B590 ~ $ ssh -i /home/anntony/.ssh/private_key_from_cubie aruntu@192.168.0.161
+Welcome to Ubuntu 13.10 (GNU/Linux 3.4.98-sun7i+ armv7l)
+
+ * Documentation:  https://help.ubuntu.com/
+
+Your Ubuntu release is not supported anymore.
+For upgrade information, please visit:
+http://www.ubuntu.com/releaseendoflife
+
+New release '14.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Wed Sep 10 22:34:33 2014 from anntony-lenovo-b590.local
+aruntu@cubie001:~$ exit
+logout
+
+Connection to 192.168.0.161 closed.
+anntony@anntony-Lenovo-B590 ~ $ ssh -i /home/anntony/.ssh/id_rsa aruntu@192.168.0.161
+Permission denied (publickey).
+
+帥斃了，這就是我要的
+只有在筆記型電腦上指定使用這一把private key
+/home/anntony/.ssh/private_key_from_cubie
+才能和ssh服務器（CubieTruck）建立ssh連線
+
+到這裡
+我們在CubieTruck上面的ssh服務器
+有以下的特性
+．root禁止登入
+．任何用戶禁止使用密碼登入
+．ssh client端只有在持有CubieTruck機器上的/home/aruntu/.ssh/id_rsa這一把私鑰，
+　（也就是筆記型電腦上的/home/anntony/.ssh/private_key_from_cubie　兩支私鑰是同一支啦，用scp指令複製過來的記得嗎？）
+　並指定使用它來與ssh服務器（CubieTruck）建立ssh連線時，才能順利建立連線
+
+順便提一下
+最好是讓ssh client來產生RSA keypair
+然後在ssh server的某個用戶的家目錄下的authorized_keys檔案
+也就是本例中的
+/home/aruntu/.ssh/authorized_keys
+記載著ssh client的public key
+也就是本例中的
+/home/anntony/.ssh/id_rsa.pub
+為了順便展示如何產生RSA keypair
+還有因為我的筆記型電腦裡的
+/home/anntony/.ssh目錄裡原本就有了id_rsa和id_rsa.pub
+所以我在ssh server（也就是CubieTruck）這邊產生keypair
+在執行完
+$ cat /home/aruntu/.ssh/id_rsa.pub >> /home/aruntu/.ssh/authorized_keys
+指令之後（可以想成是注冊aruntu用戶認同的公鑰）
+然後就把private key讓我的ssh client端（筆記型電腦）來複製
+這樣子
+如果這個ssh client
+是個熱情的人
+他到處把這一把private key
+到處給人複製
+那麼只要有這一把private key的人
+都可以用aruntu用戶權限登入你的ssh服務器（CubieTruck）
+站在ssh server的立場
+它應該叫ssh client自已提交來一把RSA的public key
+然後ssh server再把這支public key添加到ssh server上的某個用戶（如本例的aruntu用戶）家目錄下的.ssh/authorized_keys檔案裡
+這樣才對
+本例為了演示方便，所以在ssh服務器端產生RSA keypair，然後把產生的private key讓ssh client端持有
+好孩子不要學（我確定我自已不會把private key交給別人，不會再有其他人可以這樣登入我的CubieTruck，那就沒差）
+
+又是一個漫長的旅程
+打完收工
+接著請繼續收看objective 7
