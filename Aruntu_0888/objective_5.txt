@@ -11,6 +11,7 @@ objective 5 : 客製化aRuntu系統
 　（三）偶爾可能還是會寫到Java代碼，所以要把Oracle JDK裝上，順便也裝上Netbeans IDE
 　（四）還有LibreOffice和影像處理程式Gimp也裝上
 　（五）修改CubieTruck的主機名稱 ( hostname )
+　（六）加入一個系統置換檔( swap )
 
 ==============================================================================================
 （零）調整MicroSD卡的分割區大小 - Resize the partition size on my 16GB MicroSD card
@@ -1838,7 +1839,137 @@ service networking restart
 原來的主機名稱是aruntu (和預設用戶名稱一樣)
 我改成了cubie001
 這樣就修改完主機名稱了
+再來是下一個任務
 
+==============================================================================================
+（六）加入一個系統置換檔( swap )
+==============================================================================================
+我注意到aRuntu預設是沒有使用系統置換檔(swap)的
+我在「系統工具」的「系統監控」
+https://plus.google.com/photos/117546034720970496255/albums/6057327335855397601/6057327338092363922?pid=6057327338092363922&oid=117546034720970496255
+
+看到「置換」的下方寫著「無法使用」，所以這說明我沒有使用swap嗎？
+https://plus.google.com/photos/117546034720970496255/albums/6057327335855397601/6057327341912141762?pid=6057327341912141762&oid=117546034720970496255
+
+然後我去Google找到了這一篇文章
+https://www.digitalocean.com/community/tutorials/how-to-add-swap-on-ubuntu-12-04
+
+首先我再次檢查了aRuntu到底有沒有使用swap置換檔？
+在終端機執行如下：
+aruntu@cubie001:~$ sudo -i
+root@cubie001:~# swapon -s
+Filename				Type		Size	Used	Priority
+root@cubie001:~# 
+
+空的，什麼都沒有，那就真的沒有使用swap置換檔了
+在創造swap置換檔之前，先看一下MicroSD卡上面剩多少空間？
+root@cubie001:~# df -h
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/root       7.1G  5.4G  1.5G   80% /
+devtmpfs        888M  4.0K  888M    1% /dev
+/dev/root       7.1G  5.4G  1.5G   80% /var/log.hdd
+ramlog-tmpfs    984M   13M  972M    2% /var/log
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+tmpfs           984M  4.0K  984M    1% /tmp
+none            197M  452K  197M    1% /run
+tmpfs           984M     0  984M    0% /var/tmp
+none            5.0M     0  5.0M    0% /run/lock
+none            984M   72K  984M    1% /run/shm
+none            100M  8.0K  100M    1% /run/user
+
+哦我已經用掉百分之80了，不過還有剩下1.5G應該可以
+接下來還是在終端機裡，請這樣作
+root@cubie001:~# pwd
+/root
+root@cubie001:~# cd /
+root@cubie001:/# ls
+1.fex                       bin   dev  home  lost+found  mnt  proc  run   script-ct.bin         srv  tmp       uEnv.ct          usr
+aRUNTU_TITAN_EDITION_0.888  boot  etc  lib   media       opt  root  sbin  script-cubie-A20.bin  sys  uEnv.cb2  uEnv.ct.default  var
+root@cubie001:/# dd if=/dev/zero of=/swapfile bs=1024 count=256k
+262144+0 records in
+262144+0 records out
+複製了 268435456 位元組 (268 MB), 31.9952 s, 8.4 MB/s
+root@cubie001:/# pwd
+/
+root@cubie001:/# ls -al
+總計 262364
+drwxr-xr-x  21 root   root        4096  9月 10 14:55 .
+drwxr-xr-x  21 root   root        4096  9月 10 14:55 ..
+-rw-r--r--   1 root   root       23207  9月  4 17:52 1.fex
+-rw-r--r--   1 root   root          50  7月  5 07:04 aRUNTU_TITAN_EDITION_0.888
+drwxr-xr-x   2 root   root        4096  7月 11 00:20 bin
+drwxrwxr-x   2 aruntu aruntu      4096  7月 13 06:21 boot
+drwxr-xr-x  13 root   root        3620  9月 10 14:13 dev
+drwxr-xr-x 163 root   root       12288  9月 10 14:13 etc
+drwxr-xr-x   4 root   root        4096  7月  1 23:31 home
+drwxr-xr-x  16 root   root        4096  7月 13 07:12 lib
+drwx------   2 root   root       16384  1月 25  2014 lost+found
+drwxr-xr-x   5 root   root        4096  7月  1 02:02 media
+drwxr-xr-x   2 root   root        4096 10月 14  2013 mnt
+drwxr-xr-x   2 root   root        4096 10月 16  2013 opt
+dr-xr-xr-x 149 root   root           0  1月  1  1970 proc
+drwx------  22 root   root        4096  9月 10 03:42 root
+drwxr-xr-x  23 root   root         900  9月 10 14:30 run
+drwxr-xr-x   2 root   root        4096  7月  4 23:47 sbin
+-rwxrwxrwx   1 root   root       44228  9月  4 17:53 script-ct.bin
+-rwxrwxrwx   1 root   root       46096  7月  6 00:14 script-cubie-A20.bin
+drwxr-xr-x   2 root   root        4096 10月 16  2013 srv
+-rw-r--r--   1 root   root   268435456  9月 10 14:55 swapfile
+dr-xr-xr-x  12 root   root           0  9月 10 14:13 sys
+drwxrwxrwt   7 root   root         200  9月 10 14:39 tmp
+-rw-r--r--   1 root   root        1629  7月 13 06:17 uEnv.cb2
+-rwxr-xr-x   1 root   root        1619  9月  4 17:42 uEnv.ct
+-rwxr-xr-x   1 root   root        1619  9月  4 17:41 uEnv.ct.default
+drwxr-xr-x  10 root   root        4096 10月 16  2013 usr
+drwxr-xr-x  15 root   root        4096  6月 29 19:40 var
+root@cubie001:/#  mkswap /swapfile
+設定 swapspace 版本 1, 大小 = 262140 KiB
+無標籤， UUID=00d5b4f2-8dae-4de1-ab78-9a9e322a90c4
+root@cubie001:/# swapon /swapfile
+root@cubie001:/# swapon -s
+Filename				Type		Size	Used	Priority
+/swapfile                               file		262140	0	-1
+root@cubie001:/# cat /etc/fstab
+# UNCONFIGURED FSTAB FOR BASE SYSTEM
+tmpfs           /tmp            tmpfs   defaults          0       0
+tmpfs           /var/tmp        tmpfs   defaults          0       0
+root@cubie001:/# vi /etc/fstab
+root@cubie001:/# cat /etc/fstab
+# UNCONFIGURED FSTAB FOR BASE SYSTEM
+tmpfs           /tmp            tmpfs   defaults          0       0
+tmpfs           /var/tmp        tmpfs   defaults          0       0
+/swapfile       none            swap    sw                0       0
+root@cubie001:/# cat /proc/sys/vm/swappiness 
+60
+root@cubie001:/# echo 10 | tee /proc/sys/vm/swappiness
+10
+root@cubie001:/# cat /proc/sys/vm/swappiness
+10
+root@cubie001:/# cat /etc/sysctl.conf |grep swap
+root@cubie001:/# echo vm.swappiness = 10 | tee -a /etc/sysctl.conf
+vm.swappiness = 10
+root@cubie001:/# cat /etc/sysctl.conf |grep swap
+vm.swappiness = 10
+root@cubie001:/# chown root:root /swapfile 
+root@cubie001:/# chmod 0600 /swapfile 
+root@cubie001:/# ls -al|grep swapfile
+-rw-------   1 root   root   268435456  9月 10 14:57 swapfile
+root@cubie001:/# sync
+root@cubie001:/# init 6
+重開機之後，再進入了終端機，執行
+aruntu@cubie001:~$ sudo -i
+root@cubie001:~# swapon -s
+Filename				Type		Size	Used	Priority
+/swapfile                               file		262140	0	-1
+
+哦，swap置換檔有作用
+然後再去圖形介面的「系統監控」再次確認一下
+這一次我剛才弄的256MB的swap置換檔出現了，嗚嗚很感動
+https://plus.google.com/photos/117546034720970496255/albums/6057327335855397601/6057338661563558338?pid=6057338661563558338&oid=117546034720970496255
+
+加入swap置換檔的任務，完成
+
+==============================================================================================
 這樣objective 5 
 客製化aRuntu系統
 超漫長的
