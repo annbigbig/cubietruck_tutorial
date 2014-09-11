@@ -1,0 +1,279 @@
+objective 7 : 設定vnc server
+
+aRuntu的影像檔寫入MicroSD卡之後，預設就有安裝好x11vnc (Server)
+可以打開套件管理員確認一下，如圖：
+https://plus.google.com/photos/117546034720970496255/albums/6057327335855397601/6057707187504555106?pid=6057707187504555106&oid=117546034720970496255
+
+而且開機時已經設定好自動啟動於TCP port 5900了
+所以在vnc viewer端（筆記型電腦）
+只要安裝上隨便一個vnc viewer軟體
+就可以和CubieTruck作VNC連線了
+
+我在筆記型電腦上的Linux Mint 17上安裝的vnc viewer是vinagre
+打開我的套件管理員，在這裡可以再次確認，已經安裝上了vinagre
+https://plus.google.com/photos/117546034720970496255/albums/6057327335855397601/6057709183570996082?pid=6057709183570996082&oid=117546034720970496255
+
+打開我筆記型電腦上的vinagre，在左下角Menu ->網際網路 ->　遠端桌面檢視器
+https://plus.google.com/photos/117546034720970496255/albums/6057327335855397601/6057709704382219714?pid=6057709704382219714&oid=117546034720970496255
+
+使用很簡單，按下左上角的「連線」鈕之後，輸入vnc server的IP:port
+例如我的CubieTruck就是192.168.0.161:5900
+通訊協定維持原來的VNC，按下右下角的「連線」鈕
+https://plus.google.com/photos/117546034720970496255/albums/6057327335855397601/6057711457298045954?pid=6057711457298045954&oid=117546034720970496255
+
+然後就連線了，很快樂
+https://plus.google.com/photos/117546034720970496255/albums/6057327335855397601/6057714218142170146?pid=6057714218142170146&oid=117546034720970496255
+
+aRuntu 0.888版預設的x11vnc並沒有設置密碼
+所以只要你同一個網段的區網裡的任何人
+都可以隨便拿一個vnc viewer去連你CubieTruck的 192.168.0.161:5900
+如果要為x11vnc設置密碼，可以這樣作
+
+anntony@anntony-Lenovo-B590 ~ $ ssh mycubie
+Welcome to Ubuntu 13.10 (GNU/Linux 3.4.98-sun7i+ armv7l)
+
+ * Documentation:  https://help.ubuntu.com/
+
+Your Ubuntu release is not supported anymore.
+For upgrade information, please visit:
+http://www.ubuntu.com/releaseendoflife
+
+New release '14.04.1 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+Last login: Thu Sep 11 15:48:46 2014 from anntony-lenovo-b590.local
+aruntu@cubie001:~$ pwd
+/home/aruntu
+aruntu@cubie001:~$ ls -al|grep vnc
+drwxrwxr-x  3 aruntu aruntu   4096  7月  5 04:56 .vnc
+aruntu@cubie001:~$ cd .vnc
+aruntu@cubie001:~/.vnc$ ls -al
+總計 12
+drwxrwxr-x  3 aruntu aruntu 4096  7月  5 04:56 .
+drwxr-xr-x 42 aruntu aruntu 4096  9月 11 15:00 ..
+drwxrwxr-x  2 aruntu aruntu 4096  7月  5 04:56 profiles
+aruntu@cubie001:~/.vnc$ cd profiles/
+aruntu@cubie001:~/.vnc/profiles$ ls -al
+總計 8
+drwxrwxr-x 2 aruntu aruntu 4096  7月  5 04:56 .
+drwxrwxr-x 3 aruntu aruntu 4096  7月  5 04:56 ..
+aruntu@cubie001:~/.vnc/profiles$ cd ~
+aruntu@cubie001:~$ pwd
+/home/aruntu
+aruntu@cubie001:~$ x11vnc -storepasswd
+Enter VNC password: 
+Verify password:    
+Write password to /home/aruntu/.vnc/passwd?  [y]/n y
+Password written to: /home/aruntu/.vnc/passwd
+aruntu@cubie001:~$ cat /home/aruntu/.vnc/passwd 
+(3o�1�Rbaruntu@cubie001:~$ 
+
+我偷偷告訴你我的vnc server密碼是rrrrr
+因為我超愛SOD
+設定了x11vnc的密碼之後，應該要重新啟動x11vnc
+可是我看網路上我用「ubuntu x11vnc restart」查到的文章
+有夠長有夠長有夠長廢話一堆
+我想…那直接把CubieTruck重新開機會不會比較快？
+所以我就重開機了
+接下來
+現在再來試試看在筆記型電腦上使用vnc viewer去連vnc server(CubieTruck)
+
+
+結果悲劇發生了
+還是和設定vnc密碼之前一模一樣，什麼密碼都不用輸入就快樂的連線了
+啊啊啊三小？怎麼會這樣
+
+然後我再看了一下aRuntu官網寫的這一篇
+http://cubiuntu.com/2014/05/06/ssh-and-x11vnc-server-password-change-in-cubiuntu/
+
+重點是
+FOR CHANGING X11VNC PASSWORD:
+
+Type:
+
+x11vnc -storepasswd
+
+as normal user and as root.
+
+所以我剛只有改變aruntu用戶的vnc密碼
+連root的也要修改是嗎？
+好吧再次回到筆記型電腦的終端機，執行
+anntony@anntony-Lenovo-B590 ~ $ ssh mycubie
+Last login: Thu Sep 11 15:56:01 2014 from anntony-lenovo-b590.local
+aruntu@cubie001:~$ sudo -i
+root@cubie001:~# ls -al|grep vnc
+root@cubie001:~# whoami
+root
+root@cubie001:~# pwd
+/root
+root@cubie001:~# x11vnc -storepasswd
+Enter VNC password: 
+Verify password:    
+Write password to /root/.vnc/passwd?  [y]/n y
+Password written to: /root/.vnc/passwd
+root@cubie001:~# ls -al|grep vnc
+drwxr-xr-x  2 root root   4096  9月 11 16:20 .vnc
+root@cubie001:~# cat /root/.vnc/passwd 
+rs�L�!�root@cubie001:~# 
+
+再偷偷告訴你，我的root用戶的vnc密碼剛才設定的是
+ooooo
+因為我超超超愛SOD，他們提供優質影片
+所以現在我的CubieTruck上面的aruntu用戶的vnc密碼是rrrrr
+然後root用戶的vnc密碼是ooooo
+
+現在再使用筆記型電腦上的vnc viewer來連線CubieTruck
+結果
+我剛才設定的vnc密碼還是不必輸入就可以連線了…
+怪…
+我疑惑了…為什麼呢？
+我用ssh連線進了CubieTruck，在終端機裡執行了
+root@cubie001:~# ps aux|grep vnc
+aruntu    1444  0.4  0.6  21672 12904 ?        S    16:23   0:55 x11vnc -shared -forever
+root      2595  0.0  0.0   3816   768 pts/0    S+   20:01   0:00 grep --color=auto vnc
+root@cubie001:~# 
+
+我發現aRuntu執行x11vnc的時候，沒有指定要使用任何的密碼檔
+像是某篇文章裡看到的
+x11vnc -geometry 1366x768 -rfbauth .vnc/passwd
+這裡指定了螢幕的解析度和vnc server的密碼檔
+
+參考資料
+http://kanghuanyao.blogspot.tw/2008/01/x11vnc.html
+http://magnatecha.com/using-x11vnc-with-ubuntu/
+https://www.digitalocean.com/community/tutorials/how-to-setup-vnc-for-ubuntu-12
+http://cubiuntu.com/2014/06/17/x11vnc-at-init-in-aruntu/
+搜尋關鍵字「ubuntu x11vnc password configuration」
+
+參考資料
+http://unix.stackexchange.com/questions/16138/how-to-search-text-throughout-entire-file-system
+搜尋關鍵字
+linux how to search file entire filesystem content
+
+大概看過上面搜出來的資料之後
+我本來期待會有一個類似/etc/x11vnc.conf的組態檔
+可以讓我去設定x11vnc的預設行為
+但是上面的文章裡都沒有
+我發現大家都是直接執行x11vnc指令，頂多是後面加上一些參數
+我甚至到CubieTruck上面打開了synaptic套件管理員，找到x11vnc套件，然後按右鍵按了「屬性」來確認
+如圖：
+https://plus.google.com/photos/117546034720970496255/albums/6057327335855397601/6057803981492590594?pid=6057803981492590594&oid=117546034720970496255
+
+我怕圖片連結失效，你看不到內容
+我又把x11vnc的「已安裝檔案」列在這裡
+/.
+/usr
+/usr/bin
+/usr/bin/x11vnc
+/usr/share
+/usr/share/applications
+/usr/share/applications/x11vnc.desktop
+/usr/share/doc
+/usr/share/doc/x11vnc
+/usr/share/doc/x11vnc/README.gz
+/usr/share/doc/x11vnc/changelog.Debian.gz
+/usr/share/doc/x11vnc/copyright
+/usr/share/man
+/usr/share/man/man1
+/usr/share/man/man1/x11vnc.1.gz
+
+真的沒有什麼類似組態檔設定檔的東西，沒有/etc/x11vnc.conf，沒有這種東西存在
+所以綜合以上的資訊，可以了解
+如果aRuntu要在開機後自動運行x11vnc，
+那麼應該是在某個開機後會自動執行的shell script裡面
+寫著
+x11vnc ........
+之類的指令
+然後為什麼現在我們CubieTruck上面的x11vnc，
+即使我剛才為aruntu用戶和root用戶都設置了vnc server的連線密碼
+在筆記型電腦的vnc viewer上操作時，還是連問一下密碼都不用，就可以連線到CubieTruck的vnc server了呢？
+那是因為在CubieTruck的某個地方（大概是在/etc目錄下的某個檔案）
+是開機自動執行的，那個不知名的檔案裡有一行關鍵的
+x11vnc ........（後面參數不知道有什麼）
+但是可以知道的是，後面一定沒有加上
+-rfbauth .vnc/passwd
+可是/etc目錄那麼大，裡面少說幾萬個檔案，要怎麼把這個設定檔案找出來？
+這個檔案有一個特徵，就是檔案內容裡有「x11vnc」這個關鍵字
+所以我們可以在CubieTruck的終端機試著執行：
+root@cubie001:~# find /etc -xdev -type f -print0 | xargs -0 grep -H "x11vnc"
+/etc/xdg/lxsession/LXDE/autostart:@x11vnc -share -forever
+root@cubie001:~# 
+
+啊哈，找到了，混帳東西
+在
+/etc/xdg/lxsession/LXDE/autostart
+把這行
+@x11vnc -share -forever
+改成這行
+@x11vnc -forever -geometry 1024x768 -rfbauth /root/.vnc/passwd -o /var/log/x11vnc.log -rfbport 27900
+上面是使用1024x768解析度
+然後密碼檔是在/root/.vnc/passwd
+log檔請記錄在/var/log/x11vnc.log
+vnc server使用的TCP port是27900
+修改完存檔
+然後重新啟動CubieTruck試試
+
+沒用
+我快發瘋了
+結果原來在/home目錄下的
+/home/aruntu/.local/share/applications/x11vnc.desktop
+這個檔案
+內容是
+[Desktop Entry]
+Name=X11VNC Server
+Comment=Share this desktop by VNC
+Exec=x11vnc -gui tray=setpass -rfbport PROMPT -bg -o %%HOME/.x11vnc.log.%%VNCDISPLAY
+Icon=computer
+Terminal=false
+Type=Application
+StartupNotify=false
+#StartupWMClass=x11vnc_port_prompt
+Categories=Network;RemoteAccess;
+Hidden=true
+
+把上面這個檔案
+/home/aruntu/.local/share/applications/x11vnc.desktop
+的其中這一行
+Exec=x11vnc -gui tray=setpass -rfbport PROMPT -bg -o %%HOME/.x11vnc.log.%%VNCDISPLAY
+改成這樣
+Exec=x11vnc -forever -geometry 1024x768 -rfbauth %%HOME/.vnc/passwd -o %%HOME/.x11vnc.log.%%VNCDISPLAY -rfbport 27999
+然後重新再啟動CubieTruck看看
+
+臭基拜，還是沒用，還是一樣把vnc server啟動在TCP port 5900
+然後我又
+# find /usr/share/applications -xdev -type f -print0 | xargs -0 grep -H "x11vnc"
+/usr/share/applications/x11vnc.desktop:Exec=x11vnc -gui tray=setpass -rfbport PROMPT -bg -o %%HOME/.x11vnc.log.%%VNCDISPLAY
+/usr/share/applications/x11vnc.desktop:#StartupWMClass=x11vnc_port_prompt
+/usr/share/applications/bamf-2.index:x11vnc.desktop	x11vnc -gui tray=setpass -rfbport PROMPT -bg -o %%HOME/.x11vnc.log.%%VNCDISPLAY			false
+root@cubie001:/usr/share/applications# 
+
+
+Exec=x11vnc -forever -geometry 1024x768 -rfbauth %%HOME/.vnc/passwd -o %%HOME/.x11vnc.log.%%VNCDISPLAY -rfbport 27999
+
+注意這裡
+aruntu@cubie001:~$ sudo -i
+root@cubie001:~# netstat -anp|less
+root@cubie001:~# ps aux|grep vnc
+aruntu    1456  0.2  0.3  19292  6060 ?        S    23:17   0:00 x11vnc -shared -forever
+root      1976  0.0  0.0   3816   768 pts/0    S+   23:18   0:00 grep --color=auto vnc
+root@cubie001:~# kill 1456
+root@cubie001:~# ps aux|grep vnc
+aruntu    1978  3.0  0.3  19292  6048 ?        S    23:18   0:00 x11vnc -shared -forever
+root      1980  0.0  0.0   3812   724 pts/0    S+   23:19   0:00 grep --color=auto vnc
+root@cubie001:~# ps aux|grep vnc
+aruntu    1978  0.6  0.3  19292  6052 ?        S    23:18   0:00 x11vnc -shared -forever
+root      1982  0.0  0.0   3812   724 pts/0    S+   23:19   0:00 grep --color=auto vnc
+root@cubie001:~# netstat -anp|less
+root@cubie001:~# kill 1978
+root@cubie001:~# netstat -anp|less
+root@cubie001:~# kill 1985
+root@cubie001:~# netstat -anp|less
+root@cubie001:~# ps aux|grep vnc
+aruntu    1988  0.3  0.3  19292  6052 ?        S    23:19   0:00 x11vnc -shared -forever
+root      1993  0.0  0.0   3812   724 pts/0    S+   23:20   0:00 grep --color=auto vnc
+root@cubie001:~# 
+
+永遠殺不死的x11vnc，殺死了之後又自動重生
+是不死系的魔物嗎？
+我眼花了嗎？
+累了，休息吧
