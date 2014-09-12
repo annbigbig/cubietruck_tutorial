@@ -1,0 +1,392 @@
+objective 8 : 設定nfs server
+
+參考了
+http://tutorialforlinux.com/2013/10/26/ubuntu-13-10-saucy-how-to-share-files-over-network-with-nfs4-from-server-to-client-setup/
+
+首先到CubieTruck上面的終端機，把nfs server套件安裝上去
+aruntu@cubie001:~$ sudo -i
+root@cubie001:~# whoami
+root
+root@cubie001:~# apt-get update
+略過 http://ports.ubuntu.com saucy InRelease       
+略過 http://ports.ubuntu.com saucy-updates InRelease
+略過 http://ports.ubuntu.com saucy-backports InRelease
+略過 http://ports.ubuntu.com saucy-security InRelease
+已有 http://ports.ubuntu.com saucy Release.gpg
+已有 http://ports.ubuntu.com saucy-updates Release.gpg
+已有 http://ports.ubuntu.com saucy-backports Release.gpg
+已有 http://ports.ubuntu.com saucy-security Release.gpg
+已有 http://ports.ubuntu.com saucy Release
+已有 http://ports.ubuntu.com saucy-updates Release
+已有 http://ports.ubuntu.com saucy-backports Release
+已有 http://ports.ubuntu.com saucy-security Release
+已有 http://ports.ubuntu.com saucy/main Sources
+已有 http://ports.ubuntu.com saucy/restricted Sources
+已有 http://ports.ubuntu.com saucy/universe Sources
+已有 http://ports.ubuntu.com saucy/main armhf Packages
+已有 http://ports.ubuntu.com saucy/restricted armhf Packages
+已有 http://ports.ubuntu.com saucy/universe armhf Packages
+已有 http://ports.ubuntu.com saucy/main Translation-zh_TW
+已有 http://ports.ubuntu.com saucy/main Translation-en
+已有 http://ports.ubuntu.com saucy/restricted Translation-zh_TW
+已有 http://ports.ubuntu.com saucy/restricted Translation-en
+已有 http://ports.ubuntu.com saucy/universe Translation-zh_TW
+已有 http://ports.ubuntu.com saucy/universe Translation-en
+已有 http://ports.ubuntu.com saucy-updates/main Sources
+已有 http://ports.ubuntu.com saucy-updates/restricted Sources
+已有 http://ports.ubuntu.com saucy-updates/universe Sources
+已有 http://ports.ubuntu.com saucy-updates/main armhf Packages
+已有 http://ports.ubuntu.com saucy-updates/restricted armhf Packages
+已有 http://ports.ubuntu.com saucy-updates/universe armhf Packages
+已有 http://ports.ubuntu.com saucy-backports/main Sources
+已有 http://ports.ubuntu.com saucy-backports/restricted Sources
+已有 http://ports.ubuntu.com saucy-backports/main armhf Packages
+已有 http://ports.ubuntu.com saucy-backports/restricted armhf Packages
+已有 http://ports.ubuntu.com saucy-backports/main Translation-en
+已有 http://ports.ubuntu.com saucy-backports/restricted Translation-en
+已有 http://ports.ubuntu.com saucy-security/main Sources
+已有 http://ports.ubuntu.com saucy-security/restricted Sources
+已有 http://ports.ubuntu.com saucy-security/universe Sources
+已有 http://ports.ubuntu.com saucy-security/multiverse Sources
+已有 http://ports.ubuntu.com saucy-security/main armhf Packages
+已有 http://ports.ubuntu.com saucy-security/restricted armhf Packages
+已有 http://ports.ubuntu.com saucy-security/universe armhf Packages
+已有 http://ports.ubuntu.com saucy-security/multiverse armhf Packages
+已有 http://ports.ubuntu.com saucy-security/main Translation-en
+已有 http://ports.ubuntu.com saucy-security/multiverse Translation-en
+已有 http://ports.ubuntu.com saucy-security/restricted Translation-en
+已有 http://ports.ubuntu.com saucy-security/universe Translation-en
+略過 http://ports.ubuntu.com saucy/main Translation-zh
+略過 http://ports.ubuntu.com saucy/restricted Translation-zh
+略過 http://ports.ubuntu.com saucy/universe Translation-zh
+略過 http://ports.ubuntu.com saucy-backports/main Translation-zh_TW
+略過 http://ports.ubuntu.com saucy-backports/main Translation-zh
+略過 http://ports.ubuntu.com saucy-backports/restricted Translation-zh_TW
+略過 http://ports.ubuntu.com saucy-backports/restricted Translation-zh
+略過 http://ports.ubuntu.com saucy-security/main Translation-zh_TW
+略過 http://ports.ubuntu.com saucy-security/main Translation-zh
+略過 http://ports.ubuntu.com saucy-security/multiverse Translation-zh_TW
+略過 http://ports.ubuntu.com saucy-security/multiverse Translation-zh
+略過 http://ports.ubuntu.com saucy-security/restricted Translation-zh_TW
+略過 http://ports.ubuntu.com saucy-security/restricted Translation-zh
+略過 http://ports.ubuntu.com saucy-security/universe Translation-zh_TW
+略過 http://ports.ubuntu.com saucy-security/universe Translation-zh
+正在讀取套件清單... 完成
+root@cubie001:~# apt-get install nfs-kernel-server rpcbind nfs-common
+正在讀取套件清單... 完成
+正在重建相依關係          
+正在讀取狀態資料... 完成
+nfs-common 已經是最新版本了。
+nfs-kernel-server 已經是最新版本了。
+rpcbind 已經是最新版本了。
+rpcbind 被設定為手動安裝。
+升級 0 個，新安裝 0 個，移除 0 個，有 27 個未被升級。
+root@cubie001:~# cat /etc/default/rpcbind
+cat: /etc/default/rpcbind: 沒有此一檔案或目錄
+root@cubie001:~# vi /etc/default/rpcbind
+root@cubie001:~# cat /etc/default/rpcbind
+OPTIONS=""
+root@cubie001:~# cat /etc/host.allow
+cat: /etc/host.allow: 沒有此一檔案或目錄
+root@cubie001:~# echo "portmap: 192.168.0." >> /etc/hosts.allow
+root@cubie001:~# cat /etc/host.allow
+cat: /etc/host.allow: 沒有此一檔案或目錄
+root@cubie001:~# cat /etc/hosts.allow
+# /etc/hosts.allow: list of hosts that are allowed to access the system.
+#                   See the manual pages hosts_access(5) and hosts_options(5).
+#
+# Example:    ALL: LOCAL @some_netgroup
+#             ALL: .foobar.edu EXCEPT terminalserver.foobar.edu
+#
+# If you're going to protect the portmapper use the name "portmap" for the
+# daemon name. Remember that you can only use the keyword "ALL" and IP
+# addresses (NOT host or domain names) for the portmapper, as well as for
+# rpc.mountd (the NFS mount daemon). See portmap(8) and rpc.mountd(8)
+# for further information.
+#
+
+portmap: 192.168.0.
+root@cubie001:~# cat /etc/default/nfs-common 
+# If you do not set values for the NEED_ options, they will be attempted
+# autodetected; this should be sufficient for most people. Valid alternatives
+# for the NEED_ options are "yes" and "no".
+
+# Do you want to start the statd daemon? It is not needed for NFSv4.
+NEED_STATD=
+
+# Options for rpc.statd.
+#   Should rpc.statd listen on a specific port? This is especially useful
+#   when you have a port-based firewall. To use a fixed port, set this
+#   this variable to a statd argument like: "--port 4000 --outgoing-port 4001".
+#   For more information, see rpc.statd(8) or http://wiki.debian.org/SecuringNFS
+STATDOPTS=
+
+# Do you want to start the gssd daemon? It is required for Kerberos mounts.
+NEED_GSSD=
+root@cubie001:~# cat /etc/default/nfs-common |grep NEED_IDMAPD
+root@cubie001:~# echo "NEED_IDMAPD=YES" >> /etc/default/nfs-common
+root@cubie001:~# cat /etc/default/nfs-common |grep NEED_IDMAPD
+NEED_IDMAPD=YES
+root@cubie001:~# cat /etc/default/nfs-common
+# If you do not set values for the NEED_ options, they will be attempted
+# autodetected; this should be sufficient for most people. Valid alternatives
+# for the NEED_ options are "yes" and "no".
+
+# Do you want to start the statd daemon? It is not needed for NFSv4.
+NEED_STATD=
+
+# Options for rpc.statd.
+#   Should rpc.statd listen on a specific port? This is especially useful
+#   when you have a port-based firewall. To use a fixed port, set this
+#   this variable to a statd argument like: "--port 4000 --outgoing-port 4001".
+#   For more information, see rpc.statd(8) or http://wiki.debian.org/SecuringNFS
+STATDOPTS=
+
+# Do you want to start the gssd daemon? It is required for Kerberos mounts.
+NEED_GSSD=
+NEED_IDMAPD=YES
+root@cubie001:~# cat /etc/idmapd.conf 
+[General]
+
+Verbosity = 0
+Pipefs-Directory = /run/rpc_pipefs
+# set your own domain here, if id differs from FQDN minus hostname
+# Domain = localdomain
+
+[Mapping]
+
+Nobody-User = nobody
+Nobody-Group = nogroup
+root@cubie001:~# cat /etc/exports 
+# /etc/exports: the access control list for filesystems which may be exported
+#		to NFS clients.  See exports(5).
+#
+# Example for NFSv2 and NFSv3:
+# /srv/homes       hostname1(rw,sync,no_subtree_check) hostname2(ro,sync,no_subtree_check)
+#
+# Example for NFSv4:
+# /srv/nfs4        gss/krb5i(rw,sync,fsid=0,crossmnt,no_subtree_check)
+# /srv/nfs4/homes  gss/krb5i(rw,sync,no_subtree_check)
+#
+root@cubie001:~# vi /etc/exports
+root@cubie001:~# vi /etc/exports
+root@cubie001:~# cat /etc/exports 
+# /etc/exports: the access control list for filesystems which may be exported
+#		to NFS clients.  See exports(5).
+#
+# Example for NFSv2 and NFSv3:
+# /srv/homes       hostname1(rw,sync,no_subtree_check) hostname2(ro,sync,no_subtree_check)
+#
+# Example for NFSv4:
+# /srv/nfs4        gss/krb5i(rw,sync,fsid=0,crossmnt,no_subtree_check)
+# /srv/nfs4/homes  gss/krb5i(rw,sync,no_subtree_check)
+#
+
+/nfs-share         192.168.0.0/255.255.255.0(rw,sync,no_subtree_check)
+root@cubie001:~# ls
+autostart.default  Documents  _etc_xdg_lxsession_LXDE_autostart_default  nano.save  Public       sunxi-tools  Templates  x11vnc.desktop.default
+Desktop            Downloads  Music                                      Pictures   result0.txt  syslog.2     Videos
+root@cubie001:~# pwd
+/root
+root@cubie001:~# cd /
+root@cubie001:/# mkdir /nfs-share
+root@cubie001:/# chmod 777 nfs-share/
+root@cubie001:/# ls -al |grep nfs
+drwxrwxrwx   2 root   root        4096  9月 12 22:32 nfs-share
+root@cubie001:/# /etc/init.d/nfs-kernel-server start
+ * Exporting directories for NFS kernel daemon...                                                                                                        [ OK ] 
+ * Starting NFS kernel daemon                                                                                                                            [ OK ] 
+root@cubie001:/# /etc/init.d/rpcbind start
+root@cubie001:/# 
+
+在CubieTruck這邊已經讓nfs server和rpcbind都啟動了
+接下來在筆記型電腦(nfs client)這邊的終端機
+anntony-Lenovo-B590 ~ # apt-get install nfs-common rpcbind
+正在讀取套件清單... 完成
+正在重建相依關係          
+正在讀取狀態資料... 完成
+nfs-common 已是最新版本。
+rpcbind 已是最新版本。
+以下套件為自動安裝，並且已經無用：
+  libgettextpo0 libgsoap4 libm17n-0 libotf0 libvncserver0 m17n-contrib m17n-db
+Use 'apt-get autoremove' to remove them.
+升級 0 個，新安裝 0 個，移除 0 個，有 72 個未被升級。
+
+哦對，我已經安裝好nfs client所需要的套件了，現在在筆記型電腦上的終端機
+anntony-Lenovo-B590 mnt # mount.nfs4 192.168.0.161:/nfs-share /mnt/nfs
+anntony-Lenovo-B590 mnt # df -h
+檔案系統                  容量  已用  可用 已用% 掛載點
+/dev/sda1                 453G   93G  338G   22% /
+none                      4.0K     0  4.0K    0% /sys/fs/cgroup
+udev                      2.8G  4.0K  2.8G    1% /dev
+tmpfs                     559M  1.4M  558M    1% /run
+none                      5.0M     0  5.0M    0% /run/lock
+none                      2.8G   36M  2.7G    2% /run/shm
+none                      100M   44K  100M    1% /run/user
+192.168.0.161:/nfs-share  7.1G  5.6G  1.2G   83% /mnt/nfs
+anntony-Lenovo-B590 mnt # 
+
+掛載起來了，nfs server（CubieTruck）分享出來的/nfs-share目錄
+被掛載到了nfs clinet（筆記型電腦）上的/mnt/nfs目錄
+記住這個重要的指令
+# mount.nfs4 192.168.0.161:/nfs-share /mnt/nfs
+它是nfs client端用來把nfs server端分享出來的目錄給掛載到自已本地端目錄的指令
+
+接下來寫些檔案進去/mnt/nfs目錄試試
+要怎麼寫檔案進去/mnt/nfs呢？
+很簡單啊，把檔案總管打開，直接複製/貼上
+或是用cp指令都可以
+
+關於最重要的CubieTruck上面的/etc/exports設定檔案
+/nfs-share         192.168.0.0/255.255.255.0(rw,sync,no_subtree_check)
+如果你真的受不了複製檔案時，明明在同一個區網裡面，但是卻只有每秒100KB不到的龜速
+那就把它改成這樣吧
+/nfs-share         192.168.0.0/255.255.255.0(rw,async,no_subtree_check)
+從sync改成了async
+
+我實驗過了複製約500MB的檔案
+如果是sync，檔案傳輸速度約在每秒100K到200K
+如果是async，檔案傳輸速度約在每秒4MB到5MB
+最極端的情況下會差整整五十倍的速度
+僅管有強者老外說如果複製重要檔案不要使用async
+可是我的檔案大概都不是非常重要，應該沒差
+（我受不了sync選項那個每秒100K甚至以下的速度，我會抓狂）
+
+此外我注意到一點
+如果我是用檔案總管（用戶anntony身分），
+把我筆記型電腦裡的某些檔案用「複製/貼上」的方法
+貼到/mnt/nfs目錄
+那麼這些貼過去的檔案和目錄
+在CubieTruck分享出的目錄/nfs-share裡面
+它們的檔案擁有人和群組都會是aruntu
+
+在筆記型電腦上使用anntony身份進入終端機
+然後在/mnt/nfs產生檔案或是目錄
+它們的檔案擁有人和群組在筆記型電腦上看的時候都是anntony
+回到CubieTruck的/nfs-share目錄時看的時候卻是aruntu
+
+可是如果我在筆記型電腦上
+在終端機裡使用root權限然後用cp指令把檔案複製到本機掛載的nfs目錄，
+也就是
+/mnt/nfs
+那麼我在終端機以root身分複製過去的檔案或是目錄
+它們的擁有人和群組都會被壓縮成nobody和nogroup
+
+所以在這裡可以發現一件事
+nfs server好像是認/etc/passwd這個檔案裡面，用戶的UID的
+它不是認用戶的名字，而是UID
+在筆記型電腦上，我的預設登入的用戶是anntony，然後在/etc/passwd裡他的UID是1000
+在CubieTruck上，我的預設登入的用戶是aruntu，然後在/etc/passwd裡他的UID也是1000
+
+啊哈…
+其實nfs學問還滿大的
+這一篇我的筆記只是單純的分享出CubieTruck機器上的/nfs-share目錄
+讓它可以讀可以寫
+如果一直在想為什麼在複製nfs server上的檔案速度會那麼慢的時候
+還可以參考
+這一篇
+這個老外真的寫得超專業
+先擱著，有空我再慢慢研究
+畢竟目前我都是先求能動作能使用就好
+
+我剛才突然想到
+為什麼我什麼都還沒作
+開機的時候就會自動啟動nfs server
+這是很久很久以前學的
+現在只剩下模糊記憶
+如果在
+/etc/rc5.d裡面
+你看到K開頭的symbolic link
+它連結的標的服務啟動腳本
+那就表示那個服務不要在開機的時候啟動
+如果是S開頭的symbolic link
+就表示它是要在開機的時候啟動的服務
+你看下面這個終端機輸出
+找一下
+有一個叫作
+S20nfs-kernel-server
+的symbolic link
+它指著
+../init.d/nfs-kernel-server
+耶
+那就表示nfs-kernel-server會在開機的時候自動啟動
+為什麼要放在/etc/rc5.d目錄裡
+是表示這是在Runlevel 5也就是以圖形介面開機的時候
+要啟動這些服務
+root@cubie001:/etc# cd rc5.d
+root@cubie001:/etc/rc5.d# ls -al
+總計 20
+drwxr-xr-x   2 root root  4096  9月 12 22:57 .
+drwxr-xr-x 163 root root 12288  9月 12 22:55 ..
+lrwxrwxrwx   1 root root    18  9月 12 22:57 K01ondemand -> ../init.d/ondemand
+lrwxrwxrwx   1 root root    17  6月 29 22:33 K09apache2 -> ../init.d/apache2
+lrwxrwxrwx   1 root root    29  6月 29 22:33 K20logitechmediaserver -> ../init.d/logitechmediaserver
+lrwxrwxrwx   1 root root    18  6月 29 22:33 K20minidlna -> ../init.d/minidlna
+lrwxrwxrwx   1 root root    15  6月 29 22:33 K20saned -> ../init.d/saned
+lrwxrwxrwx   1 root root    18  6月 29 22:33 K50netatalk -> ../init.d/netatalk
+-rw-r--r--   1 root root   677  6月  4  2013 README
+lrwxrwxrwx   1 root root    16  6月 29 19:40 S02ramlog -> ../init.d/ramlog
+lrwxrwxrwx   1 root root    21  6月 29 09:29 S05loadcpufreq -> ../init.d/loadcpufreq
+lrwxrwxrwx   1 root root    22  6月 29 09:29 S19cpufrequtils -> ../init.d/cpufrequtils
+lrwxrwxrwx   1 root root    14  7月 11 00:20 S19lirc -> ../init.d/lirc
+lrwxrwxrwx   1 root root    17  6月 29 08:59 S20hddtemp -> ../init.d/hddtemp
+lrwxrwxrwx   1 root root    20  6月 29 08:54 S20kerneloops -> ../init.d/kerneloops
+lrwxrwxrwx   1 root root    17  1月 25  2014 S20netplug -> ../init.d/netplug
+lrwxrwxrwx   1 root root    27  6月 29 22:03 S20nfs-kernel-server -> ../init.d/nfs-kernel-server
+lrwxrwxrwx   1 root root    27  6月 29 08:59 S20speech-dispatcher -> ../init.d/speech-dispatcher
+lrwxrwxrwx   1 root root    18  6月 29 09:37 S20stunnel4 -> ../init.d/stunnel4
+lrwxrwxrwx   1 root root    14  7月  1 00:14 S20xrdp -> ../init.d/xrdp
+lrwxrwxrwx   1 root root    14  6月 29 07:51 S30slim -> ../init.d/slim
+lrwxrwxrwx   1 root root    15  6月 10 22:08 S50rsync -> ../init.d/rsync
+lrwxrwxrwx   1 root root    18  6月 29 08:49 S70pppd-dns -> ../init.d/pppd-dns
+lrwxrwxrwx   1 root root    14  6月 29 07:19 S75sudo -> ../init.d/sudo
+lrwxrwxrwx   1 root root    18 10月 16  2013 S99rc.local -> ../init.d/rc.local
+root@cubie001:/etc/rc5.d# 
+
+這裡講到的
+可以參考這兩篇
+http://www.tldp.org/LDP/sag/html/run-levels-intro.html
+http://www.pathbreak.com/blog/ubuntu-startup-init-scripts-runlevels-upstart-jobs-explained
+
+或是自已Google搜尋「ubuntu linux runlevel rcN.d」
+會跳出很多
+
+不過在/etc/rc5.d裡面
+沒有看到指向rpcbind的symbolic link
+那麼rpcbind又是在那裡設定自動啟動的呢？
+這裡又有一篇文章
+http://superuser.com/questions/511804/in-ubuntu-is-there-a-command-to-show-a-list-of-all-autostart-services
+
+剛才我講的那個/etc/rcN.d還有/etc/init.d那個是傳統的開機自動啟動的方式（上古時代）
+Ubuntu好像又搞了一個新的叫作Upstart的開機自動啟動
+也許rpcbind在開機會自動啟動，就是用Upstart的方式注冊在開機自動服務裡的
+我記得圖形介面裡還有一個BootUP-Manager
+那裡好像也可以注冊開機自動啟動的服務
+不過，我趕時間沒空細究
+反正
+rpcbind有跟著nfs-kernel-server在開機的時候自動啟動就好
+對Linux的內部運作全部都要細究的話
+可能我到八十歲老公公了什麼屁都沒作出來
+總之有動作然後正常運作就好
+我不想去管那麼細那麼細的事
+
+這裡還有一篇Ubuntu官網關於nfs的HOW-TO
+https://help.ubuntu.com/community/SettingUpNFSHowTo
+我稍微瞄了一下
+發現人家的/etc/exports設定檔是長這樣
+/export       192.168.1.0/24(rw,fsid=0,insecure,no_subtree_check,async)
+/export/users 192.168.1.0/24(rw,nohide,insecure,no_subtree_check,async)
+
+我的設定值是sync，人家的是async，
+我試過sync在複製檔案的時候超慢，async比較快，而且快很多
+但是前面有一篇那個老外強者說async不要用在重要檔案複製的時候
+除了這個還有重要的nfs client端的/etc/fstab設定
+也就是要讓nfs client端開機之後，就自動掛載nfs server分享出的目錄
+Ubuntu官網的文章，有參考價值
+先這樣，等那一天我閒到爆的時候一定會好好研究它們的
+我現在趕時間
+
+打完收工（混）
+哈哈
+請繼續收看objective 9
+
