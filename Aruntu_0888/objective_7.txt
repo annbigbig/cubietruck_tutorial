@@ -1,5 +1,104 @@
 objective 7 : 設定vnc server
 
+＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+
+aRuntu 0.888版預設已經安裝好x11vnc，也設定好在開機的時候自動啟動了
+它的預設TCP port是5900，然後不需要密碼就可以連線
+我的筆記型電腦上安裝的vnc viewer叫作vinagre
+我們可以告訴它，要連線到
+192.168.0.161:5900
+然後它就會建立vnc連線了
+
+但是我想把預設的TCP port 5900換成別的，換成27900好了
+然後我要vnc viewer端需要密碼才能連線
+進入CubieTruck的終端機，執行
+
+aruntu@cubie001:~$ pwd
+/home/aruntu
+aruntu@cubie001:~$ whoami
+aruntu
+aruntu@cubie001:~$ ls -al|grep vnc
+drwxrwxr-x  3 aruntu aruntu   4096  9月 12 15:37 .vnc
+aruntu@cubie001:~$ cd .vnc
+aruntu@cubie001:~/.vnc$ ls -al
+總計 12
+drwxrwxr-x  3 aruntu aruntu 4096  9月 12 15:37 .
+drwxr-xr-x 42 aruntu aruntu 4096  9月 12 14:52 ..
+drwxrwxr-x  2 aruntu aruntu 4096  7月  5 04:56 profiles
+aruntu@cubie001:~/.vnc$ x11vnc -storepasswd
+Enter VNC password: 
+Verify password:    
+Write password to /home/aruntu/.vnc/passwd?  [y]/n y
+Password written to: /home/aruntu/.vnc/passwd
+aruntu@cubie001:~/.vnc$ ls -al
+總計 16
+drwxrwxr-x  3 aruntu aruntu 4096  9月 12 15:38 .
+drwxr-xr-x 42 aruntu aruntu 4096  9月 12 14:52 ..
+-rw-------  1 aruntu aruntu    8  9月 12 15:38 passwd
+drwxrwxr-x  2 aruntu aruntu 4096  7月  5 04:56 profiles
+aruntu@cubie001:~/.vnc$ cat ./passwd 
+Ok��$�aruntu@cubie001:~/.vnc$ 
+
+好了，現在我們設定好x11vnc的連線密碼了
+（我設定的密碼是rrrrr）
+接下來要修改x11vnc的啟動參數
+開機會自動執行x11vnc的那個檔案叫作
+/home/aruntu/.config/lxsession/LXDE/autostart 
+請改成這樣
+
+@xscreensaver -no-splash
+@lxpanel --profile LXDE
+@pcmanfm --desktop --profile LXDE
+@/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1
+#@x11vnc -shared -forever
+@x11vnc -forever -geometry 1024x768 -rfbauth /home/aruntu/.vnc/passwd -o /tmp/x11vnc.log -rfbport 27900
+#@xcompmgr
+
+
+
+xset s off
+# don't activate screensaver
+
+xset -dpms
+# disable DPMS (Energy Star) features.
+
+xset s noblank
+# don't blank the video device
+
+改完之後存檔
+然後把CubieTruck重新開機
+再用筆記型電腦上的vinagre或是其他的vnc viewer
+去連
+192.168.0.161:27900
+這個時候，需要輸入你剛才設定的vnc密碼才能連線
+還有記得如果將來換了一個用戶名稱
+而不再是aruntu的時候
+（假設這個你拿來登入的新用戶叫anntony）
+那麼你的
+/home/anntony/.config/lxsession/LXDE/autostart 
+裡面的這一行
+@x11vnc -forever -geometry 1024x768 -rfbauth /home/anntony/.vnc/passwd -o /tmp/x11vnc.log -rfbport 27900
+密碼檔存放的路徑不同，要自已手動改一下，從aruntu改成anntony，變成
+/home/anntony/.vnc/passwd
+還有這個密碼檔你自已要再照著上面講的方法
+重新產生一次
+
+完成，啦啦啦
+後面是血汗的過程，你不用看，我只是想留個紀念而已
+什麼都不是憑空得來的
+
+請繼續收看 objective 8
+
+＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊後面的你不用看，那只是過程＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+
+＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊後面的你不用看，那只是過程＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+
 aRuntu的影像檔寫入MicroSD卡之後，預設就有安裝好x11vnc (Server)
 可以打開套件管理員確認一下，如圖：
 https://plus.google.com/photos/117546034720970496255/albums/6057327335855397601/6057707187504555106?pid=6057707187504555106&oid=117546034720970496255
@@ -277,3 +376,145 @@ root@cubie001:~#
 是不死系的魔物嗎？
 我眼花了嗎？
 累了，休息吧
+
+Ubuntu官網上的VNC Server教學
+明天起床看一下
+https://help.ubuntu.com/community/VNC/Servers#tightvncserver
+
+（隔天起床後…）
+我又在終端機執行了
+# find / -xdev -type f -print0 | xargs -0 grep -H "x11vnc" >> /tmp/result0.txt
+這次我抓狂了，直接從系統根目錄也就是/開始找，
+然後把找到的所有線索都存到/tmp/result0.txt
+其中最可疑的就是這一行
+/home/aruntu/.config/lxsession/LXDE/autostart:@x11vnc -shared -forever
+好吧剛才已經試過兩個檔案了
+現在再試這個
+不知道有沒有用
+先把x11vnc關掉就好了
+修改
+/home/aruntu/.config/lxsession/LXDE/autostart
+把這一行的前面加上個#
+@x11vnc -shared -forever
+變成
+#@x11vnc -shared -forever
+存檔，然後把CubieTruck重新開機試試，看看TCP port 5900是不是真的會被關掉？
+
+重新開機之後
+到終端機執行了
+root@cubie001:~# netstat -anp
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 0.0.0.0:43762           0.0.0.0:*               LISTEN      1166/rpc.statd  
+tcp        0      0 127.0.1.1:53            0.0.0.0:*               LISTEN      1317/dnsmasq    
+tcp        0      0 127.0.0.1:3350          0.0.0.0:*               LISTEN      1268/xrdp-sesman
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      822/sshd        
+tcp        0      0 127.0.0.1:631           0.0.0.0:*               LISTEN      645/cupsd       
+tcp        0      0 0.0.0.0:3389            0.0.0.0:*               LISTEN      1264/xrdp       
+tcp        0      0 0.0.0.0:445             0.0.0.0:*               LISTEN      971/smbd        
+tcp        0      0 0.0.0.0:49152           0.0.0.0:*               LISTEN      1405/mediatomb  
+tcp        0      0 0.0.0.0:139             0.0.0.0:*               LISTEN      971/smbd        
+tcp        0      0 0.0.0.0:111             0.0.0.0:*               LISTEN      1022/rpcbind    
+tcp        0      0 192.168.0.161:22        192.168.0.12:49215      ESTABLISHED 1585/sshd: aruntu [
+tcp6       0      0 :::22                   :::*                    LISTEN      822/sshd        
+tcp6       0      0 ::1:631                 :::*                    LISTEN      645/cupsd       
+tcp6       0      0 :::445                  :::*                    LISTEN      971/smbd        
+tcp6       0      0 :::36713                :::*                    LISTEN      1166/rpc.statd  
+tcp6       0      0 :::139                  :::*                    LISTEN      971/smbd        
+tcp6       0      0 :::111                  :::*                    LISTEN      1022/rpcbind    
+udp        0      0 0.0.0.0:631             0.0.0.0:*                           825/cups-browsed
+udp        0      0 192.168.0.255:137       0.0.0.0:*                           1453/nmbd       
+udp        0      0 192.168.0.161:137       0.0.0.0:*                           1453/nmbd       
+udp        0      0 0.0.0.0:137             0.0.0.0:*                           1453/nmbd       
+udp        0      0 192.168.0.255:138       0.0.0.0:*                           1453/nmbd       
+udp        0      0 192.168.0.161:138       0.0.0.0:*                           1453/nmbd       
+udp        0      0 0.0.0.0:138             0.0.0.0:*                           1453/nmbd       
+udp        0      0 0.0.0.0:42168           0.0.0.0:*                           1166/rpc.statd  
+udp        0      0 0.0.0.0:38588           0.0.0.0:*                           524/avahi-daemon: r
+udp        0      0 0.0.0.0:5353            0.0.0.0:*                           524/avahi-daemon: r
+udp        0      0 0.0.0.0:772             0.0.0.0:*                           1022/rpcbind    
+udp        0      0 0.0.0.0:60714           0.0.0.0:*                           1449/dhclient   
+udp        0      0 0.0.0.0:1900            0.0.0.0:*                           1405/mediatomb  
+udp        0      0 127.0.0.1:918           0.0.0.0:*                           1166/rpc.statd  
+udp        0      0 127.0.0.1:40366         0.0.0.0:*                           1405/mediatomb  
+udp        0      0 127.0.1.1:53            0.0.0.0:*                           1317/dnsmasq    
+udp        0      0 0.0.0.0:68              0.0.0.0:*                           1449/dhclient   
+udp        0      0 0.0.0.0:111             0.0.0.0:*                           1022/rpcbind    
+udp6       0      0 :::5353                 :::*                                524/avahi-daemon: r
+udp6       0      0 :::38653                :::*                                524/avahi-daemon: r
+udp6       0      0 :::772                  :::*                                1022/rpcbind    
+udp6       0      0 :::29980                :::*                                1449/dhclient   
+udp6       0      0 :::52111                :::*                                1166/rpc.statd  
+udp6       0      0 :::111                  :::*                                1022/rpcbind    
+Active UNIX domain sockets (servers and established)
+Proto RefCnt Flags       Type       State         I-Node   PID/Program name    Path
+（後面的輸出省略）
+
+哇靠，終於被我找出來了吧，混帳東西，我搞了整整一天
+下次應該一開始就出絕招，直接從根目錄/找組態檔
+我太含蓄了，只找/etc和/home
+不過話說回來，從/home開始找的時候，應該也會找到
+x11vnc設定檔（用戶級）就在這裡
+/home/aruntu/.config/lxsession/LXDE/autostart
+為什麼我第一次第二次沒發現？
+是我眼花了嗎？
+算了不想再細究，總之找到就好
+
+剛才我確定在
+/home/aruntu/.config/lxsession/LXDE/autostart
+把這一行
+@x11vnc -shared -forever
+改成
+#@x11vnc -shared -forever
+就真的會把TCP port 5900關閉掉，開機的時候不會再自動啟動x11vnc
+
+現在我要把它打開
+把剛才的檔案
+/home/aruntu/.config/lxsession/LXDE/autostart
+注解掉的這一行
+#@x11vnc -shared -forever
+改成
+@x11vnc -forever -geometry 1024x768 -rfbauth /home/aruntu/.vnc/passwd -o /tmp/x11vnc.log -rfbport 27900
+改完之後存檔，然後一樣把CubieTruck重新開機
+
+這樣寫好像還不是很清楚
+總之我改好的
+/home/aruntu/.config/lxsession/LXDE/autostart
+內容如下
+@xscreensaver -no-splash
+@lxpanel --profile LXDE
+@pcmanfm --desktop --profile LXDE
+@/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1
+#@x11vnc -shared -forever
+@x11vnc -forever -geometry 1024x768 -rfbauth /home/aruntu/.vnc/passwd -o /tmp/x11vnc.log -rfbport 27900
+#@xcompmgr
+
+
+xset s off         
+# don't activate screensaver
+
+xset -dpms         
+# disable DPMS (Energy Star) features.
+
+xset s noblank     
+# don't blank the video device
+
+然後把CubieTruck重新開機之後
+再用筆記型電腦的vnc viewer去連線
+注意到我把預設的TCP port 5900換成27900了
+所以用來連線的IP:port要換成192.168.0.161:27900
+按下「連線」就會要求要輸入密碼了
+我在很前面很前面設定了用戶aruntu的vnc server密碼是rrrrr
+輸入完密碼，按「驗證」然後vnc連線就建立了
+
+如圖：（vinagre遠端桌面檢視器，要求你輸入vnc server的密碼）
+https://plus.google.com/photos/117546034720970496255/albums/6057327335855397601/6058076447310503794?pid=6058076447310503794&oid=117546034720970496255
+
+很快樂，打完收工
+
+
+
+
+
+
+
