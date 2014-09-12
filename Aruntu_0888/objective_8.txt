@@ -285,6 +285,7 @@ nfs server好像是認/etc/passwd這個檔案裡面，用戶的UID的
 如果一直在想為什麼在複製nfs server上的檔案速度會那麼慢的時候
 還可以參考
 這一篇
+http://www.slashroot.in/how-do-linux-nfs-performance-tuning-and-optimization
 這個老外真的寫得超專業
 先擱著，有空我再慢慢研究
 畢竟目前我都是先求能動作能使用就好
