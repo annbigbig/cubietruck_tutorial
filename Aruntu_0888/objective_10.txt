@@ -1,0 +1,53 @@
+objective 10 : 代碼倉庫 : 設定gitolite
+
+首先安裝gitolite套件
+到終端機執行
+$ sudo -i
+# apt-get update -y
+# apt-get install -y gitolite
+
+
+剛才安裝gitolite套件的時候，由於git是依賴套件
+所以會自動一起裝上，執行以下的指令
+看看系統裡是不是已經安裝好了git
+# which git
+# git --version
+
+
+切換回aruntu用戶身分，設定user.name和user.email
+# exit
+$ git config --global user.name aruntu
+$ git config --global user.email aruntu@localhost
+
+
+剛才設定的user.name和user.email存在這裡
+$ git config --list
+$ cat ~/.gitconfig
+
+
+還記得稍早前設定ssh server的時候，
+我們為用戶aruntu產生了一對RSA key pair嗎？
+/home/aruntu/.ssh/id_rsa
+/home/aruntu/.ssh/id_rsa.pub
+
+
+如果用戶aruntu還沒產生RSA key pair
+可以用這裡的指令產生，如果已經有了RSA key pair，請跳過此步驟
+$ cd /home/aruntu
+$ mkdir .ssh
+$ chmod 700 .ssh
+$ ssh-keygen -t rsa -C aruntu@192.168.0.161 -N "" -f .ssh/id_rsa
+
+
+新增一個git用戶，密碼隨便設定，我設定成和帳戶一樣是git
+$ sudo -i
+# adduser --gecos Git git
+
+
+把aruntu用戶的public key
+複製到git用戶的家目錄下，並更名為admin.pub
+# cp /home/aruntu/.ssh/id_rsa.pub /home/git/admin.pub
+
+
+admin.pub的持有人和群組都是git用戶
+# chown git:git /home/git/admin.pub
