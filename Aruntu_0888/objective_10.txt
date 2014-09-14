@@ -141,7 +141,7 @@ Initialized empty Git repository in /home/git/repositories/testing.git/
 產生一個abc.git的bare repository
 （再次強調，我現在是git用戶別忘了）
 $ git init /home/git/repositories/abc.git
-$ chmod 700 /home/git/repositories/abc.git
+
 
 現在一個空白的代碼倉庫abc已經建立了
 可是還沒有設定權限
@@ -177,6 +177,7 @@ bare倉庫就是個裸體倉庫，它沒有工作目錄
 
 
 一樣還是aruntu用戶身分，把家目錄下的anntony的公鑰，移動到
+$ cd /home/aruntu
 $ mv anntony.pub gitolite-admin/keydir/
 
 一樣還是aruntu用戶身分，使用vi editor文字編輯器修改這個檔案
@@ -230,7 +231,7 @@ c433d9a start
 /home/git/repositories/abc.git
 我們已經完全設定好權限了
 我稍微解釋一下剛才的設定
-（複製版的倉庫：路徑是　/home/aruntu/gitolite-admin/conf/gitolite.conf）
+（複製版的權限倉庫設定檔：路徑是　/home/aruntu/gitolite-admin/conf/gitolite.conf）
 repo    abc
         RW+  a  =   anntony
         RW   b  =   anntony
@@ -247,8 +248,49 @@ branch c有R (只可以讀）
 而且都要放在
 /home/git/repositories
 目錄下，擁有人和群組都必須要是git
-權限最好是700只有git用戶能讀能寫
+權限必須是775（git用戶和git群組都要能讀能寫）
+
+
+因為在前面的objective 6 : 設定ssh server
+我們已經改變了CubieTruck機器上面預設的ssh server的行為
+我們強制它不能使用密碼登入
+（記得嗎？修改了/etc/ssh/sshd_config設定檔，把PasswordAuthentication no啟用了）
+所以在這裡我們必須加一個動作
+也就是讓CubieTruck機器上的git用戶的
+/home/git/.ssh/authorized_keys
+裡面注冊有筆記型電腦上的anntony用戶的
+/home/anntony/.ssh/id_rsa.pub
+這一把公鑰
+不然待會兒在筆記型電腦上
+使用指令要複製代碼倉庫abc.git的時候
+也就是這行指令
+$ git clone ssh://git@192.168.0.161:22/home/git/repositories/abc.git
+會失敗
+因為我們的SSH服務器會TM一直想問你git用戶的密碼
+來確認你是git用戶
+可是我們又把SSH服務器密碼登入的功能鎖死了
+
+
+解釋完了，來動手吧
+在CubieTruck機器上，以root身分執行
+# cat /home/aruntu/gitolite-admin/keydir/anntony.pub >> /home/git/.ssh/authorized_keys 
+注冊完公鑰之後
+筆記型電腦使用ssh指令，預設會去使用/home/anntony/.ssh/id_rsa這一支私鑰
+由於和這支私鑰是一對的公鑰，已經被注冊到/home/git/.ssh/authorized_keys 
+所以你在筆記型電腦上執行
+$ git clone ssh://git@192.168.0.161:22/home/git/repositories/abc.git
+的時候，不會再囉哩八嗦問你git用戶的密碼是什麼
+會直接讓你完成git clone指令
+你一定要記得這個步驟
+只要開發團隊裡加入了新的成員
+一定要記得把他/她的RSA公鑰
+加到CubieTruck機器上面的
+/home/git/.ssh/authorized_keys
+要不然他/她沒辦法把分享的git repositories給clone下來作事
+
 
 接著我們來實驗一下剛才gitolite裡面設定的權限有沒有生效？
-
+首先把CubieTruck機器上分享出來的名為abc.git的bare repository複製到本地（筆記型電腦）
+我現在的身分是anntony用戶
+$ git clone ssh://git@192.168.0.161:22/home/git/repositories/abc.git
 
