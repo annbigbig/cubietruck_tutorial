@@ -51,3 +51,204 @@ $ sudo -i
 
 admin.pub的持有人和群組都是git用戶
 # chown git:git /home/git/admin.pub
+
+
+我的筆記型電腦上的預設用戶名是anntony
+我已經為它產生了一對RSA key pair
+路徑在
+/home/anntony/.ssh/id_rsa
+/home/anntony/.ssh/id_rsa.pub
+我現在要把public key複製到CubieTruck機器上的/home/aruntu目錄裡
+還記得我的/home/anntony/.ssh/config
+有這5行設定嗎？
+Host mycubie
+  HostName 192.168.0.161
+  User aruntu
+  Port 22
+  IdentityFile /home/anntony/.ssh/private_key_from_cubie
+
+因為有上面這5行設定
+所以回到筆記型電腦上，我可以直接下這樣的指令，
+把用戶anntony的public key複製到CubieTruck機器的/home/aruntu目錄，並更名為anntony.pub
+# scp /home/anntony/.ssh/id_rsa.pub mycubie:anntony.pub
+
+如果你的/home/YOURS_username/.ssh/config
+沒有類似的設定
+那麼你也可以把本機的public key複製到CubieTruck機器的/home/aruntu目錄裡，
+只是你要下的指令比較長，如下
+# scp -P 22 -i /home/anntony/.ssh/private_key_from_cubie /home/anntony/.ssh/id_rsa.pub aruntu@192.168.0.161:anntony.pub
+
+
+上面的指令，使用了Port 22
+RSA private key檔案指定為/home/anntony/.ssh/private_key_from_cubie
+然後把（筆記型電腦上的）來源檔/home/anntony/.ssh/id_rsa.pub
+複製到192.168.0.161機器（CubieTruck）上的aruntu帳號的家目錄下
+並更名為anntony.pub
+為什麼要複製到aruntu帳號的家目錄/home/aruntu下面
+因為剛才在CubieTruck機器上，我們把
+/home/aruntu/.ssh/id_rsa.pub
+複製到
+/home/git/admin.pub
+我這樣作的用意是讓aruntu用戶變成CubieTruck機器上面所有git repositories的最高領導人
+（抱歉我國文造詣很爛）
+aruntu現在是CubieTruck機器上安裝的gitolite套件所認定的代碼倉庫管理員
+而anntony.pub這支公鑰，就代表了某個要使用git repositories的一般用戶
+這個一般用戶的公鑰當然是交給aruntu用戶（最高管理員、最高領導人、大統領、隨便啦~！）
+
+還是在CubieTruck機器上
+切換成git用戶
+# su - git
+
+查看一下家目錄/home/git
+會看到admin.pub和anntony.pub兩支public key
+$ ls -al
+
+執行gl-setup設定管理員的公鑰是admin.pub
+$ gl-setup admin.pub
+不要忘了CubieTruck機器上的/home/git/admin.pub
+和CubieTruck機器上的/home/aruntu/.ssh/id_rsa.pub
+是同一把公鑰
+
+上面的指令
+$ gl-setup admin.pub
+執行之後
+會強制打開vi editor
+請不要隨便修改這個組態檔
+直接:w按ENTER
+再:q按ENTER離開即可
+
+
+終端機輸出的訊息如下
+$ gl-setup admin.pub 
+The default settings in the rc file (/home/git/.gitolite.rc) are fine for most
+people but if you wish to make any changes, you can do so now.
+
+hit enter...
+creating gitolite-admin...
+Initialized empty Git repository in /home/git/repositories/gitolite-admin.git/
+creating testing...
+Initialized empty Git repository in /home/git/repositories/testing.git/
+[master (root-commit) c433d9a] start
+ 2 files changed, 6 insertions(+)
+ create mode 100644 conf/gitolite.conf
+ create mode 100644 keydir/admin.pub
+
+現在關於gitolite都已經設定好了
+以後要控管git repositories
+請用git用戶權限，在/home/git/repositories目錄下面產生bare repository
+具體作法如下，現在我們在CubieTruck機器上，還是保持git用戶身分
+使用下列指令，在/home/git/repositories目錄下
+產生一個abc.git的bare repository
+（再次強調，我現在是git用戶別忘了）
+$ git init /home/git/repositories/abc.git
+$ chmod 700 /home/git/repositories/abc.git
+
+現在一個空白的代碼倉庫abc已經建立了
+可是還沒有設定權限
+設定權限的地方在CubieTruck機器上的
+/home/git/repositories/gitolite-admin.git
+這個目錄裡
+這個目錄是一個git bare repository
+所以你必須先在某個地方，把它clone到本地端（筆記型電腦或CubieTruck上面都行）
+然後對著那個clone來的non-bare git repository作提交
+再push回原來的bare repository（也就是/home/git/repositories/gitolite-admin.git）
+要這樣才算作好gitolite的權限設定
+
+實際操作一下
+（我現在人在CubieTruck機器上，以aruntu身份登入終端機）
+
+確定現在人在家目錄下
+$ cd /home/aruntu
+
+把放在/home/git/repositories/gitolite-admin.git這個權限倉庫複製下來
+指令是
+$ git clone git@localhost:gitolite-admin.git
+再解釋一次為什麼要這麼作
+/home/git/repositories/gitolite-admin.git
+它除了是gitolite用來設定權限的倉庫，它還是一個bare git repository
+想要對這個倉庫作提交
+唯一的方式是把它git clone下來，
+複製的倉庫（/home/aruntu/gitolite-admin.git）變成non-bare倉庫，
+才能使用git commit指令作提交
+git的bare和non-bare倉庫，它們的差別在
+bare倉庫就是個裸體倉庫，它沒有工作目錄
+而一般我們用來提交代碼的倉庫，都是non-bare倉庫，non-bare repository
+詳細差異請自已看git版本控制的相關書籍，這裡只是筆記，不負責教git的概念
+
+
+一樣還是aruntu用戶身分，把家目錄下的anntony的公鑰，移動到
+$ mv anntony.pub gitolite-admin/keydir/
+
+一樣還是aruntu用戶身分，使用vi editor文字編輯器修改這個檔案
+$ vi /home/aruntu/gitolite-admin/conf/gitolite.conf 
+
+請改成這樣，現在是在設定剛才我們用git用戶新建的abc.git裸倉庫的權限
+repo    gitolite-admin
+        RW+     =   admin
+
+repo    testing
+        RW+     =   @all
+
+repo    abc
+        RW+  a  =   anntony
+        RW   b  =   anntony
+        R    c  =   anntony
+
+改完之後就存檔
+然後暫存、提交、推回原來的origin倉庫（/home/git/repositories/gitolite-admin.git）
+指令如下
+一樣還是用戶aruntu身分
+$ cd /home/aruntu/gitolite-admin
+$ git add -A
+$ git commit -m "Anntony's priviledges for abc repo"
+$ git remote -v
+$ git push origin master
+
+要怎樣才能確定真的把剛才的提交推回origin倉庫（/home/git/repositories/gitolite-admin.git）了呢？
+簡單啊，就走過去看看
+執行以下指令
+
+先變成git用戶
+$ sudo su - git
+
+然後到origin倉庫的所在地
+$ cd /home/git/repositories/gitolite-admin.git
+
+看看所有的commit，指令是
+$ git log --oneline
+
+如果看到下面的輸出
+334bf97 Anntony's priviledges for abc repo
+c433d9a start
+
+沒錯，origin倉庫（/home/git/repositories/gitolite-admin.git）
+有了一個新的commit，是我們剛才作的
+這個commit裡面有：我們把anntony.pub這支公鑰給放進keydir
+還有我們修改了gitolite.conf
+關於分享出的git bare倉庫
+也就是位於CubieTruck機器上的
+/home/git/repositories/abc.git
+我們已經完全設定好權限了
+我稍微解釋一下剛才的設定
+（複製版的倉庫：路徑是　/home/aruntu/gitolite-admin/conf/gitolite.conf）
+repo    abc
+        RW+  a  =   anntony
+        RW   b  =   anntony
+        R    c  =   anntony
+
+這裡規定著abc倉庫的權限
+其中anntony用戶
+branch a有RW+ (可讀、可寫、可強制寫）
+branch b有RW (可讀、可寫、不可以強制寫）
+branch c有R (只可以讀）
+
+
+記得要放在CubieTruck上面控管的git repository都必須要是bare repository
+而且都要放在
+/home/git/repositories
+目錄下，擁有人和群組都必須要是git
+權限最好是700只有git用戶能讀能寫
+
+接著我們來實驗一下剛才gitolite裡面設定的權限有沒有生效？
+
+
