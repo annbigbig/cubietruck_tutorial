@@ -324,8 +324,258 @@ $ git clone ssh://git@192.168.0.161:22/home/git/repositories/abc.git
 接著我們來實驗一下剛才gitolite裡面設定的權限有沒有生效？
 首先把CubieTruck機器上分享出來的名為abc.git的bare repository複製到本地（筆記型電腦）
 我現在的身分是anntony用戶
-$ git clone ssh://git@192.168.0.161:22/home/git/repositories/abc.git
+
+切換到/tmp目錄
+$ cd /tmp
+
+把CubieTruck機器上面分享出來的abc.git倉庫給clone到本地（筆記型電腦）
+再次強調我現在是用戶anntony的身分
+$ git clone ssh://git@192.168.0.161:22/abc.git
+
+如果用戶anntony想要複製CubieTruck機器上的gitolite-admin.git倉庫，有可能嗎？試試
+$ git clone ssh://git@192.168.0.161:22/gitolite-admin.git
+
+不行，你會踢到鐵板，會出現這個訊息
+Cloning into 'gitolite-admin'...
+R access for gitolite-admin DENIED to anntony
+(Or there may be no repository at the given path. Did you spell it correctly?)
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
 
 
+因為我們在CubieTruck機器上安裝的gitolite套件
+它認定aruntu用戶才是所有git repositories的管理員
+更準確的說，是所有路徑在/home/git/repositories目錄下的git repositories的管理員
+好吧現在要進入剛才複製到本地的空倉庫abc了
+進終端機，一樣是以用戶anntony身分執行指令
+
+進入abc倉庫
+$ cd /tmp/abc
+
+看看裡面有什麼？
+$ git log --oneline
+
+然後終端機會告訴你
+fatal: bad default revision 'HEAD'
+
+什麼都沒有，
+因為這是個空空如也什麼commit都沒有的倉庫
+
+接著執行
+$ echo "m1" >> m1.txt ; git add -A ; git commit -m "m1"
+$ echo "m2" >> m2.txt ; git add -A ; git commit -m "m2"
+$ echo "m3" >> m3.txt ; git add -A ; git commit -m "m3"
+
+然後再看看倉庫裡有什麼？
+$ git log --oneline --graph --decorate --all
+
+然後終端機回答
+* b05e8cd (HEAD, master) m3
+* 8a015f5 m2
+* 13da66c m1
+
+這個回答說明，我現在的HEAD在master分支上，我有3個commit
+
+然後我要開一個新的分支a
+$ git branch a
+
+看看我的倉庫現在有什麼分支？
+$ git branch -avv
+
+然後終端機回答
+  a      b05e8cd m3
+* master b05e8cd [origin/master: gone] m3
+
+雖然我已經開了新的分支a，但是我的人還是在master分支上
+那就執行指令切換到分支a
+$ git checkout a
+
+再看看我現在人在那一個分支上？
+$ git branch
+
+終端機回答
+* a
+  master
+
+這表示我人現在正在分支a上面
+那我繼續作提交了，在終端機執行
+$ echo "a1" >> a1.txt ; git add -A ; git commit -m "a1"
+$ echo "a2" >> a2.txt ; git add -A ; git commit -m "a2"
+$ echo "a3" >> a3.txt ; git add -A ; git commit -m "a3"
+
+然後再看看現在倉庫裡的分支圖長得怎樣？
+$ git log --oneline --graph --decorate --all
+
+終端機打印
+* 220a4dd (HEAD, a) a3
+* bdb5f24 a2
+* d3b9ca6 a1
+* b05e8cd (master) m3
+* 8a015f5 m2
+* 13da66c m1
+
+基本上還是算一條直線，即使到m3有一個折角
+這個輸出告訴我們
+master分支：m1 -> m2 -> m3
+a分支：m1 -> m2 -> m3 -> a1 -> a2 -> a3
+master分支是a分支的子集
+
+剛才在權限倉庫gitolite-admin裡面
+我們規定anntony用戶可以對分支a的權限是RW+
+也就是可以R（讀）可以W（寫）還可以+（強制寫）
+那我們來試試看對CubieTruck機器上的abc.git倉庫
+寫入分支a的提交試試，一樣是anntony身分，執行
+$ git push origin a
+
+終端機回答
+Counting objects: 18, done.
+Delta compression using up to 2 threads.
+Compressing objects: 100% (11/11), done.
+Writing objects: 100% (18/18), 1.22 KiB | 0 bytes/s, done.
+Total 18 (delta 4), reused 0 (delta 0)
+To ssh://git@192.168.0.161:22/abc.git
+ * [new branch]      a -> a
+
+哦，成功了嗎？我在筆記型電腦上作push，真的推回CubieTruck機器上的abc.git倉庫了嗎？
+如果有疑問，就是到CubieTruck機器上的abc.git倉庫裡看看
+路徑是/home/git/repositories/abc.git
+到CubieTruck機器上
+
+先變成root身分
+$ sudo -i
+
+再變成git用戶的身分
+# su - git
+
+然後到abc.git倉庫的目錄裡
+$ cd /home/git/repositories/abc.git
+
+打印一下倉庫裡的分支圖
+$ git log --oneline --graph --decorate --all
+
+結果終端機輸出了
+* 220a4dd (a) a3
+* bdb5f24 a2
+* d3b9ca6 a1
+* b05e8cd m3
+* 8a015f5 m2
+* 13da66c m1
+
+
+哇靠，真的把a分支推回原來分享的地方了
+（也就是CubieTruck機器上的/home/git/repositories/abc.git）
+
+那麼回到筆記型電腦，我們剛才複製版的abc倉庫裡
+現在我們來實驗一下，用戶anntony到底可不可以強制寫？
+強制寫？那是什麼？
+剛才我們在CubieTruck機器上，看到了分支a其實是
+m1 -> m2 -> m3 -> a1 -> a2 -> a3
+總共有6個提交
+那如果我現在想要讓CubieTruck機器上的abc.git倉庫的分支a
+變成只有5個提交
+也就是
+m1 -> m2 -> m3 -> a1 -> a2
+我想要讓a3提交變不見，就是「強制寫」
+首先我們在筆記型電腦上
+剛才clone下來的abc倉庫的目錄（/tmp/abc）裡，以anntony身分執行
+
+動手前先確認倉庫裡的分支圖長得怎樣？
+$ git log --oneline --graph --decorate --all
+
+終端機輸出了
+* 220a4dd (HEAD, origin/a, a) a3
+* bdb5f24 a2
+* d3b9ca6 a1
+* b05e8cd (master) m3
+* 8a015f5 m2
+* 13da66c m1
+
+然後我把HEAD放到前一個提交，也就是HEAD~
+$ git reset --hard HEAD~
+
+終端機回應，現在你的HEAD在a2
+HEAD is now at bdb5f24 a2
+
+再次確認倉庫裡的分支圖
+$ git log --oneline --graph --decorate --all
+
+終端機打印了
+* 220a4dd (origin/a) a3
+* bdb5f24 (HEAD, a) a2
+* d3b9ca6 a1
+* b05e8cd (master) m3
+* 8a015f5 m2
+* 13da66c m1
+
+上面的終端機訊息告訴我們
+在遠端倉庫origin（放在CubieTruck機器上的/home/git/repositories/abc.git）裡的分支a
+有這樣的提交歷史
+m1 -> m2 -> m3 -> a1 -> a2 -> a3
+然後在本地端（筆記型電腦的/tmp/abc）裡的分支a
+有這樣的提交歷史
+m1 -> m2 -> m3 -> a1 -> a2
+而且現在HEAD是放在a2的地方
+
+簡單來說
+上面的訊息告訴我們
+origin倉庫的分支a有6個提交
+本地倉庫的分支a只有5個提交
+那麼現在如果要作強制寫
+就是讓origin倉庫的分支a也只剩下5個提交
+在筆記型電腦上以anntony用戶身分，在/tmp/abc目錄裡執行以下指令
+$ git push -f origin a
+
+終端機回應了
+Total 0 (delta 0), reused 0 (delta 0)
+To ssh://git@192.168.0.161:22/abc.git
+ + 220a4dd...bdb5f24 a -> a (forced update)
+
+強制更新成功，可是還是有點懷疑
+所以再回到CubieTruck機器上的
+/home/git/repositories/abc.git
+看一下是不是只剩5個提交？
+
+變成root身分
+$ sudo -i
+
+再變成git用戶身分
+# su - git
+
+切換到abc.git倉庫的目錄
+$ cd /home/git/repositories/abc.git
+
+打印倉庫裡的分支圖
+$ git log --oneline --graph --decorate --all
+
+然後終端機打印了
+* bdb5f24 (a) a2
+* d3b9ca6 a1
+* b05e8cd m3
+* 8a015f5 m2
+* 13da66c m1
+
+帥哦，真的被強制寫了
+本來CubieTruck機器上分享出的abc.git倉庫裡的分支a有6個提交
+m1 -> m2 -> m3 -> a1 -> a2 -> a3
+現在被強制寫之後，只剩5個提交
+m1 -> m2 -> m3 -> a1 -> a2
+
+再回到筆記型電腦上的/tmp/abc目錄（複製的abc.git倉庫的目錄）
+剛才執行強制寫的指令之後
+我想再看看本地倉庫裡的分支圖，所以我又執行了
+$ git log --oneline --graph --decorate --all
+
+然後終端機輸出了
+* bdb5f24 (HEAD, origin/a, a) a2
+* d3b9ca6 a1
+* b05e8cd (master) m3
+* 8a015f5 m2
+* 13da66c m1
+
+上面的訊息告訴我們
+HEAD, origin/a, a
+都指向提交a2的地方
 
 
