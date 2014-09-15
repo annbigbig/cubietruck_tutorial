@@ -578,4 +578,243 @@ $ git log --oneline --graph --decorate --all
 HEAD, origin/a, a
 都指向提交a2的地方
 
+HEAD是指著你現在的commit
+就好像你人在檔案總管裡面
+總會在某一個資料夾裡面
+只要你操作git repository
+你就會在某個commit上面，然後繼續進行下一個提交
+HEAD就是指在你現在所在的commit
 
+origin/a的學名叫作remote tracking branch
+你不要看它的名字叫作「remote tracking branch」
+就把它當成是一個位在「遠端」的分支
+不是
+恰恰相反
+origin/a它是一個在你現在目前倉庫裡的本地分支
+它之所以為什麼叫作「origin/a」
+是因為它反映了某一個遠端的別名叫作origin的倉庫
+origin倉庫裡有一個分支叫作a分支
+為什麼origin/a會出現在你的倉庫裡
+剛才我執行了
+git push origin a
+指令之後，它就出現在我筆記型電腦的/tmp/abc倉庫裡了
+如果我從遠端倉庫拉commit回來本地端
+那麼也會建立像是origin/a或是origin/master這樣的「遠端追蹤分支」
+其名雖然是remote tracking branch，不過它是個本地分支( local branch )
+
+說好了這是筆記，不教git概念
+不過想到還是順手寫了進去
+最好是自已去找一本關於git的書來看
+我推薦Apress出版社的git recipes
+你可以自已去amazon.com買來看看
+裡面寫的都是實際操作
+沒有一直講理論
+理論是空泛的，實作才是有價值的
+
+回到正題，剛才試完CubieTruck機器分享出的abc.git倉庫的分支a的
+w（寫）+（強制寫）
+現在快速來試一下分支b的
+w（寫）+（強制寫）
+
+剛才扯蛋太久，怕你忘了我們稍早之前在CubieTruck機器上對abc.git倉庫的權限設定
+還有相關倉庫的位置
+再次提醒一次
+分享的倉庫完整路徑：/home/git/repositories/abc.git
+gitolite權限倉庫完整路徑：/home/git/repositories/gitolite-admin.git
+下面是gitolite設定檔的內容
+repo    gitolite-admin
+        RW+     =   admin
+
+repo    testing
+        RW+     =   @all
+
+repo    abc
+        RW+  a  =   anntony
+        RW   b  =   anntony
+        R    c  =   anntony
+
+我們是先git clone到aruntu家目錄下，再設定的
+所以完整路徑是在
+/home/aruntu/gitolite-admin/conf/gitolite.conf
+要修改倉庫的權限設定的話就改這個檔
+改完要存檔，然後再
+$ git add -A
+再
+$ git commit -m "some messages..."
+再
+$ git push origin master
+這樣才算完成gitolite的設定
+再次強調
+因為你沒辦法直接修改
+/home/git/repositories/gitolite-admin.git
+這是個bare respository
+所以你要以gitolite認定的管理者，也就是aruntu的身分
+去git clone這個權限設定的裸倉庫
+在複製來的non-bare倉庫設定好了，再push回裸倉庫/home/git/repositories/gitolite-admin.git
+這樣才算完成設定
+
+我為什麼這麼囉嗦
+因為git和gitolite和ssh還有RSA public key、private key糾纏不清
+git本身就複雜的要死了
+然後又扯了一堆東西進來
+現在我勉強看得懂
+但是十年後我就不敢保證
+於是我只好在現在
+拼命留下我自已看得懂的筆記
+
+哦好，又扯遠了
+現在我們回到筆記型電腦的/tmp/abc目錄
+這是我們以用戶anntony身分git clone下來的倉庫
+剛才我們嘗試在CubieTruck分享出的abc.git倉庫，對分支a
+w（寫）+（強制寫）
+都成功了
+
+現在來試分支b的
+w（寫）+（強制寫）
+在筆記型電腦上，以anntony身分，執行指令如下
+
+
+確定切換到abc.git複製版倉庫的目錄
+$ cd /tmp/abc
+
+看一下倉庫裡的分支圖
+$ git log --oneline --graph --decorate --all
+
+
+終端機打印了
+* bdb5f24 (HEAD, origin/a, a) a2
+* d3b9ca6 a1
+* b05e8cd (master) m3
+* 8a015f5 m2
+* 13da66c m1
+
+上面的訊息告訴我
+該B（？？？）的地方在m3
+我想要讓分支b從m3提交的地方長出來
+於是我執行了下面的指令
+
+切回master分支，這會讓我的HEAD停在m3提交的地方
+$ git checkout master
+
+再打印一次倉庫分支圖，我只是要確定HEAD的目前位置
+$ git log --oneline --graph --decorate --all
+
+終端機打印了
+* bdb5f24 (origin/a, a) a2
+* d3b9ca6 a1
+* b05e8cd (HEAD, master) m3
+* 8a015f5 m2
+* 13da66c m1
+
+耶，HEAD真的停在m3提交
+現在我要建立一個新的b分支，然後切換我目前的工作分支到b分支上
+執行
+$ git checkout -b b
+
+終端機回應了
+Switched to a new branch 'b'
+
+再打印一次倉庫分支圖，反正只要想知道倉庫怎麼了，就打印來瞧瞧，又不用錢，哈
+$ git log --oneline --graph --decorate --all
+
+終端機打印了
+* bdb5f24 (origin/a, a) a2
+* d3b9ca6 a1
+* b05e8cd (HEAD, master, b) m3
+* 8a015f5 m2
+* 13da66c m1
+
+在m3的地方，同時有HEAD, master, b
+那我怎麼知道我現在人在那個分支上
+剛才終端機不是有說
+Switched to a new branch 'b'
+這句話嗎？
+或者你還可以再執行
+$ git branch
+再次確認一下
+終端機回應了
+  a
+* b
+  master
+
+不要懷疑，你現在工作的分支是b分支，然後HEAD在m3提交
+待會兒如果有新的提交，會從m3的地方長出來
+現在執行以下指令，為分支b新增3個提交
+$ echo "b1" > b1.txt ; git add -A ; git commit -m "b1"
+$ echo "b2" > b2.txt ; git add -A ; git commit -m "b2"
+$ echo "b3" > b3.txt ; git add -A ; git commit -m "b3"
+
+
+然後再看看倉庫裡的分支圖
+$ git log --oneline --graph --decorate --all
+
+
+終端機打印了
+* ef2cfd9 (HEAD, b) b3
+* 92e7466 b2
+* 1e5ecf0 b1
+| * bdb5f24 (origin/a, a) a2
+| * d3b9ca6 a1
+|/  
+* b05e8cd (master) m3
+* 8a015f5 m2
+* 13da66c m1
+
+
+剛才我為什麼說m3是該B
+現在大家明白了吧？
+該B的學名…不知道是什麼
+「分岐處」嗎？
+就是那個小學的時候男生玩阿魯巴會被撞擊的地方
+好吧我不鬼扯了
+上面的輸出告訴了我們
+分支b的演化過程是
+m1 -> m2 -> m3 -> b1 -> b2 -> b3
+
+現在本地倉庫裡我們新建了分支b
+我們試著把分支b推回遠端倉庫origin
+（CubieTruck機器上的/home/git/repositories/abc.git）
+看看能不能成功推回分支b？
+請執行
+$ git push origin b
+
+終端機輸出了
+Counting objects: 11, done.
+Delta compression using up to 2 threads.
+Compressing objects: 100% (6/6), done.
+Writing objects: 100% (9/9), 722 bytes | 0 bytes/s, done.
+Total 9 (delta 2), reused 0 (delta 0)
+To ssh://git@192.168.0.161:22/abc.git
+ * [new branch]      b -> b
+
+成功推回去遠端倉庫origin了
+可是我超想用我的肉身
+去檢驗琴操的真身
+所以我回到了CubieTruck機器上
+執行了
+
+切換成git用戶
+$ sudo su - git
+
+進入分享倉庫abc.git的所在目錄
+$ cd /home/git/repositories/abc.git
+
+一樣打印倉庫的分支圖來瞧瞧
+$ git log --oneline --graph --decorate --all
+
+終端機打印了
+* ef2cfd9 (b) b3
+* 92e7466 b2
+* 1e5ecf0 b1
+| * bdb5f24 (a) a2
+| * d3b9ca6 a1
+|/  
+* b05e8cd m3
+* 8a015f5 m2
+* 13da66c m1
+
+哦，真的成功推回來了
+很快樂
+不過我有點累了
+明天再繼續
+喵
