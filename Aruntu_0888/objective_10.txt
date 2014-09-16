@@ -142,7 +142,7 @@ Initialized empty Git repository in /home/git/repositories/testing.git/
 使用下列指令，在/home/git/repositories目錄下
 產生一個abc.git的bare repository
 （再次強調，我現在是git用戶別忘了）
-$ git init /home/git/repositories/abc.git
+$ git init --bare /home/git/repositories/abc.git
 
 
 現在一個空白的代碼倉庫abc已經建立了
