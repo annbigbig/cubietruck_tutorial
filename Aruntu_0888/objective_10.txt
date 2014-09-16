@@ -815,6 +815,301 @@ $ git log --oneline --graph --decorate --all
 
 哦，真的成功推回來了
 很快樂
-不過我有點累了
-明天再繼續
-喵
+驗證了anntony用戶可以寫入分支b
+用戶anntony擁有abc.git倉庫的分支b的w權限
+指的是在分支b上，新增commit
+只能增加，不能減少，這就是w權限
+
+現在來驗證anntony用戶是否擁有abc.git倉庫的分支b的+權限（強制寫）
+回到筆記型電腦的本地倉庫/tmp/abc目錄中，執行
+
+動手前一樣先看看本地倉庫裡的分支圖
+$ git log --oneline --graph --decorate --all
+
+終端機打印了
+* ef2cfd9 (HEAD, origin/b, b) b3
+* 92e7466 b2
+* 1e5ecf0 b1
+| * bdb5f24 (origin/a, a) a2
+| * d3b9ca6 a1
+|/  
+* b05e8cd (master) m3
+* 8a015f5 m2
+* 13da66c m1
+
+上面訊息說明了分支b的演化歷史
+m1 -> m2 -> m3 -> b1 -> b2 -> b3
+
+我現在HEAD的位置在b3
+現在我要把HEAD的位置調整到b2
+也就是我要讓本地倉庫的分支b的演化歷史，變成
+m1 -> m2 -> m3 -> b1 -> b2
+
+執行指令移動HEAD到b2
+$ git reset --hard HEAD~
+
+終端機回應了
+HEAD is now at 92e7466 b2
+
+然後我再打印一次倉庫的分支圖
+$ git log --oneline --graph --decorate --all
+
+終端機打印了
+* ef2cfd9 (origin/b) b3
+* 92e7466 (HEAD, b) b2
+* 1e5ecf0 b1
+| * bdb5f24 (origin/a, a) a2
+| * d3b9ca6 a1
+|/  
+* b05e8cd (master) m3
+* 8a015f5 m2
+* 13da66c m1
+
+上面的訊息說明了
+HEAD和本地分支b都指向m2提交
+如果想要知道本地倉庫，是怎麼定義分支b的，可以執行下面指令
+$ git log --oneline
+
+然後終端機回應了
+92e7466 b2
+1e5ecf0 b1
+b05e8cd m3
+8a015f5 m2
+13da66c m1
+
+上面訊息說明，現在本地倉庫裡的分支b的演化歷史，就是
+m1 -> m2 -> m3 -> b1 -> b2
+
+我現在要把這只有5個提交的分支b，推回遠端origin倉庫（CubieTruck機器上的/home/git/repositories/abc.git）
+看看是否會成功？
+執行
+$ git push -f origin b
+
+終端機輸出了
+To ssh://git@192.168.0.161:22/abc.git
+ ! [rejected]        b -> b (non-fast-forward)
+error: failed to push some refs to 'ssh://git@192.168.0.161:22/abc.git'
+hint: Updates were rejected because the tip of your current branch is behind
+hint: its remote counterpart. Integrate the remote changes (e.g.
+hint: 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+
+踢到鐵板了
+注意那一行關鍵的
+ ! [rejected]        b -> b (non-fast-forward)
+
+
+一樣回到CubieTruck機器上
+看看abc.git分享倉庫有沒有被強制寫？
+
+變成git用戶
+$ sudo su - git
+
+進入分享倉庫abc.git的目錄
+$ cd /home/git/repositories/abc.git
+
+打印一下倉庫的分支圖
+$ git log --oneline --graph --decorate --all
+
+
+終端機打印了
+* ef2cfd9 (b) b3
+* 92e7466 b2
+* 1e5ecf0 b1
+| * bdb5f24 (a) a2
+| * d3b9ca6 a1
+|/  
+* b05e8cd m3
+* 8a015f5 m2
+* 13da66c m1
+
+沒事，分享的abc.git裸倉庫的分支b
+演化歷史是
+m1 -> m2 -> m3 > b1 -> b2 -> b3
+一樣是6個commit
+沒有被強制寫
+這個行為符合我們稍早在CubieTruck機器上在/home/git/repositories/gitolite-admin.git作的設定
+再回顧一次
+/home/aruntu/gitolite-admin/conf/gitolite.conf
+設定檔的內容
+如下
+repo    gitolite-admin
+        RW+     =   admin
+
+repo    testing
+        RW+     =   @all
+
+repo    abc
+        RW+   a  =   anntony
+        RW    b  =   anntony
+        R     c  =   anntony
+
+我們規定了abc.git分享倉庫的b分支，只有RW權限，並沒有強制寫的+權限
+
+最後來驗證分支c是否真的禁止用戶anntony寫入？
+回到筆記型電腦的/tmp/abc本地倉庫目錄
+執行指令如下
+
+老樣子，動手之前，再打印倉庫的分支圖來瞧瞧
+$ git log --oneline --graph --decorate --all
+
+
+終端機輸出了
+* ef2cfd9 (origin/b) b3
+* 92e7466 (HEAD, b) b2
+* 1e5ecf0 b1
+| * bdb5f24 (origin/a, a) a2
+| * d3b9ca6 a1
+|/  
+* b05e8cd (master) m3
+* 8a015f5 m2
+* 13da66c m1
+
+
+上面訊息告訴我們，現在HEAD在b2提交
+所以我人在分支b上面
+我想要待會新建立的分支c
+從m3的地方長出來
+所以我要先切換到master分支
+$ git checkout master
+
+
+終端機該該叫說我上游的位於origin遠端倉庫的master分支死了
+要修正問題就執行git branch --unset-upstream
+很煩耶，不想鳥它，這不是重點，請忽視它，進行下個步驟
+Switched to branch 'master'
+Your branch is based on 'origin/master', but the upstream is gone.
+  (use "git branch --unset-upstream" to fixup)
+
+建立一個新的本地分支c
+$ git checkout -b c
+
+終端機回應了
+Switched to a new branch 'c'
+
+再打印倉庫的分支圖
+$ git log --oneline --graph --decorate --all
+
+終端機打印了
+* ef2cfd9 (origin/b) b3
+* 92e7466 (b) b2
+* 1e5ecf0 b1
+| * bdb5f24 (origin/a, a) a2
+| * d3b9ca6 a1
+|/  
+* b05e8cd (HEAD, master, c) m3
+* 8a015f5 m2
+* 13da66c m1
+
+
+上面訊息說明現在HEAD在m3的地方
+再確認一下我現在的工作分支，執行
+$ git branch
+
+終端機回答了
+  a
+  b
+* c
+  master
+
+我人現在的位置在m3提交，然後我的工作分支是本地的c分支
+所以待會兒如果有新的提交，一樣會從m3的地方長出來
+
+執行下列指令新增分支c的三個新提交
+$ echo "c1" > c1.txt ; git add -A ; git commit -m "c1"
+$ echo "c2" > c2.txt ; git add -A ; git commit -m "c2"
+$ echo "c3" > c3.txt ; git add -A ; git commit -m "c3"
+
+新增之後，一樣打印倉庫的分支圖來瞧瞧
+$ git log --oneline --graph --decorate --all
+
+終端機打印了
+* cbf23a7 (HEAD, c) c3
+* 8ac15d9 c2
+* c5fc7ca c1
+| * ef2cfd9 (origin/b) b3
+| * 92e7466 (b) b2
+| * 1e5ecf0 b1
+|/  
+| * bdb5f24 (origin/a, a) a2
+| * d3b9ca6 a1
+|/  
+* b05e8cd (master) m3
+* 8a015f5 m2
+* 13da66c m1
+
+上面的訊息告訴我們
+本地倉庫abc裡的分支c的演化過程是
+m1 -> m2 -> m3 -> c1 -> c2 -> c3
+
+現在我們試試把分支c推回遠端的origin裸倉庫試試，執行
+$ git push origin c
+
+耶，踢到鐵板了，不能推推
+這是當然的啊，我們前面規定了anntony用戶對分支c只有R（讀）的權限而已
+Counting objects: 12, done.
+Delta compression using up to 2 threads.
+Compressing objects: 100% (6/6), done.
+Writing objects: 100% (9/9), 724 bytes | 0 bytes/s, done.
+Total 9 (delta 2), reused 0 (delta 0)
+remote: W refs/heads/c abc anntony DENIED by fallthru
+remote: error: hook declined to update refs/heads/c
+To ssh://git@192.168.0.161:22/abc.git
+ ! [remote rejected] c -> c (hook declined)
+error: failed to push some refs to 'ssh://git@192.168.0.161:22/abc.git'
+
+再回到CubieTruck機器上
+回到abc.git分享倉庫的目錄
+/home/git/repositories/abc.git
+
+變身成git用戶
+$ sudo su - git
+
+切換目錄到abc.git
+$ cd /home/git/repositories/abc.git
+
+打印一下分享倉庫的分支圖
+$ git log --oneline --graph --decorate --all
+
+終端機打印了
+* ef2cfd9 (b) b3
+* 92e7466 b2
+* 1e5ecf0 b1
+| * bdb5f24 (a) a2
+| * d3b9ca6 a1
+|/  
+* b05e8cd m3
+* 8a015f5 m2
+* 13da66c m1
+
+哦哦哦，依然純潔無瑕
+本地倉庫/tmp/abc壞壞，它想把本地分支c強制寫入遠端的origin裸倉（CubieTruck機器上的/home/git/repositories/abc.git）
+但是它沒有得逞，origin裸倉依然是只有分支a和分支b
+
+總結：
+以上我們在cubieTruck機器上安裝了gitolite套件
+我們設定了gitolite認定的管理員是aruntu
+還有一個普通用戶anntony
+又新增了一個git用戶，讓它管理所有分享出來的bare repositories
+分享出來的倉庫會放在
+/home/git/repositories
+目錄裡面集中管理
+如果要設定每個分享倉庫的權限
+是在
+/home/git/repositories/gitolite-admin.git
+但是由於這是個bare repository
+所以你只能將這個裸倉庫git clone到其他地方
+（本例是在CubieTruck機器上的/home/aruntu目錄裡進行git clone的動作）
+clone下來之後，這個gitolite-admin倉庫變成了non-bare的倉庫，有工作目錄
+我們才能修改設定檔
+/home/aruntu/gitolite/conf/gitolite.conf
+改完之後，暫存、提交、
+推回原來的origin遠端裸倉庫（CubieTruck機器上的/home/git/repositories/gitolite-admin.git）
+才算完成gitolite的分享倉庫們的權限設定
+然後我們又驗證了一般用戶anntony
+是否對CubieTruck機器上的分享倉庫abc.git裡的分支a、分支b、分支c
+有w（寫）或是+（強制寫）的權限
+
+gitolite設定筆記大概寫到這裡完成
+有想到什麼再補上來
+請繼續收看objective 11
