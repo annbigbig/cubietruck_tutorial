@@ -1,0 +1,10 @@
+指令如下：
+
+$ git init template-repo
+$ cd template-repo/
+$ echo "m1" > m1.txt ; git add -A ; git commit -m "m1"
+$ echo "m2" > m2.txt ; git add -A ; git commit -m "m2"
+$ echo "m3" > m3.txt ; git add -A ; git commit -m "m3"
+$ git log --oneline --graph --decorate --all
+$ cd ..
+$ git clone --bare template-repo abc.git

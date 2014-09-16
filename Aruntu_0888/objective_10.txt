@@ -141,7 +141,12 @@ Initialized empty Git repository in /home/git/repositories/testing.git/
 具體作法如下，現在我們在CubieTruck機器上，還是保持git用戶身分
 使用下列指令，在/home/git/repositories目錄下
 產生一個abc.git的bare repository
-（再次強調，我現在是git用戶別忘了）
+
+在產生共享的abc.git倉庫之前，先設定好git用戶的user.name和user.email
+$ git config --global user.name "Git"
+$ git config --global user.email "git@localhost"
+
+產生要分享的abc.git裸倉庫（再次強調，我現在是git用戶別忘了）
 $ git init --bare /home/git/repositories/abc.git
 
 
@@ -159,7 +164,7 @@ $ git init --bare /home/git/repositories/abc.git
 實際操作一下
 （我現在人在CubieTruck機器上，以aruntu身份登入終端機）
 
-確定現在人在家目錄下
+確定現在人在家目錄下，然後是aruntu用戶的身分
 $ cd /home/aruntu
 
 把放在/home/git/repositories/gitolite-admin.git這個權限倉庫複製下來
@@ -886,17 +891,16 @@ m1 -> m2 -> m3 -> b1 -> b2
 $ git push -f origin b
 
 終端機輸出了
+Total 0 (delta 0), reused 0 (delta 0)
+remote: + refs/heads/b abc anntony DENIED by fallthru
+remote: error: hook declined to update refs/heads/b
 To ssh://git@192.168.0.161:22/abc.git
- ! [rejected]        b -> b (non-fast-forward)
+ ! [remote rejected] b -> b (hook declined)
 error: failed to push some refs to 'ssh://git@192.168.0.161:22/abc.git'
-hint: Updates were rejected because the tip of your current branch is behind
-hint: its remote counterpart. Integrate the remote changes (e.g.
-hint: 'git pull ...') before pushing again.
-hint: See the 'Note about fast-forwards' in 'git push --help' for details.
 
 踢到鐵板了
 注意那一行關鍵的
- ! [rejected]        b -> b (non-fast-forward)
+ ! [remote rejected] b -> b (hook declined)
 
 
 一樣回到CubieTruck機器上
@@ -1057,6 +1061,7 @@ remote: error: hook declined to update refs/heads/c
 To ssh://git@192.168.0.161:22/abc.git
  ! [remote rejected] c -> c (hook declined)
 error: failed to push some refs to 'ssh://git@192.168.0.161:22/abc.git'
+
 
 再回到CubieTruck機器上
 回到abc.git分享倉庫的目錄
