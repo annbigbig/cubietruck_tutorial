@@ -1,0 +1,66 @@
+objective 11 : 將目前放在Micro SD卡上的系統，作成一個OS Image檔
+
+到目前為止，我們CubieTruck機器上運行的aRuntu 0.888作業系統
+已經和我們剛下載來的時候，差異很大了
+因為我們不止把它改成中文環境、時區也改了
+又安裝上了許多套件（Oracle JDK、Netbeans IDE、gimp、LibreOffice）
+然後又讓許多常用的網路服務跑了起來（ssh、vnc、nfs、ftp）
+也設定好了gitolite讓它管理/home/git/repositories目錄下的代碼倉庫
+現在我們要把目前MicroSD卡的狀態，作成一個OS Image檔
+就好像是在一般的PC上面，把硬碟上的作業系統作成一個GHOST或是TrueImage影像檔
+然後有需要的時候，就整個把影像檔再restore回硬碟
+立刻就回到那個時候作業系統的狀態，不用再一個一個安裝啦設定啦，天都亮了
+
+開始實作，把CubieTruck機器關閉電源，拔出MicroSD卡
+插上SD轉卡，然後再插到我筆記型電腦的SD Slot上面
+
+參考了cubieboard官網的這篇教程
+http://docs.cubieboard.org/how_to_make_a_sd_image_from_sd_bootable_os
+
+但我沒有完全照抄它的作法，因為上面的官網教程裡，他們用來開機的MicroSD卡有兩個分割區
+它把/dev/sdb1分割區的資料擷取出來，包成了bootfs.tar.gz
+然後/dev/sdb2分割區的資料擷取出來，包成了rootfs.tar.gz
+接著在硬碟上的WORK_DIR目錄裡，作了一個空白的大小約2.38 G的image file
+清空最前面1024K的地方
+然後從最前面空下來整整8KB，再手動寫入u-boot-sunxi-with-spl.bin
+接著再用fdisk指令把image file，也就是/dev/loop0裝置給格式化成兩個分割區
+/dev/loop0p1分割區格式化成FAT之後，被取了個別名叫/dev/loop1，再把剛才包的bootfs.tar.gz全解壓縮到/dev/loop1
+/dev/loop0p2分割區格式化成EXT4之後，被取了個別名叫/dev/loop2，再把剛才包的rootfs.tar.gz全解壓縮到/dev/loop2
+這樣作沒什麼不對，可是因為aRuntu 0.888它只有一個分割區，而且我的aRuntu影像檔需要至少7.2GB的空間
+所以我們不能直接照抄cubieboard官網的流程，要稍微改一下
+還有我不想先包成rootfs.tar.gz，再解壓縮到loop1裝置上，我想直接TM就直接用dd指令去倒
+MicroSD卡上面最前面1024K的地方，我也想直接用dd倒到loop0裝置上
+概念大約是這樣
+
+接下來請保持清醒，不要喝酒
+還有搞清楚自已的MicroSD卡和筆記型電腦上系統硬碟的磁碟代號
+按下ENTER執行指令之前，再三確認一下寫入的來源地和目的地是那裡，想想有沒有什麼問題？
+觀念模糊不清時，可能會發生悲劇，要不洗乾淨MicroSD卡，要不就洗乾淨系統硬碟，請打起精神並小心謹慎，要開始製作影像檔了
+
+把MicroSD卡經過SD轉卡，插入筆記型電腦SD Slot之後
+到終端機下，執行
+
+先切換成root身分
+$ sudo -i
+
+然後看一下MicroSD卡的磁碟代號是什麼
+# df -h
+
+終端機打印了
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/sda1       453G   93G  338G   22% /
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+udev            2.8G  4.0K  2.8G    1% /dev
+tmpfs           559M  1.4M  558M    1% /run
+none            5.0M     0  5.0M    0% /run/lock
+none            2.8G   36M  2.7G    2% /run/shm
+none            100M   52K  100M    1% /run/user
+/dev/sdb1       7.1G  5.8G  884M   88% /media/anntony/5f70abf0-69bc-468e-b875-5cf1378b476b
+
+這個訊息說明了，我們的MicroSD卡的磁碟代號是/dev/sdb
+它有一個分割區叫/dev/sdb1
+目前被掛載到/media/anntony/5f70abf0-69bc-468e-b875-5cf1378b476b
+
+
+
+

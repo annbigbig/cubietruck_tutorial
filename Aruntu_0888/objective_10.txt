@@ -1088,7 +1088,7 @@ $ git log --oneline --graph --decorate --all
 * 13da66c m1
 
 哦哦哦，依然純潔無瑕
-本地倉庫/tmp/abc壞壞，它想把本地分支c強制寫入遠端的origin裸倉（CubieTruck機器上的/home/git/repositories/abc.git）
+本地倉庫/tmp/abc壞壞，它想把本地分支c寫入遠端的origin裸倉（CubieTruck機器上的/home/git/repositories/abc.git）
 但是它沒有得逞，origin裸倉依然是只有分支a和分支b
 
 總結：
