@@ -1,0 +1,29 @@
+我想要把/home/stark目錄裡（包含所有子目錄）
+所有檔案裡的aruntu字串
+都換成stark字串
+那麼我可以執行
+
+# cd /home/stark
+# find . -type f -print0 | xargs -0 sed -i 's/aruntu/stark/g'
+
+＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
+
+Google搜尋了
+「linux command sed how to recurisive dir replace a string」
+
+參考這篇
+http://stackoverflow.com/questions/1583219/awk-sed-how-to-do-a-recursive-find-replace-of-a-string
+
+發問者問了：
+How to I find and replace every occurrence of:
+
+subdomainA.example.com
+with
+
+subdomainB.example.com
+in every text file under the /home/www/ directory tree (recursive find/replace).
+
+答案簡單明瞭
+cd /home/www
+
+find . -type f -print0 | xargs -0 sed -i 's/subdomainA.example.com/subdomainB.example.com/g'

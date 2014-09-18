@@ -212,153 +212,77 @@ stark:x:1004:
 然後為他執行了visudo指令（讓用戶stark將來可以執行sudo -i指令變成root用戶）
 然後又把stark用戶加到了所有預設用戶aruntu所在的群組
 
-其實用戶aruntu的家目錄
-/home/aruntu
-這個目錄下面，還有一堆檔案和目錄都沒有複製到/home/stark
-因為我在想有些設定檔案裡面，直接寫著aruntu的用戶名
-而且可能有好幾千個，這樣我如果一個一個改，我就瘋了
-就算用sed指令遞迴所有的子目錄，把每個檔案裡的aruntu改成stark
-工程也太浩大了，難道不能簡單一點嗎？
+那還剩什麼沒弄？
+我的新用戶stark的家目錄
+/home/stark
+必須要和原來的預設用戶aruntu
+長得「幾乎」一模一樣才行
+為什麼說「幾乎」
+因為/home/aruntu目錄裡（包含所有子目錄）的所有設定檔案
+大概有好幾千個設定檔，裡面都直接寫著aruntu這個關鍵字
+那麼如果我直接把
+/home/aruntu這個目錄完全一模一樣複製成/home/stark
+八成會出問題
+而且如果我在CubieTruck機器上用aruntu用戶開機
+那麼/home/aruntu目錄就被鎖死
+我也不能直接就這樣複製成/home/stark
 
-剩最後一個/etc/slim.conf
-改完就直接TM的重開機，看看會不會自已乖乖用stark用戶自動登入
+所以我要把CubieTruck機器關掉
+然後再把MicroSD卡拔出來，在筆記型電腦上面掛載
+然後把MicroSD卡上面的/home/aruntu目錄，
+完整複製一份成為/home/stark目錄
+然後把這個新產生的/home/stark目錄裡面（包含所有子目錄）
+只要是寫著aruntu字串的檔案，全部置換成stark字串
 
-動手修改之前，先把原來的存檔一份，小心駛得萬年船
-# cp /etc/slim.conf /etc/slim.conf.default
+工程很浩大
+但是開始動手吧
+關閉CubieTruck機器的電源，拔出MicroSD卡，插上轉卡，再插到筆記型電腦裡
+進入終端機，執行
 
-重新開機之後
-系統真的使用stark用戶的身分自動登入了
-不過ssh server和vnc server都不再能連線了
-我覺得很納悶
-vnc server不能連線的原因我還知道
-因為stark的家目錄裡應該要有個檔案
-/home/stark/.config/lxsession/LXDE/autostart
-這個檔案裡面應該要有一行
-@x11vnc -forever -geometry 1024x768 -rfbauth /home/stark/.vnc/passwd -o /tmp/x11vnc.log -rfbport 27900
-而且
-我的新用戶stark的VNC連線的密碼檔
-/home/stark/.vnc/passwd
-也不存在
-所以vnc server沒有跑起來，我是可以理解的
-不過ssh server不能跑起來
-我就很納悶
-我在筆記型電腦上的終端機
-一樣使用
-$ ssh mycubie
-或是
-$ ssh -i /home/anntony/.ssh/private_key_from_cubie aruntu@192.168.0.161
-沒有用
-只會出現
-Permission denied (publickey).
-然後我去CubieTruck機器上（老老實實接了螢幕和鍵盤滑鼠T_T，遜，我網管耶還接螢幕鍵盤滑鼠，簡直奇恥大辱）
-我查看了
-/var/log/auth.log
-
-我下了這樣的指令
-
-變成root
+變身成root身分
 $ sudo -i
 
-然後打印和ssh有關的那些記錄行
-# cat auth.log | grep ssh
-
-
-結果終端機打印了
-（上面還有超多超多訊息…但不是重點）
-Sep 18 22:10:32 cubie001 sshd[1634]: Authentication refused: bad ownership or modes for file /home/aruntu/.ssh/authorized_keys
-Sep 18 22:10:32 cubie001 sshd[1634]: Connection closed by 192.168.0.12 [preauth]
-（下面也有超多超多訊息…但不是重點）
-
-嗯，我抓到問題了
-我又下了這個指令，看了一下authorized_keys這個檔案到底是什麼權限？
-# ls -al /home/aruntu/.ssh/authorized_keys
-
+看看MicroSD卡被自動掛載到那個目錄了？
+# df -h
 
 終端機打印了
--rw-rw-r-- 1 aruntu aruntu 797  9月 18 22:04 /home/aruntu/.ssh/authorized_keys
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/sda1       453G  104G  327G   25% /
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+udev            2.8G  4.0K  2.8G    1% /dev
+tmpfs           559M  1.4M  558M    1% /run
+none            5.0M     0  5.0M    0% /run/lock
+none            2.8G   37M  2.7G    2% /run/shm
+none            100M   44K  100M    1% /run/user
+/dev/sdb1       7.1G  5.9G  826M   88% /media/anntony/5f70abf0-69bc-468e-b875-5cf1378b476b
 
-為什麼會是664，好奇怪，難不成我剛才新增stark用戶的時候，有作什麼讓這個原來該是權限600的檔案改變成664了嗎？
-不管它，這就是ssh server拒絕連線的原因，把它改回權限600
-# chmod 600 /home/aruntu/.ssh/authorized_keys
+切換到
+/media/anntony/5f70abf0-69bc-468e-b875-5cf1378b476b
+也就是MicroSD卡aRuntu系統的根目錄
+# cd /media/anntony/5f70abf0-69bc-468e-b875-5cf1378b476b
 
-然後再回筆記型電腦上的終端機，試著執行ssh指令連線看看，耶，結果正常了，混帳東西
+確認一下，真的是我的aRuntu嗎？
+# ls
 
-接著再解決vnc server不能連線的問題
-直接把aruntu用戶家目錄下的.config和.vnc複製到stark用戶的家目錄下面，應該就可以了吧
-執行
+終端機輸出了
+1.fex                       bin   dev  home  lost+found  mnt        opt   root  sbin           script-cubie-A20.bin  swapfile  tmp       uEnv.ct          usr
+aRUNTU_TITAN_EDITION_0.888  boot  etc  lib   media       nfs-share  proc  run   script-ct.bin  srv                   sys       uEnv.cb2  uEnv.ct.default  var
 
-原來stark用戶的先備份一下（執行下面的指令時，我的stark用戶是登出狀態，使用原aruntu用戶登入）
-# cd /home/stark
-# mv .config .config.default
+是真的，不要懷疑
+現在進入home目錄
+# cd home
 
-把aruntu用戶的.config目錄，複製到stark用戶的家目錄下面
-# cp -R /home/aruntu/.config /home/stark/
-# cp -R /home/aruntu/.vnc /home/stark/
+看一下
+# ls
 
-檢查看看是不是真的複製過來了？
-# ls -al | grep config
-# ls -al | grep vnc
+終端機輸出了
+aruntu  ftpuser  git  stark
 
-把整個.config目錄都改成擁有人和群組都是用戶stark
-# chown -R stark:stark /home/stark/.config
-# chown -R stark:stark /home/stark/.vnc
+先把stark目錄更名成stark.original
+# mv stark stark.original
 
-剛才複製過來的.config和.vnc目錄
-裡面應該有幾百個純文字檔案，裡面都寫死了aruntu用戶的名字
-我們再作一件事，把剛才複製過來的.config和.vnc目錄
-遞迴檢查所有子目錄，如果有任何檔案裡，有aruntu這個字眼，
-我們就把aruntu換成stark
-
-不過我有點忘了要怎麼作
-所以我Google搜尋了
-「linux command sed how to recurisive dir replace a string」
-然後跳出了190000個結果頁面，第一個連結的頁面是：
-http://stackoverflow.com/questions/1583219/awk-sed-how-to-do-a-recursive-find-replace-of-a-string
-
-發問者問了：
-How to I find and replace every occurrence of:
-
-subdomainA.example.com
-with
-
-subdomainB.example.com
-in every text file under the /home/www/ directory tree (recursive find/replace).
-
-答案簡單明瞭
-cd /home/www
-
-find . -type f -print0 | xargs -0 sed -i 's/subdomainA.example.com/subdomainB.example.com/g'
-
-那我就依樣畫葫蘆了
-在動手之前，我想先記錄一下
-/home/stark/.config
-/home/stark/.vnc
-這兩個目錄（包含所有子目錄）裡面，有關鍵字aruntu出現的那些檔案
-所以我先執行了
-# find /home/stark/.config -xdev -type f -print0 | xargs -0 grep -H "aruntu" >> /root/temp/the_files_contain_keyword_aruntu_in_home_stark_.config_dir.txt
-# find /home/stark/.vnc -xdev -type f -print0 | xargs -0 grep -H "aruntu" >> /root/temp/the_files_contain_keyword_aruntu_in_home_stark_.vnc_dir.txt
-上面的這兩行指令，會幫我記錄
-/home/stark/.config目錄裡（包含所有子目錄），所有出現關鍵字aruntu的檔案到
-/root/temp/the_files_contain_keyword_aruntu_in_home_stark_.config_dir.txt
-還有記錄
-/home/stark/.vnc目錄裡（包含所有子目錄），所有出現關鍵字aruntu的檔案到
-/root/temp/the_files_contain_keyword_aruntu_in_home_stark_.vnc_dir.txt
-
-
-現在要執行sed指令來把aruntu字串置換成stark字串了
-執行指令如下：
-# cd /home/stark/.config
-# find . -type f -print0 | xargs -0 sed -i 's/aruntu/stark/g'
-# cd /home/stark/.vnc
-# find . -type f -print0 | xargs -0 sed -i 's/aruntu/stark/g'
-
-
-把這兩個目錄裡所有的aruntu字串置換成stark字串之後
-再來看看
-執行
-# find /home/stark/.config -xdev -type f -print0 | xargs -0 grep -H "stark" >> /root/temp/the_files_contain_keyword_stark_in_home_stark_.config_dir.txt
-# find /home/stark/.vnc -xdev -type f -print0 | xargs -0 grep -H "stark" >> /root/temp/the_files_contain_keyword_stark_in_home_stark_.vnc_dir.txt
-為什麼要執行這兩行的原因，和稍早執行置換的sed指令之前一樣，我懶得再說明一次
+然後把aruntu目錄複製成stark目錄，複製的時候維持原來用戶aruntu的權限
+# cp -Rp aruntu stark
 
 
 
