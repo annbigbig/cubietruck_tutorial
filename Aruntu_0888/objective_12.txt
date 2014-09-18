@@ -1,0 +1,198 @@
+objective 12 : 用自已的名字開一個使用者帳戶，並設定為預設登入的使用者
+
+在CubieTruck機器的終端機，執行
+
+先變身成root用戶，待會兒方便作事
+$ sudo -i
+
+建立一個新的用戶，叫stark
+# adduser stark
+
+終端機回應了這些訊息
+所有的答案我都不想回答，直接按ENTER接受預設值
+最後按下y再按ENTER，新的用戶stark就產生了
+
+
+正在新增使用者 `stark' ...
+增加新群組 `stark' (1004) ...
+正在新增新使用者 `stark' (UID 1004) 到群組 `stark' ...
+正在新增家目錄 `/home/stark' ...
+正在從 `/etc/skel'複製檔案 ...
+新 密碼： 
+不良的密碼： 太短了
+不良的密碼： 太簡單
+再次輸入新的 密碼： 
+passwd：密碼已成功地變更
+正在改變 stark 的使用者訊息
+請輸入新值，或直接按 ENTER 鍵以使用預設值
+	全名 []: 
+	房間號碼 []: 
+	工作電話 []: 
+	住家電話 []: 
+	其它 []: 
+以上輸入的資料正確嗎？[Y/n] y
+
+
+新增用戶stark之後，我看了一下系統為他新增的家目錄
+也就是/home/stark目錄
+# ls -al /home/stark
+
+終端機打印了，嗯…幾乎是家徒四壁
+總計 28
+drwxr-xr-x 2 stark stark 4096  9月 18 15:59 .
+drwxr-xr-x 6 root  root  4096  9月 18 15:59 ..
+-rw-r--r-- 1 stark stark  220  9月 18 15:59 .bash_logout
+-rw-r--r-- 1 stark stark 3637  9月 18 15:59 .bashrc
+-rw-r--r-- 1 stark stark  675  9月 18 15:59 .profile
+-rw-r--r-- 1 stark stark 1601  9月 18 15:59 .Xdefaults
+-rw-r--r-- 1 stark stark   14  9月 18 15:59 .xscreensaver
+
+
+我想要讓這個新用戶stark，可以使用sudo指令變身成root用戶
+所以我執行了下面的指令
+
+先確認aRuntu系統裡，有我要執行的visudo指令存在
+# which visudo
+
+終端機打印了
+/usr/sbin/visudo
+
+系統裡真的有/usr/sbin/visudo工具存在，
+再執行
+# visudo
+
+終端機出現了一個vi文字編輯器的畫面
+找到這一行
+root	ALL=(ALL:ALL) ALL
+然後在這一行的下面新增這一行
+stark   ALL=(ALL:ALL) ALL
+
+然後按下Ctrl+X，接著回答y再按ENTER，離開vi編輯器
+改好的設定會存在/etc/sudoers組態檔
+# cat /etc/sudoers
+
+終端機打印了
+#
+# This file MUST be edited with the 'visudo' command as root.
+#
+# Please consider adding local content in /etc/sudoers.d/ instead of
+# directly modifying this file.
+#
+# See the man page for details on how to write a sudoers file.
+#
+Defaults	env_reset
+Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Host alias specification
+
+# User alias specification
+
+# Cmnd alias specification
+
+# User privilege specification
+root	ALL=(ALL:ALL) ALL
+stark   ALL=(ALL:ALL) ALL
+
+# Members of the admin group may gain root privileges
+%admin  ALL = (ALL) NOPASSWD: ALL
+
+# Allow members of group sudo to execute any command
+%sudo	ALL=(ALL:ALL) ALL
+
+# See sudoers(5) for more information on "#include" directives:
+
+#includedir /etc/sudoers.d
+aruntu ALL=(ALL) NOPASSWD: ALL
+root ALL=(ALL) NOPASSWD: ALL
+
+記住你絕對不能直接自作聰明地下達這樣的指令
+# vi /etc/sudoers
+你絕對不能這樣直接去編輯/etc/sudoers這個檔案
+你必須使用visudo指令來修改
+
+新用戶stark產生了，可是還有群組的問題
+我打印了一下系統的/etc/group，執行
+# cat /etc/group
+
+終端機打印了
+root:x:0:aruntu
+daemon:x:1:aruntu
+bin:x:2:aruntu
+sys:x:3:aruntu
+adm:x:4:aruntu
+tty:x:5:aruntu
+disk:x:6:aruntu
+lp:x:7:aruntu
+mail:x:8:aruntu
+news:x:9:aruntu
+uucp:x:10:aruntu
+man:x:12:aruntu
+proxy:x:13:aruntu
+kmem:x:15:aruntu
+dialout:x:20:aruntu
+fax:x:21:aruntu
+voice:x:22:aruntu
+cdrom:x:24:aruntu
+floppy:x:25:aruntu
+tape:x:26:aruntu
+sudo:x:27:aruntu
+audio:x:29:pulse,aruntu
+dip:x:30:aruntu
+www-data:x:33:aruntu
+backup:x:34:aruntu
+operator:x:37:aruntu
+list:x:38:aruntu
+irc:x:39:aruntu
+src:x:40:aruntu
+gnats:x:41:aruntu
+shadow:x:42:aruntu
+utmp:x:43:aruntu
+video:x:44:aruntu
+sasl:x:45:aruntu
+plugdev:x:46:aruntu
+staff:x:50:aruntu
+games:x:60:aruntu
+users:x:100:aruntu
+nogroup:x:65534:aruntu
+libuuid:x:101:aruntu
+ssh:x:102:aruntu
+messagebus:x:103:aruntu
+netdev:x:104:aruntu
+aruntu:x:1000:aruntu
+fuse:x:105:aruntu
+mediatomb:x:106:aruntu
+crontab:x:107:aruntu
+sambashare:x:108:aruntu
+scanner:x:109:aruntu
+colord:x:110:aruntu
+utempter:x:111:aruntu
+bluetooth:x:112:aruntu
+ssl-cert:x:113:aruntu
+avahi:x:114:aruntu
+lpadmin:x:115:aruntu
+nopasswdlogin:x:117:aruntu
+syslog:x:118:aruntu
+avahi-autoipd:x:119:aruntu
+pulse:x:120:aruntu
+pulse-access:x:121:aruntu
+rtkit:x:122:aruntu
+saned:x:123:aruntu
+whoopsie:x:124:aruntu
+stunnel4:x:125:aruntu
+minidlna:x:126:aruntu
+xrdp:x:127:
+gdm:x:128:
+lightdm:x:116:
+ftp:x:129:
+ftpuser:x:1001:tony
+tony:x:1002:
+git:x:1003:
+stark:x:1004:
+
+我注意到原來aRuntu 0.888系統上的預設用戶aruntu
+其實加入了一堆群組，如果剛才新增的新用戶stark沒有加入這些群組
+那麼可能執行某些系統功能會受到限制
+所以我決定，只要aruntu用戶有加入的群組，那麼新用戶stark也要加入
+我執行了
+# usermod -G root,daemon,bin,sys,adm,tty,disk,lp,mail,news stark
+# usermod -G uucp,man,proxy,kmem,dialout,fax,voice,cdrom,floppy,tape stark
