@@ -304,9 +304,159 @@ none            100M  8.0K  100M    1% /run/user
 接下來我們要把MicroSD卡上面的/dev/mmcblk0p1分割區的資料
 全部複製到SATA硬碟的/dev/sda1分割區
 
-首先建立一個/mnt/mmcblk0p1目錄
-# mkdir /mnt/mmcblk0p1
+aRuntu開機的時候，已經把/dev/mmcblk0p1分割區
+掛載在根目錄 / 了
+所以現在我們執行
 
-然後把/dev/mmcblk0p1掛載到/mnt/mmcblk0p1目錄
+切換到根目錄 /
+# cd /
+
+開始用tar指令複製所有檔案到/mnt/sda1目錄
+# tar --backup -c * | tar -C /mnt/sda1 -xv
 
 
+最後複製的動作停了下來，終端機出現了下面的訊息
+讓我一頭霧水，所以到底這樣是有沒有什麼問題？
+把MicroSD卡上的資料複製到SATA硬碟的動作，有確實完成嗎？
+
+var/backups/dpkg.status.6.gz
+tar: var/backups/passwd.bak
+var/mail/
+由於先前錯誤而以失敗狀態離開
+tar: proc：難以確信的舊時間戳記 1970-01-01 08:00:00
+
+我Google搜尋了一下
+發現很多人都說沒關係
+那就先這樣，我繼續下個動作
+
+修改/uEnv.ct
+注意：現在是修改MicroSD卡的/dev/mmcblk0p1分割區上的/uEnv.ct
+# vi /uEnv.ct
+
+把原來ROOTFS部分的（以/dev/mmcblk0p1當作rootfs）
+###ROOTFS
+root=/dev/mmcblk0p1 rootwait partition=0:1
+#root=/dev/sda1 rootwait partition=0:1
+#root=/dev/sda2 rootwait partition=0:1
+
+
+改成這樣（以/dev/sda1當作rootfs）
+###ROOTFS
+#root=/dev/mmcblk0p1 rootwait partition=0:1
+root=/dev/sda1 rootwait partition=0:1
+#root=/dev/sda2 rootwait partition=0:1
+
+存檔之後，大功告成
+待會兒重新開機之後，就是用SATA硬碟的/dev/sda1分割區當作rootfs了
+重新開機之前我想先試一下現在用MicroSD卡當作儲存媒體的aRuntu作業系統
+讀寫效能如何，（不好奇的人可以跳過這個步驟）
+於是我執行了
+
+先切換到/root目錄
+# cd /root
+
+然後下指令測試
+（只有寫）
+# dd oflag=direct if=/dev/zero of=aaa bs=1M count=256
+
+終端機輸出了
+256+0 records in
+256+0 records out
+複製了 268435456 位元組 (268 MB), 60.6538 s, 4.4 MB/s
+
+（又讀又寫）
+# dd iflag=direct oflag=direct if=aaa of=bbb bs=1M count=256
+
+終端機輸出了
+256+0 records in
+256+0 records out
+複製了 268435456 位元組 (268 MB), 78.2047 s, 3.4 MB/s
+
+（只有讀）
+# dd iflag=direct if=aaa of=/dev/null bs=1M count=256
+
+終端機輸出了
+256+0 records in
+256+0 records out
+複製了 268435456 位元組 (268 MB), 13.399 s, 20.0 MB/s
+
+測試結果還滿悲慘的，這是什麼龜速啊…
+待會兒重新開機之後再測測SATA硬碟的讀寫效能
+存檔之後，然後把CubieTruck重新開機
+# init 6
+
+把CubieTruck重新開機之後，切換成root身分
+$ sudo -i
+
+看看現在的根目錄 / 是不是用/dev/sda1掛載的？
+# df -h
+
+終端機打印了
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/root       688G  7.7G  646G    2% /
+devtmpfs        888M  4.0K  888M    1% /dev
+/dev/root       688G  7.7G  646G    2% /var/log.hdd
+ramlog-tmpfs    984M   12M  973M    2% /var/log
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+tmpfs           984M   12K  984M    1% /tmp
+none            197M  464K  197M    1% /run
+tmpfs           984M     0  984M    0% /var/tmp
+none            5.0M     0  5.0M    0% /run/lock
+none            984M   72K  984M    1% /run/shm
+none            100M  8.0K  100M    1% /run/user
+/dev/mmcblk0p1  7.1G  5.9G  916M   87% /media/stark/5f70abf0-69bc-468e-b875-5cf1378b476b
+
+沒錯，掛載點 / 雖然沒寫上是用/dev/sda1掛載的
+不過我只有/dev/sda1是698G那麼巨大的分割區
+那接下來要進行好奇寶寶實驗了
+rootfs換成放在SATA硬碟上，讀寫效能有變強嗎？
+
+先切換到/root目錄
+# cd /root
+
+然後下指令測試
+（只有寫）
+# dd oflag=direct if=/dev/zero of=aaa bs=1M count=256
+
+終端機打印了
+256+0 records in
+256+0 records out
+複製了 268435456 位元組 (268 MB), 7.48966 s, 35.8 MB/s
+
+（又讀又寫）
+# dd iflag=direct oflag=direct if=aaa of=bbb bs=1M count=256
+
+終端機打印了
+256+0 records in
+256+0 records out
+複製了 268435456 位元組 (268 MB), 11.1136 s, 24.2 MB/s
+
+（只有讀）
+# dd iflag=direct if=aaa of=/dev/null bs=1M count=256
+
+終端機輸出了
+256+0 records in
+256+0 records out
+複製了 268435456 位元組 (268 MB), 2.9087 s, 92.3 MB/s
+
+哇靠，換上了SATA硬碟之後，讀寫速度簡直就爆炸性的成長
+簡單整理表格如下
+           MicroSD            SATA硬碟
+ W        4.4 MB/s            35.8 MB/s
+RW        3.4 MB/s            24.2 MB/s
+R        20.0 MB/s            92.3 MB/s
+
+錢錢扔下去，效能就出來了
+到這裡就完成了把rootfs整個複製到SATA硬碟上
+不過你還是要插著MicroSD卡才能開機
+要記得，如果要修改開機設定
+是修改位置在MicroSD卡上面的/dev/mmcblk0p1分割區上面的uEnv.ct和script-ct.bin才對
+不是改你SATA硬碟上面/dev/sda1分割區上的uEnv.ct和script-ct.bin
+
+大概就這樣
+objective 13（完）
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+之後我還想寫Nginx server還有MariaDB服務器設定篇
+也許還會有Samba和Mail server服務器設定篇…也許啦，敬請期待
+不好意思我寫得很亂很糟很白話，因為這些筆記的用途就是讓我可以很簡單地懂
