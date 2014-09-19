@@ -37,5 +37,276 @@ Code: [Select]
 但是使用tar指令複製的話就不用
 因為你只是單純把檔案從來源地複製到目的地而已
 
-觀念大概是這樣，現在開始實作，把CubieTruck接上我新買的SATA2 500G硬碟
-然後開機
+觀念大概是這樣，現在開始實作，把CubieTruck接上我新買的SATA2 750G硬碟
+然後開機，在終端機執行：
+
+切換成root身分
+$ sudo -i
+
+會幫我自動掛載我的SATA硬碟嗎？
+# df -h
+
+終端機打印了
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/root       7.1G  5.9G  883M   88% /
+devtmpfs        888M  4.0K  888M    1% /dev
+/dev/root       7.1G  5.9G  883M   88% /var/log.hdd
+ramlog-tmpfs    984M   11M  973M    2% /var/log
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+tmpfs           984M   12K  984M    1% /tmp
+none            197M  464K  197M    1% /run
+tmpfs           984M     0  984M    0% /var/tmp
+none            5.0M     0  5.0M    0% /run/lock
+none            984M   72K  984M    1% /run/shm
+none            100M  8.0K  100M    1% /run/user
+
+沒有，那看一下裝置代號
+# ls -al /dev/sda*
+
+終端機打印了
+brw-rw---- 1 root disk 8, 0  9月 19 20:14 /dev/sda
+brw-rw---- 1 root disk 8, 1  9月 19 20:14 /dev/sda1
+
+有抓到SATA硬碟的樣子，掛載起來看看
+先建立一個/mnt/sda1目錄，待會兒掛在這個目錄下
+# mkdir /mnt/sda1
+
+把/dev/sda1掛載到/mnt/sda1
+# mount -t ext4 /dev/sda1 /mnt/sda1
+
+看看有沒有掛上去？執行
+# df -h
+
+終端機打印了
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/root       7.1G  5.9G  883M   88% /
+devtmpfs        888M  4.0K  888M    1% /dev
+/dev/root       7.1G  5.9G  883M   88% /var/log.hdd
+ramlog-tmpfs    984M   11M  973M    2% /var/log
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+tmpfs           984M   12K  984M    1% /tmp
+none            197M  464K  197M    1% /run
+tmpfs           984M     0  984M    0% /var/tmp
+none            5.0M     0  5.0M    0% /run/lock
+none            984M   72K  984M    1% /run/shm
+none            100M  8.0K  100M    1% /run/user
+/dev/sda1       688G  102G  552G   16% /mnt/sda1
+
+有耶，掛載上去了
+因為我這個硬碟上面已經分割好，整個硬碟只有一個/dev/sda1分割區，
+而且上面也已經存有舊的資料了，所以這裡你可以看到/dev/sda1已經存在了102G的資料
+不過為了示範，我還是會整個重頭來過，我待會兒會重新分割硬碟，然後重新格式化硬碟
+然後再把MicroSD卡的/dev/mmcblk0p1分割區的資料，整個倒給/dev/sda1
+
+確定這個750G硬碟上的舊資料我都不要了
+先把/dev/sda1給卸載，在終端機執行
+# umount /dev/sda1
+
+檢查一下，是不是真的卸載掉了？
+# df -h
+
+終端機打印了
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/root       7.1G  5.9G  916M   87% /
+devtmpfs        888M  4.0K  888M    1% /dev
+/dev/root       7.1G  5.9G  916M   87% /var/log.hdd
+ramlog-tmpfs    984M   11M  973M    2% /var/log
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+tmpfs           984M   12K  984M    1% /tmp
+none            197M  464K  197M    1% /run
+tmpfs           984M     0  984M    0% /var/tmp
+none            5.0M     0  5.0M    0% /run/lock
+none            984M   72K  984M    1% /run/shm
+none            100M  8.0K  100M    1% /run/user
+
+好，真的卸載掉了
+現在重新用fdisk把分割區重新分割
+# fdisk /dev/sda
+
+以下是我和fdisk工具程式交互操作的終端機輸出：
+
+裝置呈現的邏輯區大小小於
+實體磁區大小。建議對齊到實體磁區 (或最佳化
+I/O) 大小邊界，否則效能也許會被影響。
+
+命令 (m 以獲得說明)： m
+命令動作
+   a   切換可開機的旗標
+   b   編輯 bsd 磁碟標籤
+   c   切換 DOS 相容性旗標
+   d   刪除分割區
+   l   列出已知分割區類型
+   m   印出這個選單
+   n   加入新的分割區
+   o   建立新的空白 DOS 分割表
+   p   印出分割表
+   q   離開而不需儲存變更
+   s   建立新的空白 Sun 磁碟標籤
+   t   變更分割區系統識別號
+   u   變更顯示/輸入單位
+   v   驗證分割表
+   w   分割表寫入磁碟然後離開
+   x   額外功能 (專家限用)
+
+命令 (m 以獲得說明)： p
+
+Disk /dev/sda: 750.2 GB, 750156374016 bytes
+81 磁頭，63 磁區/磁軌，287115 磁柱，總計 1465149168 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 4096 位元組
+I/O 大小 (最小/最佳化)：4096 位元組 / 4096 位元組
+磁碟識別碼：0x8bc2e58f
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sda1            2048  1465149167   732573560   83  Linux
+
+命令 (m 以獲得說明)： d
+已選分割區 1
+
+命令 (m 以獲得說明)： p
+
+Disk /dev/sda: 750.2 GB, 750156374016 bytes
+81 磁頭，63 磁區/磁軌，287115 磁柱，總計 1465149168 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 4096 位元組
+I/O 大小 (最小/最佳化)：4096 位元組 / 4096 位元組
+磁碟識別碼：0x8bc2e58f
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+
+命令 (m 以獲得說明)： w
+分割表已變更！
+
+呼叫 ioctl() 以重新讀取分割表。
+同步磁碟。
+
+目前為止我把/dev/sda1給刪除掉了，所以SATA硬碟沒有分割區，
+再一次執行fdisk程式，重新劃分硬碟分割區
+# fdisk /dev/sda
+
+一樣貼出和fdisk程式的互動如下輸出：
+裝置呈現的邏輯區大小小於
+實體磁區大小。建議對齊到實體磁區 (或最佳化
+I/O) 大小邊界，否則效能也許會被影響。
+
+命令 (m 以獲得說明)： m
+命令動作
+   a   切換可開機的旗標
+   b   編輯 bsd 磁碟標籤
+   c   切換 DOS 相容性旗標
+   d   刪除分割區
+   l   列出已知分割區類型
+   m   印出這個選單
+   n   加入新的分割區
+   o   建立新的空白 DOS 分割表
+   p   印出分割表
+   q   離開而不需儲存變更
+   s   建立新的空白 Sun 磁碟標籤
+   t   變更分割區系統識別號
+   u   變更顯示/輸入單位
+   v   驗證分割表
+   w   分割表寫入磁碟然後離開
+   x   額外功能 (專家限用)
+
+命令 (m 以獲得說明)： n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): 
+Using default response p
+分割區編號 (1-4, 預設 1)： 
+使用預設值 1
+起初 磁區 (2048-1465149167, 預設 2048)： 
+使用預設值 2048
+最後 磁區, +磁區 或 +大小{K,M,G} (2048-1465149167, 預設 1465149167)： 
+使用預設值 1465149167
+
+命令 (m 以獲得說明)： p
+
+Disk /dev/sda: 750.2 GB, 750156374016 bytes
+255 磁頭，63 磁區/磁軌，91201 磁柱，總計 1465149168 磁區
+單位 = 磁區 之於 1 * 512 = 512 位元組
+磁區大小 (邏輯/實體)：512 位元組 / 4096 位元組
+I/O 大小 (最小/最佳化)：4096 位元組 / 4096 位元組
+磁碟識別碼：0x8bc2e58f
+
+所用裝置 開機      開始         結束      區塊   識別號  系統
+/dev/sda1            2048  1465149167   732573560   83  Linux
+
+命令 (m 以獲得說明)： w
+分割表已變更！
+
+呼叫 ioctl() 以重新讀取分割表。
+同步磁碟。
+
+
+現在我們又把分割區/dev/sda1給作回來了
+然後再來要格式化成EXT4格式，執行
+# mkfs.ext4 /dev/sda1
+
+終端機輸出了
+mke2fs 1.42.8 (20-Jun-2013)
+Filesystem label=
+OS type: Linux
+Block size=4096 (log=2)
+Fragment size=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+45793280 inodes, 183143390 blocks
+9157169 blocks (5.00%) reserved for the super user
+First data block=0
+Maximum filesystem blocks=0
+5590 block groups
+32768 blocks per group, 32768 fragments per group
+8192 inodes per group
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, 
+	4096000, 7962624, 11239424, 20480000, 23887872, 71663616, 78675968, 
+	102400000
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (32768 blocks): done
+Writing superblocks and filesystem accounting information: done     
+
+現在再把/dev/sda1掛載到/mnt/sda1看看
+# mount -t ext4 /dev/sda1 /mnt/sda1
+
+看看系統掛載狀態，執行
+# df -h
+
+終端機打印了
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/root       7.1G  5.9G  916M   87% /
+devtmpfs        888M  4.0K  888M    1% /dev
+/dev/root       7.1G  5.9G  916M   87% /var/log.hdd
+ramlog-tmpfs    984M   11M  973M    2% /var/log
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+tmpfs           984M   12K  984M    1% /tmp
+none            197M  464K  197M    1% /run
+tmpfs           984M     0  984M    0% /var/tmp
+none            5.0M     0  5.0M    0% /run/lock
+none            984M   72K  984M    1% /run/shm
+none            100M  8.0K  100M    1% /run/user
+/dev/sda1       688G  197M  653G    1% /mnt/sda1
+
+很好，/dev/sda1掛載到/mnt/sda1了
+不過硬碟大小怪怪的，買來的時候盒子上面明明TM寫著750 GB
+為什麼容量只剩下688G？
+一樣用之前寫在objective 11的算法
+在上面的fdisk的輸出裡，我們知道/dev/sda1有（1465149167 + 1）= 1465149168個磁區
+每個磁區有512 bytes，那麼這個/dev/sda1分割區就有
+（1465149167 + 1）X 512 bytes = 750156374016 bytes = 732574584 KB = 715404.867 MB = 698.63 GB
+其實實際大小只有698.63 GB（無條件四捨五入到小數第二位），至於為什麼上面的輸出還更少了10GB，居然只有688 GB
+答案很簡單：我真的不知道它到底怎麼算的
+哈哈
+
+現在SATA硬碟分割好，也格式化成EXT4了，然後也掛載到/mnt/sda1目錄了
+接下來我們要把MicroSD卡上面的/dev/mmcblk0p1分割區的資料
+全部複製到SATA硬碟的/dev/sda1分割區
+
+首先建立一個/mnt/mmcblk0p1目錄
+# mkdir /mnt/mmcblk0p1
+
+然後把/dev/mmcblk0p1掛載到/mnt/mmcblk0p1目錄
+
+

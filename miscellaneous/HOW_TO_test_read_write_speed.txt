@@ -1,0 +1,25 @@
+參考了這篇：
+http://www.cubieforums.com/index.php?topic=2819.0
+
+其中重點在：
+for ssd driver
+ 
+write
+ sudo dd oflag=direct if=/dev/zero of=aaa bs=1M count=1000
+1000+0 records in
+1000+0 records out
+1048576000 bytes (1.0 GB) copied, 30.1714 s, 34.8 MB/s
+
+
+ read and write
+sudo dd iflag=direct oflag=direct if=aaa of=bbb bs=1M count=1000
+1000+0 records in
+1000+0 records out
+1048576000 bytes (1.0 GB) copied, 30.1714 s, 34.8 MB/s
+
+
+read 
+sudo dd iflag=direct if=/dev/sda1 of=/dev/null bs=1M count=1000
+1000+0 records in
+1000+0 records out
+1048576000 bytes (1.0 GB) copied, 6.64053 s, 158 MB/s
