@@ -1,0 +1,41 @@
+objective 13 : 接上我新買的SATA硬碟，並將rootfs的內容從MicroSD卡上整個倒過去硬碟裡
+
+參考了這篇：
+http://www.cubieforums.com/index.php?topic=1485.0
+
+捲到下面有個大鬍子白人的地方
+他說了
+There has been a discussion about the best way to copy rootfs. Some people had problems with dd.
+
+Other approaches were tar and rsync. i can commit that tar did work.
+
+Then copy rootfs to SATA EXT4 filesystem
+Code: [Select]
+#(cd /mnt/rootfs_source; tar --backup -c *) |tar -C /mnt/rootfs_target –xv
+Maybe a rsync command would be easier if available…
+Code: [Select]
+#rsync –av /mnt/rootfs_source /mnt/rootfs_target
+
+
+最好不要用dd指令直接把MicroSD卡的東西，直接倒到SATA硬碟
+這裡只說「Some people had problems with dd」
+有些人用了dd指令去倒，結果遇到了問題
+但是沒有細說是什麼問題
+
+他給出了兩種方式
+一種是用tar指令去複製，另一種是rsync指令
+我曾經試過用rsync指令去複製，可是我印象中速度超級慢
+過了快一個小時還沒倒完，而且好像就這麼掛了
+所以我就沒再用rsync去複製TM任何東西
+
+所以我用的是tar指令，把MicroSD卡上面/dev/mmcblk0p1分割區的資料，複製到SATA硬碟
+真的有效，值得推薦，而且用tar指令和使用dd指令的不同
+是在於你用完dd指令把來源（也許是/dev/mmcblk0p1）倒進目的地（也許是/dev/sda1）之後
+你還得要用
+# resize2fs /dev/sda1
+這個指令去調整/dev/sda1分割區的大小
+但是使用tar指令複製的話就不用
+因為你只是單純把檔案從來源地複製到目的地而已
+
+觀念大概是這樣，現在開始實作，把CubieTruck接上我新買的SATA2 500G硬碟
+然後開機
