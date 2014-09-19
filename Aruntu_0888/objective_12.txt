@@ -202,6 +202,11 @@ stark:x:1004:
 # usermod -a -G utempter,bluetooth,ssl-cert,avahi,lpadmin,nopasswdlogin,syslog,avahi-autoipd,pulse,pulse-access stark
 # usermod -a -G rtkit,saned,whoopsie,stunnel4,minidlna,ftpuser stark
 
+以上的指令，每一行都會把用戶stark，多加入到一些群組
+以上指令全部執行完之後，你可以
+# cat /etc/group
+看看和上面的加入前的/etc/group有什麼不同
+
 順便一提
 如果要把用戶stark恢復成原來還沒有加入所有群組的狀態
 就執行
@@ -232,7 +237,7 @@ stark:x:1004:
 然後把MicroSD卡上面的/home/aruntu目錄，
 完整複製一份成為/home/stark目錄
 然後把這個新產生的/home/stark目錄裡面（包含所有子目錄）
-只要是寫著aruntu字串的檔案，全部置換成stark字串
+只要是檔案裡有寫著aruntu字串的地方，全部都要置換成stark字串
 
 工程很浩大
 但是開始動手吧
@@ -283,6 +288,7 @@ aruntu  ftpuser  git  stark
 
 作下一個動作之前
 事實上又先把MicroSD卡給插回CubieTruck機器
+（如果你的MicroSD卡上面空間還夠用，就跳過這個步驟）
 以預設aruntu用戶開機了，要幹麻？
 因為那個時候安裝了NetbeansIDE
 現在MicroSD卡上面的/dev/sdb1分割區已經沒空間了，
@@ -375,4 +381,15 @@ default_user        stark
 會成功嗎？好期待
 重開機之後，打開瀏覽器，居然跳出了
 「無法正確開啟您的設定檔，部分功能可能無法使用，請檢查該設定檔是否存在，並確認您擁有讀寫設定檔內容的權限」
-？？？拿來Google搜尋出現了一堆文章，慢慢爬
+不過好險這只有在stark用戶第一次打開瀏覽器的時候，才有跳出來
+之後開了幾次，試著上網看影片看Java股價線圖都很正常
+
+唯一有點奇怪的是，明明是全部複製/home/aruntu目錄產生的/home/stark目錄
+登入aRuntu時，左下角的那個帆船圖示不見了
+還有黑色的冰塊桌布也不見了
+大概就這個小地方可以嫌而已
+不過我懶得再弄了
+反正現在已經是用stark用戶身份開機自動登入
+就好啦，不然要怎樣？（混）
+
+請續續收看objective 13
