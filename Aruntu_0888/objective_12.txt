@@ -281,8 +281,98 @@ aruntu  ftpuser  git  stark
 先把stark目錄更名成stark.original
 # mv stark stark.original
 
-然後把aruntu目錄複製成stark目錄，複製的時候維持原來用戶aruntu的權限
+作下一個動作之前
+事實上又先把MicroSD卡給插回CubieTruck機器
+以預設aruntu用戶開機了，要幹麻？
+因為那個時候安裝了NetbeansIDE
+現在MicroSD卡上面的/dev/sdb1分割區已經沒空間了，
+只剩不到900MB，而/home/aruntu用戶有1.2GB
+所以只好把NetbeansIDE給解除安裝
+（/home/aruntu/netbeans-8.0/uninstall.sh可以解除安裝）
+連/home/aruntu/Downloads目錄下的安裝檔
+netbeans-8.0-linux.sh
+有200多MB
+還有
+jdk-8u6-linux-arm-vfp-hflt.tar.gz
+有87MB，一起刪掉吧
+刪完之後一樣再把CubieTruck機器關掉
+然後把MicroSD卡插上轉卡，然後插到筆記型電腦裡
+接著下個步驟
+
+
+然後把aruntu目錄複製成stark目錄，
+-p是為了複製過去的時候維持原來用戶aruntu的權限
+-R是除了現行目錄，還要遞迴複製所有的子目錄
 # cp -Rp aruntu stark
 
+複製過去的stark目錄裡
+應該有幾千個檔案裡面，都寫著aruntu
+我們可以執行下面的指令來驗證一下
+# find ./stark -xdev -type f -print0 | xargs -0 grep -H "aruntu" >> /root/files_contain_keyword_aruntu_in_home_stark_dir.txt
+搜出來的結果會存放在/root/files_contain_keyword_aruntu_in_home_stark_dir.txt
+我不列出來了，可是我可以說我總共搜出了860個地方是有aruntu字串的
+
+切換到剛才新複製來的stark目錄
+# cd stark
+
+我現在人在那裡呀？
+# pwd
+
+終端機打印了
+/media/anntony/5f70abf0-69bc-468e-b875-5cf1378b476b/home/stark
 
 
+執行下列指令，把剛才新複製出的stark目錄裡
+所有的aruntu字串，都置換成stark字串
+# find . -type f -print0 | xargs -0 sed -i 's/aruntu/stark/g'
+
+
+看看是不是真的都換掉了
+結果會存在/root/files_contain_keyword_stark_in_home_stark_dir.txt
+# cd ..
+# pwd
+# find ./stark -xdev -type f -print0 | xargs -0 grep -H "stark" >> /root/files_contain_keyword_stark_in_home_stark_dir.txt
+
+
+離開現在的/media/anntony/5f70abf0-69bc-468e-b875-5cf1378b476b目錄
+# cd /root
+
+卸載掉MicroSD卡
+# umount /dev/sdb1
+
+再確認一次是不是真的卸載掉了？
+# df -h
+
+終端機打印了
+檔案系統        容量  已用  可用 已用% 掛載點
+/dev/sda1       453G  104G  327G   25% /
+none            4.0K     0  4.0K    0% /sys/fs/cgroup
+udev            2.8G  4.0K  2.8G    1% /dev
+tmpfs           559M  1.4M  558M    1% /run
+none            5.0M     0  5.0M    0% /run/lock
+none            2.8G   43M  2.7G    2% /run/shm
+none            100M   52K  100M    1% /run/user
+很好，真的卸載掉了
+
+拔出MicroSD卡，再插回CubieTruck機器上開機
+切換成root身分
+$ sudo -i
+
+把所有/home/stark目錄下的所有檔案，擁有人和群組都設定成stark
+# chown -R stark:stark /home/stark
+
+修改/etc/slim.conf，設定預設的登入用戶是stark
+# vi /etc/slim.conf
+
+把這一行
+default_user        aruntu
+改成這一行
+default_user        stark
+
+存檔之後，把CubieTruck重新開機
+# init 6
+
+會成功嗎？好期待
+重開機之後，打開瀏覽器，居然跳出了
+「無法正確開啟您的設定檔，部分功能可能無法使用，請檢查該設定檔是否存在，並確認您擁有讀寫設定檔內容的權限」
+？？？拿來Google搜尋出現了一堆文章，慢慢爬
