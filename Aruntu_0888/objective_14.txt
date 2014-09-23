@@ -1,0 +1,56 @@
+objective 14 : 安裝 nginx 服務器 ( with PHP & laravel support )
+
+參考了這一篇教程：
+https://www.digitalocean.com/community/tutorials/how-to-install-laravel-with-an-nginx-web-server-on-ubuntu-14-04
+
+進入CubieTruck終端機，執行
+
+切換成root身分
+$ sudo -i
+
+更新軟體源
+# apt-get update
+
+安裝nginx相關套件
+# apt-get install nginx php5-fpm php5-cli php5-mcrypt
+
+修改PHP組態檔，修改前先複製一份預設值以防出錯
+# cp /etc/php5/fpm/php.ini /etc/php5/fpm/php.ini.default
+# vi /etc/php5/fpm/php.ini
+
+把這一行被注解掉的
+;cgi.fix_pathinfo=1
+
+改成這樣
+cgi.fix_pathinfo=0
+然後存檔離開
+
+改上面那個設定的原因是為了安全性
+作者的理由如下：
+This tells PHP not to try to execute a similar named script if the requested file name cannot be found. 
+This is very important because allowing this type of behavior could allow an attacker to craft a specially designed request
+　to try to trick PHP into executing code that it should not.
+呃，我也不是很懂，改就對了
+
+啟用MCrypt extension (Laravel會用到)
+# php5enmod mcrypt
+
+終端機打印了
+WARNING: Module mcrypt ini file doesn't exist under /etc/php5/mods-available
+WARNING: Module mcrypt ini file doesn't exist under /etc/php5/mods-available
+WARNING: Module mcrypt ini file doesn't exist under /etc/php5/mods-available
+
+上面的那一行php5enmod mcrypt，並沒有成功
+看起來是因為/etc/php5/mods-available目錄裡少了mcrypt.ini這個檔案的樣子
+搜到這篇
+http://stackoverflow.com/questions/19446679/mcrypt-not-present-after-ubuntu-upgrade-to-13-10
+
+所以我執行了
+# ln -s /etc/php5/conf.d/mcrypt.ini /etc/php5/mods-available
+
+再執行一次
+# php5enmod mcrypt
+終端機沒有再靠腰，看起來應該有成功
+
+重新啟動php5-fpm讓剛才的設定生效
+# service php5-fpm restart
