@@ -92,3 +92,286 @@ server {
 
 改好就存檔，然後重新啟動nginx服務器
 # service nginx restart
+
+安裝一下curl，因為待會兒要直接在終端機下載檔案
+# apt-get install curl
+
+接著照著Digital Ocean的教程繼續搞搞搞
+大師指示我
+# cd ~
+# curl -sS https://getcomposer.org/installer | php
+
+結果雞拜哩出現下列這個訊息
+Some settings on your machine make Composer unable to work properly.
+Make sure that you fix the issues listed below and run this script again:
+
+The json extension is missing.
+Install it or recompile php without --disable-json
+
+然後Google搜尋一下出後出現的第一頁是
+http://stackoverflow.com/questions/18493217/json-not-compiled-in-php
+
+大大師神回覆
+If you haven't already installed it:
+
+sudo apt-get install php5-json
+
+(more info: http://iteration99.com/2013/php-json-removed-from-php-5-5/ )
+
+Shouldn't overwrite any other settings.
+
+所以就照著大大師的試一下，執行了
+# apt-get install php5-json
+
+安裝完成php5-json之後，從剛才有問題的地方繼續重新作
+再次執行
+# cd ~
+# curl -sS https://getcomposer.org/installer | php
+
+終端機出現了
+#!/usr/bin/env php
+All settings correct for using Composer
+Downloading...
+
+Composer successfully installed to: /root/composer.phar
+Use it: php composer.phar
+
+
+終端機好像在和我說，它下載了一個叫作composer.phar的檔案
+繼續大師的教程
+他移動了這個composer.phar檔案到/usr/local/bin目錄，並更名為composer（少了副檔名）
+#  mv composer.phar /usr/local/bin/composer
+
+看看現在系統裡呼叫composer指令會用那個路徑裡的composer？？
+# which composer
+
+終端機打印了
+/usr/local/bin/composer
+
+要安裝最新版的laravel了
+# composer create-project laravel/laravel /var/www/laravel
+
+如果要指定版本，上面的指令可以這樣子下，我還是使用上一行的指令來安裝我的laravel
+# composer create-project laravel/laravel /var/www/laravel 4.2
+
+終端機回應了（有點長）
+Installing laravel/laravel (v4.2.0)
+  - Installing laravel/laravel (v4.2.0)
+    Downloading: 100%         
+
+Created project in /var/www/laravel
+Loading composer repositories with package information
+Installing dependencies (including require-dev)
+  - Installing symfony/translation (v2.5.4)
+    Downloading: 100%         
+
+  - Installing symfony/security-core (v2.5.4)
+    Downloading: 100%         
+
+  - Installing symfony/routing (v2.5.4)
+    Downloading: 100%         
+
+  - Installing symfony/process (v2.5.4)
+    Downloading: 100%         
+
+  - Installing psr/log (1.0.0)
+    Downloading: 100%         
+
+  - Installing symfony/debug (v2.5.4)
+    Downloading: 100%         
+
+  - Installing symfony/http-foundation (v2.5.4)
+    Downloading: 100%         
+
+  - Installing symfony/event-dispatcher (v2.5.4)
+    Downloading: 100%         
+
+  - Installing symfony/http-kernel (v2.5.4)
+    Downloading: 100%         
+
+  - Installing symfony/finder (v2.5.4)
+    Downloading: 100%         
+
+  - Installing symfony/dom-crawler (v2.5.4)
+    Downloading: 100%         
+
+  - Installing symfony/css-selector (v2.5.4)
+    Downloading: 100%         
+
+  - Installing symfony/console (v2.5.4)
+    Downloading: 100%         
+
+  - Installing symfony/browser-kit (v2.5.4)
+    Downloading: 100%         
+
+  - Installing swiftmailer/swiftmailer (v5.2.2)
+    Downloading: 100%         
+
+  - Installing stack/builder (v1.0.2)
+    Downloading: 100%         
+
+  - Installing predis/predis (v0.8.7)
+    Downloading: 100%         
+
+  - Installing phpseclib/phpseclib (0.3.8)
+    Downloading: 100%         
+
+  - Installing patchwork/utf8 (v1.1.25)
+    Downloading: 100%         
+
+  - Installing nesbot/carbon (1.12.0)
+    Downloading: 100%         
+
+  - Installing monolog/monolog (1.10.0)
+    Downloading: 100%         
+
+  - Installing nikic/php-parser (v0.9.5)
+    Downloading: 100%         
+
+  - Installing jeremeamia/superclosure (1.0.1)
+    Downloading: 100%         
+
+  - Installing filp/whoops (1.1.2)
+    Downloading: 100%         
+
+  - Installing ircmaxell/password-compat (1.0.3)
+    Downloading: 100%         
+
+  - Installing d11wtq/boris (v1.0.8)
+    Downloading: 100%         
+
+  - Installing symfony/filesystem (v2.5.4)
+    Downloading: 100%         
+
+  - Installing classpreloader/classpreloader (1.0.2)
+    Downloading: 100%         
+
+  - Installing laravel/framework (v4.2.9)
+    Downloading: 100%         
+
+symfony/translation suggests installing symfony/config ()
+symfony/translation suggests installing symfony/yaml ()
+symfony/security-core suggests installing symfony/validator (For using the user password constraint)
+symfony/security-core suggests installing symfony/expression-language (For using the expression voter)
+symfony/routing suggests installing symfony/config (For using the all-in-one router or any loader)
+symfony/routing suggests installing symfony/yaml (For using the YAML loader)
+symfony/routing suggests installing symfony/expression-language (For using expression matching)
+symfony/routing suggests installing doctrine/annotations (For using the annotation loader)
+symfony/event-dispatcher suggests installing symfony/dependency-injection ()
+symfony/http-kernel suggests installing symfony/class-loader ()
+symfony/http-kernel suggests installing symfony/config ()
+symfony/http-kernel suggests installing symfony/dependency-injection ()
+predis/predis suggests installing ext-phpiredis (Allows faster serialization and deserialization of the Redis protocol)
+predis/predis suggests installing ext-curl (Allows access to Webdis when paired with phpiredis)
+phpseclib/phpseclib suggests installing ext-gmp (Install the GMP (GNU Multiple Precision) extension in order to speed up arbitrary precision integer arithmetic operations.)
+phpseclib/phpseclib suggests installing pear-pear/PHP_Compat (Install PHP_Compat to get phpseclib working on PHP < 4.3.3.)
+patchwork/utf8 suggests installing ext-intl (Use Intl for best performance)
+monolog/monolog suggests installing graylog2/gelf-php (Allow sending log messages to a GrayLog2 server)
+monolog/monolog suggests installing raven/raven (Allow sending log messages to a Sentry server)
+monolog/monolog suggests installing doctrine/couchdb (Allow sending log messages to a CouchDB server)
+monolog/monolog suggests installing ruflin/elastica (Allow sending log messages to an Elastic Search server)
+monolog/monolog suggests installing ext-amqp (Allow sending log messages to an AMQP server (1.0+ required))
+monolog/monolog suggests installing ext-mongo (Allow sending log messages to a MongoDB server)
+monolog/monolog suggests installing aws/aws-sdk-php (Allow sending log messages to AWS services like DynamoDB)
+monolog/monolog suggests installing rollbar/rollbar (Allow sending log messages to Rollbar)
+laravel/framework suggests installing doctrine/dbal (Allow renaming columns and dropping SQLite columns.)
+Writing lock file
+Generating autoload files
+Generating optimized class loader
+Compiling common classes
+Compiling views
+Application key [ADpLtj5HZjkmrGnFna0rKuQPMtXZ0uij] set successfully.
+
+好奇的我看一下/var/www/laravel目錄裡多了什麼東西？
+# ls -al /var/www/laravel
+
+終端機打印了
+總計 116
+drwxr-xr-x  6 root root  4096  9月 23 22:21 .
+drwxr-xr-x  3 root root  4096  9月 23 13:47 ..
+drwxr-xr-x 12 root root  4096  6月  2 02:16 app
+-rwxr-xr-x  1 root root  2452  6月  2 02:16 artisan
+drwxr-xr-x  2 root root  4096  9月 23 22:21 bootstrap
+-rw-r--r--  1 root root   697  6月  2 02:16 composer.json
+-rw-r--r--  1 root root 58208  9月 23 22:21 composer.lock
+-rw-r--r--  1 root root   146  6月  2 02:16 CONTRIBUTING.md
+-rw-r--r--  1 root root    12  6月  2 02:16 .gitattributes
+-rw-r--r--  1 root root   100  6月  2 02:16 .gitignore
+-rw-r--r--  1 root root   567  6月  2 02:16 phpunit.xml
+drwxr-xr-x  3 root root  4096  6月  2 02:16 public
+-rw-r--r--  1 root root  2051  6月  2 02:16 readme.md
+-rw-r--r--  1 root root   519  6月  2 02:16 server.php
+drwxr-xr-x 20 root root  4096  9月 23 22:21 vendor
+
+哦…原來/var/www/laravel是個空目錄，現在多了這麼多東西
+接下來要把目錄下的檔案的group給修改一下，檔案的owner還是保持root用戶
+# chown -R :www-data /var/www/laravel
+
+改完之後再看看檔案的owner和group是莎夏？
+# ls -al /var/www/laravel
+
+終端機打印了
+總計 116
+drwxr-xr-x  6 root www-data  4096  9月 23 22:21 .
+drwxr-xr-x  3 root root      4096  9月 23 13:47 ..
+drwxr-xr-x 12 root www-data  4096  6月  2 02:16 app
+-rwxr-xr-x  1 root www-data  2452  6月  2 02:16 artisan
+drwxr-xr-x  2 root www-data  4096  9月 23 22:21 bootstrap
+-rw-r--r--  1 root www-data   697  6月  2 02:16 composer.json
+-rw-r--r--  1 root www-data 58208  9月 23 22:21 composer.lock
+-rw-r--r--  1 root www-data   146  6月  2 02:16 CONTRIBUTING.md
+-rw-r--r--  1 root www-data    12  6月  2 02:16 .gitattributes
+-rw-r--r--  1 root www-data   100  6月  2 02:16 .gitignore
+-rw-r--r--  1 root www-data   567  6月  2 02:16 phpunit.xml
+drwxr-xr-x  3 root www-data  4096  6月  2 02:16 public
+-rw-r--r--  1 root www-data  2051  6月  2 02:16 readme.md
+-rw-r--r--  1 root www-data   519  6月  2 02:16 server.php
+drwxr-xr-x 20 root www-data  4096  9月 23 22:21 vendor
+
+還有/var/www/laravel/app/storage這個目錄的權限要改成775
+# chmod -R 775 /var/www/laravel/app/storage
+
+修改php.ini，讓它啟用utf8編碼
+修改前一樣先將預設值存檔
+# cp /etc/php5/apache2/php.ini /etc/php5/apache2/php.ini.default
+# vi /etc/php5/apache2/php.ini
+
+把這行啟用後，存檔、離開
+default_charset = "UTF-8"
+
+再修改這裡
+# vi /etc/nginx/sites-available/default
+
+在server { .... } 區塊裡，加上這一行
+charset utf-8;
+存檔、離開
+
+大概就這樣，改完設定就重新啟動nginx服務器一下，指令是
+# service nginx restart
+
+產生一個測試用的html檔
+# cd /var/www/laravel/public
+# touch index.html
+# vi index.html
+
+內容如下：就三行，不用多
+abcde<br>
+我覺得印地安人很酷<p>
+超酷怎麼辦？<p>
+
+存檔、離開
+然後到瀏覽器的網址列，打上
+http://192.168.0.161
+看看你能看到什麼？
+
+記得網站的根目錄是在CubieTruck機器上的
+/var/www/laravel/public
+這個目錄裡的
+第一順位：index.php
+第二順位：index.html
+第三順位：index.htm
+為什麼有這個規則呢？我們在
+/etc/nginx/sites-available/default
+設定的啊，捲回去仔細找一下
+
+打完收工
