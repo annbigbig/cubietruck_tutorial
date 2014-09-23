@@ -54,3 +54,41 @@ http://stackoverflow.com/questions/19446679/mcrypt-not-present-after-ubuntu-upgr
 
 重新啟動php5-fpm讓剛才的設定生效
 # service php5-fpm restart
+
+
+接下來要設定document root
+先建立/var/www/laravel目錄
+# mkdir -p /var/www/laravel
+
+再來編輯nginx組態檔，動手修改之前一樣先備份預設值
+# cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.001
+
+打開vi編輯器修改nginx組態檔
+# vi /etc/nginx/sites-available/default
+
+以這裡的為樣本
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+
+    root /var/www/laravel/public;
+    index index.php index.html index.htm;
+
+    server_name localhost;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        try_files $uri /index.php =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}
+
+改好就存檔，然後重新啟動nginx服務器
+# service nginx restart
